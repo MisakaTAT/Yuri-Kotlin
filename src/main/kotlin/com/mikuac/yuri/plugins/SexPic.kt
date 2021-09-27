@@ -12,14 +12,18 @@ import com.mikuac.yuri.common.config.ReadConfig
 import com.mikuac.yuri.common.task.AsyncTask
 import com.mikuac.yuri.common.utils.RequestUtils
 import com.mikuac.yuri.dto.SexPicDto
+import com.mikuac.yuri.repository.PluginSwitchRepository
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import javax.annotation.Resource
 
 @Component
 class SexPic : BotPlugin() {
 
-    @Resource
+    @Autowired
     private lateinit var asyncTask: AsyncTask
+
+    @Autowired
+    private lateinit var repository: PluginSwitchRepository
 
     private val cdTime = ReadConfig.config?.plugin?.sexPic?.cdTime
 
@@ -59,8 +63,16 @@ class SexPic : BotPlugin() {
     private fun check(groupId: Long, userId: Long, bot: Bot): Boolean {
         // 检查是否处于冷却时间
         if (timedCache.get(groupId) != null && timedCache.get(groupId) == userId) {
-            bot.sendGroupMsg(groupId, MsgUtils.builder().at(userId).text("整天色图色图，信不信把你变成色图？").build(), false)
+            val text = "整天色图色图，信不信把你变成色图？"
+            if (groupId != 0L) bot.sendGroupMsg(groupId, MsgUtils.builder().at(userId).text(text).build(), false)
+            if (groupId == 0L) bot.sendPrivateMsg(userId, text, false)
             return false
+        }
+        // 检查是否停用
+        if (repository.findByPluginName(this.javaClass.simpleName).get().disable) {
+            val text = "该功能已停用"
+            if (groupId != 0L) bot.sendGroupMsg(groupId, MsgUtils.builder().at(userId).text(text).build(), false)
+            if (groupId == 0L) bot.sendPrivateMsg(userId, text, false)
         }
         return true
     }

@@ -1,9 +1,17 @@
 server:
   port: 5555
+spring:
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    url: jdbc:sqlite:BotDB.sqlite3
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    open-in-view: false
 
 shiro:
   plugin-list:
     - com.mikuac.yuri.plugins.EventLog
     - com.mikuac.yuri.plugins.Poke
     - com.mikuac.yuri.plugins.SexPic
-
