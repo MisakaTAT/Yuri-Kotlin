@@ -1,0 +1,16 @@
+base:
+  # 机器人名称
+  botName: "悠里"
+  # 机器人QQ号
+  botSelfId: 1234567
+  # 管理员列表
+  adminList:
+    - 1234567
+plugin:
+  # 色图插件配置
+  sexPic:
+    api: "https://api.lolicon.app/setu/v2"
+    # 冷却时间（秒）
+    cdTime: 60
+    # 图片撤回时间（秒）
+    recallMsgPicTime: 30

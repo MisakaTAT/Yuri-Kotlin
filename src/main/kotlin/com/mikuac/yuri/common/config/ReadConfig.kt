@@ -1,0 +1,47 @@
+package com.mikuac.yuri.common.config
+
+import cn.hutool.core.io.watch.SimpleWatcher
+import cn.hutool.core.io.watch.WatchMonitor
+import cn.hutool.core.io.watch.watchers.DelayWatcher
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.mikuac.yuri.common.log.Slf4j.Companion.log
+import org.springframework.stereotype.Component
+import org.yaml.snakeyaml.Yaml
+import java.io.File
+import java.nio.file.Path
+import java.nio.file.WatchEvent
+import javax.annotation.PostConstruct
+import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
+
+@Component
+class ReadConfig {
+
+    companion object {
+        var config: Config? = null
+    }
+
+    val configFileName = "config.yaml"
+
+    @PostConstruct
+    private fun initConfig() {
+        val yaml = Yaml()
+        val inputStream = File(configFileName).inputStream()
+        val map: HashMap<String, JvmType.Object> = yaml.load(inputStream)
+        val objectMapper = ObjectMapper()
+        config = objectMapper.convertValue(map, Config::class.java)
+    }
+
+    @PostConstruct
+    private fun watchMonitorConfigFile() {
+        val monitor = WatchMonitor.createAll("./", object : DelayWatcher(object : SimpleWatcher() {
+            override fun onModify(event: WatchEvent<*>?, currentPath: Path?) {
+                if (configFileName == event?.context().toString()) {
+                    initConfig()
+                    log.info("配置文件 $configFileName 已重载")
+                }
+            }
+        }, 500) {})
+        monitor.start()
+    }
+
+}

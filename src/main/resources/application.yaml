@@ -1,0 +1,9 @@
+server:
+  port: 5555
+
+shiro:
+  plugin-list:
+    - com.mikuac.yuri.plugins.EventLog
+    - com.mikuac.yuri.plugins.Poke
+    - com.mikuac.yuri.plugins.SexPic
+
