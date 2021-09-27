@@ -9,29 +9,29 @@ import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.common.config.ReadConfig
-import com.mikuac.yuri.common.task.AsyncTask
+import com.mikuac.yuri.common.log.Slf4j.Companion.log
 import com.mikuac.yuri.common.utils.RequestUtils
-import com.mikuac.yuri.dto.SexPicDto
+import com.mikuac.yuri.dto.EroticPicDto
 import com.mikuac.yuri.repository.PluginSwitchRepository
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class SexPic : BotPlugin() {
-
-    @Autowired
-    private lateinit var asyncTask: AsyncTask
+class EroticPic : BotPlugin() {
 
     @Autowired
     private lateinit var repository: PluginSwitchRepository
 
-    private val cdTime = ReadConfig.config?.plugin?.sexPic?.cdTime
+    private val cdTime = ReadConfig.config?.plugin?.eroticPic?.cdTime
 
     private val timedCache: TimedCache<Long, Long> = CacheUtil.newTimedCache(cdTime?.times(1000L) ?: 60000)
 
-    private fun request(): SexPicDto.Data? {
-        val result = ReadConfig.config?.plugin?.sexPic?.api?.let { RequestUtils.get(it) } ?: return null
-        val json = Gson().fromJson(result, SexPicDto::class.java) ?: return null
+    private fun request(): EroticPicDto.Data? {
+        val result = ReadConfig.config?.plugin?.eroticPic?.api?.let { RequestUtils.get(it) } ?: return null
+        val json = Gson().fromJson(result, EroticPicDto::class.java) ?: return null
         return json.data[0]
     }
 
@@ -44,14 +44,14 @@ class SexPic : BotPlugin() {
     private fun buildTextMsg(): Triple<Boolean, String, String?> {
         val data = request() ?: return Triple(false, "诶呀...，请求好像出现了一些问题，要不重新试试？", null)
         return Triple(
-            true,
-            MsgUtils.builder()
-                .text("标题：${data.title}")
-                .text("\nPID：${data.pid}")
-                .text("\n作者：${data.author}")
-                .text("\n链接：https://www.pixiv.net/artworks/${data.pid}")
-                .text("\n反代链接：${data.urls.original}")
-                .build(), data.urls.original
+                true,
+                MsgUtils.builder()
+                        .text("标题：${data.title}")
+                        .text("\nPID：${data.pid}")
+                        .text("\n作者：${data.author}")
+                        .text("\n链接：https://www.pixiv.net/artworks/${data.pid}")
+                        .text("\n反代链接：${data.urls.original}")
+                        .build(), data.urls.original
         )
     }
 
@@ -77,6 +77,14 @@ class SexPic : BotPlugin() {
         return true
     }
 
+    private fun recallMsgPic(msgId: Int, bot: Bot) = runBlocking {
+        launch {
+            delay(ReadConfig.config?.plugin?.eroticPic?.recallMsgPicTime?.times(1000L) ?: 30000)
+            bot.deleteMsg(msgId)
+            log.info("撤回色图, 消息ID: $msgId")
+        }
+    }
+
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
         val msg = event.message
         if (msg.equals("test")) {
@@ -89,7 +97,7 @@ class SexPic : BotPlugin() {
                 // 如果 buildTextMsg().first 为 true 则认为请求成功，这时候将请求者信息放入 Map
                 timedCache.put(groupId, userId)
                 val msgId = bot.sendGroupMsg(groupId, buildPicMsg(buildTextMsg().third), false).data.messageId
-                asyncTask.deleteMsg(msgId, bot)
+                recallMsgPic(msgId, bot)
             }
         }
         return MESSAGE_IGNORE

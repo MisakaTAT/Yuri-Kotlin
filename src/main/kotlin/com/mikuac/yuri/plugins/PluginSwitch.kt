@@ -15,7 +15,7 @@ class PluginSwitch {
 
     @PostConstruct
     fun init() {
-        val pluginList = listOf("Poke", "SexPic")
+        val pluginList = listOf("Poke", "EroticPic")
         pluginList.forEach {
             if (repository.findByPluginName(it).isPresent) {
                 log.info("插件开关表 {} 插件已初始化，即将跳过此项", it)

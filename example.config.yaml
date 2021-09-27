@@ -8,7 +8,7 @@ base:
     - 1234567
 plugin:
   # 色图插件配置
-  sexPic:
+  eroticPic:
     api: "https://api.lolicon.app/setu/v2"
     # 冷却时间（秒）
     cdTime: 60
