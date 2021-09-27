@@ -44,14 +44,14 @@ class EroticPic : BotPlugin() {
     private fun buildTextMsg(): Triple<Boolean, String, String?> {
         val data = request() ?: return Triple(false, "诶呀...，请求好像出现了一些问题，要不重新试试？", null)
         return Triple(
-                true,
-                MsgUtils.builder()
-                        .text("标题：${data.title}")
-                        .text("\nPID：${data.pid}")
-                        .text("\n作者：${data.author}")
-                        .text("\n链接：https://www.pixiv.net/artworks/${data.pid}")
-                        .text("\n反代链接：${data.urls.original}")
-                        .build(), data.urls.original
+            true,
+            MsgUtils.builder()
+                .text("标题：${data.title}")
+                .text("\nPID：${data.pid}")
+                .text("\n作者：${data.author}")
+                .text("\n链接：https://www.pixiv.net/artworks/${data.pid}")
+                .text("\n反代链接：${data.urls.original}")
+                .build(), data.urls.original
         )
     }
 
