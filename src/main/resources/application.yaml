@@ -15,3 +15,4 @@ shiro:
     - com.mikuac.yuri.plugins.EventLog
     - com.mikuac.yuri.plugins.Poke
     - com.mikuac.yuri.plugins.EroticPic
+    - com.mikuac.yuri.plugins.PluginSwitch

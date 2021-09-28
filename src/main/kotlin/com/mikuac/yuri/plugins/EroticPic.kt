@@ -10,6 +10,7 @@ import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.common.config.ReadConfig
 import com.mikuac.yuri.common.log.Slf4j.Companion.log
+import com.mikuac.yuri.common.utils.MsgSendUtils
 import com.mikuac.yuri.common.utils.RequestUtils
 import com.mikuac.yuri.dto.EroticPicDto
 import com.mikuac.yuri.repository.PluginSwitchRepository
@@ -51,7 +52,8 @@ class EroticPic : BotPlugin() {
                 .text("\n作者：${data.author}")
                 .text("\n链接：https://www.pixiv.net/artworks/${data.pid}")
                 .text("\n反代链接：${data.urls.original}")
-                .build(), data.urls.original
+                .build(),
+            data.urls.original
         )
     }
 
@@ -63,16 +65,12 @@ class EroticPic : BotPlugin() {
     private fun check(groupId: Long, userId: Long, bot: Bot): Boolean {
         // 检查是否处于冷却时间
         if (timedCache.get(groupId) != null && timedCache.get(groupId) == userId) {
-            val text = "整天色图色图，信不信把你变成色图？"
-            if (groupId != 0L) bot.sendGroupMsg(groupId, MsgUtils.builder().at(userId).text(text).build(), false)
-            if (groupId == 0L) bot.sendPrivateMsg(userId, text, false)
+            MsgSendUtils.sendAll(userId, groupId, bot, "整天色图色图，信不信把你变成色图？")
             return false
         }
         // 检查是否停用
         if (repository.findByPluginName(this.javaClass.simpleName).get().disable) {
-            val text = "该功能已停用"
-            if (groupId != 0L) bot.sendGroupMsg(groupId, MsgUtils.builder().at(userId).text(text).build(), false)
-            if (groupId == 0L) bot.sendPrivateMsg(userId, text, false)
+            MsgSendUtils.sendAll(userId, groupId, bot, "该功能已停用")
         }
         return true
     }
@@ -81,7 +79,7 @@ class EroticPic : BotPlugin() {
         launch {
             delay(ReadConfig.config?.plugin?.eroticPic?.recallMsgPicTime?.times(1000L) ?: 30000)
             bot.deleteMsg(msgId)
-            log.info("撤回色图, 消息ID: $msgId")
+            log.info("撤回色图，消息ID：$msgId")
         }
     }
 

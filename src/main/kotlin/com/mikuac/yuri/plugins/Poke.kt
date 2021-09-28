@@ -24,10 +24,10 @@ class Poke : BotPlugin() {
         val userInfo = bot.getGroupMemberInfo(groupId, userId, true).data
         val targetInfo = bot.getGroupMemberInfo(groupId, targetId, true).data
         if (userInfo != null && targetInfo != null) {
-            log.info("Poke事件: 群:${groupId} 用户:${userInfo.nickname} 目标:${targetInfo.nickname}")
+            log.info("Poke事件：群[${groupId}] 用户[${userInfo.nickname}] 目标[${targetInfo.nickname}]")
             return MESSAGE_IGNORE
         }
-        log.info("Poke事件: 群:${groupId} 用户:${userId} 目标:${targetId}")
+        log.info("Poke事件：群[${groupId}] 用户[${userId}] 目标[${targetId}]")
         return MESSAGE_IGNORE
     }
 

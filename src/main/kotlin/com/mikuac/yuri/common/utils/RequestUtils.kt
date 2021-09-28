@@ -13,7 +13,7 @@ class RequestUtils {
                 if (exec.status != 200) return null
                 exec.body()
             } catch (e: Exception) {
-                log.error("RequestUtils Get 请求异常: ${e.message}")
+                log.error("RequestUtils Get 请求异常：${e.message}")
                 null
             }
         }
@@ -28,7 +28,7 @@ class RequestUtils {
                 if (exec.status != 200) return null
                 exec.body()
             } catch (e: Exception) {
-                log.error("RequestUtils Get 请求异常: ${e.message}")
+                log.error("RequestUtils Get 请求异常：${e.message}")
                 null
             }
         }
@@ -41,7 +41,7 @@ class RequestUtils {
                 if (exec.status != 200) return null
                 exec.body()
             } catch (e: Exception) {
-                log.error("RequestUtils Post 请求异常: ${e.message}")
+                log.error("RequestUtils Post 请求异常：${e.message}")
                 null
             }
         }

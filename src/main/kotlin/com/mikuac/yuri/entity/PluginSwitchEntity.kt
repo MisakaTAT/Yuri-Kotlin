@@ -9,7 +9,7 @@ data class PluginSwitchEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int,
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     val pluginName: String,
 
     @Column(nullable = false)

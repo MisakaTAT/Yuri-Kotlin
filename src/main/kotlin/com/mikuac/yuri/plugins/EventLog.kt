@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component
 class EventLog : BotPlugin() {
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        log.info("群组消息: 群号:${event.groupId} 用户:${event.userId} 消息:${event.message}")
+        log.info("群组消息：群号[${event.groupId}] 用户[${event.userId}] 消息[${event.message}]")
         return MESSAGE_IGNORE
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        log.info("私聊消息: 群号:${event.userId} 消息:${event.message}")
+        log.info("私聊消息：群号[${event.userId}] 消息[${event.message}]")
         return MESSAGE_IGNORE
     }
 
