@@ -70,7 +70,7 @@ class EroticPic : BotPlugin() {
         }
         // 检查是否停用
         if (repository.findByPluginName(this.javaClass.simpleName).get().disable) {
-            MsgSendUtils.sendAll(userId, groupId, bot, "该功能已停用")
+            MsgSendUtils.sendAll(userId, groupId, bot, "此模块已停用")
         }
         return true
     }

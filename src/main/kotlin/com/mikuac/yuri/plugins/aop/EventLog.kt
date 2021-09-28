@@ -1,4 +1,4 @@
-package com.mikuac.yuri.plugins
+package com.mikuac.yuri.plugins.aop
 
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
