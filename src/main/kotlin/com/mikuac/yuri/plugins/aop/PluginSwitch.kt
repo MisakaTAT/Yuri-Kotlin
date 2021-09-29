@@ -1,13 +1,13 @@
-package com.mikuac.yuri.plugins
+package com.mikuac.yuri.plugins.aop
 
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.common.log.Slf4j.Companion.log
+import com.mikuac.yuri.common.utils.CheckUtils
 import com.mikuac.yuri.common.utils.MsgSendUtils
 import com.mikuac.yuri.common.utils.RegexUtils
-import com.mikuac.yuri.common.utils.RoleUtils
 import com.mikuac.yuri.entity.PluginSwitchEntity
 import com.mikuac.yuri.repository.PluginSwitchRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -37,7 +37,7 @@ class PluginSwitch : BotPlugin() {
     }
 
     private fun check(groupId: Long, userId: Long, msg: String, bot: Bot): Boolean {
-        if (!RoleUtils.roleCheck(userId, groupId, bot)) return false
+        if (!CheckUtils.roleCheck(userId, groupId, bot)) return false
         val pluginName = RegexUtils.group(regex, 2, msg)
         val action = RegexUtils.group(regex, 1, msg)
         val plugin = repository.findByPluginName(pluginName)

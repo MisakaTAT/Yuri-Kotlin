@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-interface PluginSwitchRepository : JpaRepository<PluginSwitchEntity, String> {
+interface PluginSwitchRepository : JpaRepository<PluginSwitchEntity, Int> {
 
     fun findByPluginName(pluginName: String): Optional<PluginSwitchEntity>
 

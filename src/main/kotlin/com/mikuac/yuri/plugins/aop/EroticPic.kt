@@ -1,4 +1,4 @@
-package com.mikuac.yuri.plugins
+package com.mikuac.yuri.plugins.aop
 
 import cn.hutool.cache.CacheUtil
 import cn.hutool.cache.impl.TimedCache
@@ -10,9 +10,11 @@ import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.common.config.ReadConfig
 import com.mikuac.yuri.common.log.Slf4j.Companion.log
+import com.mikuac.yuri.common.utils.CheckUtils
 import com.mikuac.yuri.common.utils.MsgSendUtils
 import com.mikuac.yuri.common.utils.RequestUtils
 import com.mikuac.yuri.dto.EroticPicDto
+import com.mikuac.yuri.repository.BlackListRepository
 import com.mikuac.yuri.repository.PluginSwitchRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -24,7 +26,10 @@ import org.springframework.stereotype.Component
 class EroticPic : BotPlugin() {
 
     @Autowired
-    private lateinit var repository: PluginSwitchRepository
+    private lateinit var psr: PluginSwitchRepository
+
+    @Autowired
+    private lateinit var blr: BlackListRepository
 
     private val cdTime = ReadConfig.config?.plugin?.eroticPic?.cdTime
 
@@ -68,10 +73,8 @@ class EroticPic : BotPlugin() {
             MsgSendUtils.sendAll(userId, groupId, bot, "整天色图色图，信不信把你变成色图？")
             return false
         }
-        // 检查是否停用
-        if (repository.findByPluginName(this.javaClass.simpleName).get().disable) {
-            MsgSendUtils.sendAll(userId, groupId, bot, "此模块已停用")
-        }
+        if (CheckUtils.pluginIsDisable(psr, this.javaClass.simpleName, userId, groupId, bot)) return false
+        if (CheckUtils.isBanned(blr, userId, groupId, bot)) return false
         return true
     }
 
