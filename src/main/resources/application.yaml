@@ -12,6 +12,7 @@ spring:
 
 shiro:
   plugin-list:
+    - com.mikuac.yuri.plugins.filter.TencentBotFilter
     - com.mikuac.yuri.plugins.aop.EventLog
     - com.mikuac.yuri.plugins.aop.EroticPic
     - com.mikuac.yuri.plugins.aop.PluginSwitch
