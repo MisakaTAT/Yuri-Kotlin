@@ -6,6 +6,8 @@ base:
   # 管理员列表
   adminList:
     - 1234567
+command:
+  prefix: "."
 plugin:
   # 色图插件配置
   eroticPic:
