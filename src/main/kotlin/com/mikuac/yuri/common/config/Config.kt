@@ -16,12 +16,17 @@ data class Config(
     )
 
     data class Plugin(
-        val eroticPic: EroticPic? = null
+        val eroticPic: EroticPic? = null,
+        val repeat: Repeat? = null,
     ) {
         data class EroticPic(
             val api: String? = null,
             val cdTime: Int? = null,
             val recallMsgPicTime: Int? = null
+        )
+
+        data class Repeat(
+            val thresholdValue: Int? = null
         )
     }
 

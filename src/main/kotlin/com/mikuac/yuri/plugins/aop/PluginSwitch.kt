@@ -18,7 +18,7 @@ import javax.annotation.PostConstruct
 @Component
 class PluginSwitch : BotPlugin() {
 
-    val regex = Regex("^([启停])用插件\\s+(.*)")
+    private val regex = Regex("^([启停])用插件\\s+(.*)")
 
     @Autowired
     private lateinit var repository: PluginSwitchRepository
