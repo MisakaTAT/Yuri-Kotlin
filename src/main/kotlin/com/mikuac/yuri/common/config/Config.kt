@@ -24,7 +24,7 @@ data class Config(
             val cdTime: Int,
             val recallMsgPicTime: Int
         )
- 
+
         data class Repeat(
             val thresholdValue: Int
         )

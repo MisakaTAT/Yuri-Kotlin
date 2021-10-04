@@ -80,7 +80,7 @@ class EroticPic : BotPlugin() {
 
     private fun recallMsgPic(msgId: Int, bot: Bot) = runBlocking {
         launch {
-            delay(ReadConfig.config.plugin.eroticPic.recallMsgPicTime.times(1000L) ?: 30000)
+            delay(ReadConfig.config.plugin.eroticPic.recallMsgPicTime.times(1000L))
             bot.deleteMsg(msgId)
             log.info("撤回色图，消息ID：$msgId")
         }
