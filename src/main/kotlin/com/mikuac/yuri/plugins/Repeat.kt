@@ -29,14 +29,14 @@ class Repeat : BotPlugin() {
      */
     private val countMap: HashMap<Long, Int> = HashMap()
 
-    val randomCount = ReadConfig.config?.plugin?.repeat?.thresholdValue?.let { RandomUtil.randomInt(it) }
+    val thresholdValue = RandomUtil.randomInt(ReadConfig.config.plugin.repeat.thresholdValue)
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
         val msg = event.message
         val groupId = event.groupId
 
         // 过滤指令
-        if (ReadConfig.config?.command?.prefix?.let { msg.startsWith(it) } == true) return MESSAGE_IGNORE
+        if (msg.startsWith(ReadConfig.config.command.prefix)) return MESSAGE_IGNORE
 
         // 如果缓存中存在内容则不进行复读
         val cache = timedCache.get(groupId, false)
@@ -50,7 +50,7 @@ class Repeat : BotPlugin() {
 
         if (msg.equals(lastMsg)) {
             countMap[groupId] = ++count
-            if (count == randomCount) {
+            if (count == thresholdValue) {
                 bot.sendGroupMsg(groupId, msg, false)
                 timedCache.put(groupId, msg)
                 countMap[groupId] = 0

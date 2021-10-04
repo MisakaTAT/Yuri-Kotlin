@@ -3,7 +3,7 @@ package com.mikuac.yuri.common.config
 import cn.hutool.core.io.watch.SimpleWatcher
 import cn.hutool.core.io.watch.WatchMonitor
 import cn.hutool.core.io.watch.watchers.DelayWatcher
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.gson.Gson
 import com.mikuac.yuri.common.log.Slf4j.Companion.log
 import org.springframework.stereotype.Component
 import org.yaml.snakeyaml.Yaml
@@ -17,7 +17,7 @@ import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 class ReadConfig {
 
     companion object {
-        var config: Config? = null
+        lateinit var config: Config
     }
 
     val configFileName = "config.yaml"
@@ -27,8 +27,7 @@ class ReadConfig {
         val yaml = Yaml()
         val inputStream = File(configFileName).inputStream()
         val map: HashMap<String, JvmType.Object> = yaml.load(inputStream)
-        val objectMapper = ObjectMapper()
-        config = objectMapper.convertValue(map, Config::class.java)
+        config = Gson().fromJson(Gson().toJson(map), Config::class.java)
     }
 
     @PostConstruct

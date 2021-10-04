@@ -20,7 +20,7 @@ class CommandPrefixAspect {
 
     @Around(value = "point()")
     private fun prefixCheck(pjp: ProceedingJoinPoint): Int {
-        val prefix = ReadConfig.config?.command?.prefix ?: ""
+        val prefix = ReadConfig.config.command.prefix
         val args = pjp.args
         args.forEachIndexed { index, arg ->
             if (arg is GroupMessageEvent) {

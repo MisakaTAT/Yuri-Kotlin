@@ -23,10 +23,10 @@ class GroupJoinAndQuit : BotPlugin() {
     override fun onGroupIncreaseNotice(bot: Bot, event: GroupIncreaseNoticeEvent): Int {
         val groupId = event.groupId
         val userId = event.userId
-        val botName = ReadConfig.config?.base?.botName
-        val prefix = ReadConfig.config?.command?.prefix
+        val botName = ReadConfig.config.base.botName
+        val prefix = ReadConfig.config.command.prefix
         // 排除BOT自身入群通知
-        if (userId == ReadConfig.config?.base?.botSelfId) return MESSAGE_IGNORE
+        if (userId == ReadConfig.config.base.botSelfId) return MESSAGE_IGNORE
         val msg = MsgUtils.builder()
             .at(userId)
             .text("Hi~ 我是${botName}，欢迎加入本群，如果想了解我，请发送 ${prefix}帮助 或 ${prefix}help 获取帮助信息。");

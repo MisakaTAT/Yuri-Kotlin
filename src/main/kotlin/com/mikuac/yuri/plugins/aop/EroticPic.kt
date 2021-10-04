@@ -31,12 +31,12 @@ class EroticPic : BotPlugin() {
     @Autowired
     private lateinit var blr: BlackListRepository
 
-    private val cdTime = ReadConfig.config?.plugin?.eroticPic?.cdTime
+    private val cdTime = ReadConfig.config.plugin.eroticPic.cdTime
 
-    private val timedCache: TimedCache<Long, Long> = CacheUtil.newTimedCache(cdTime?.times(1000L) ?: 60000)
+    private val timedCache: TimedCache<Long, Long> = CacheUtil.newTimedCache(cdTime.times(1000L))
 
     private fun request(): EroticPicDto.Data? {
-        val result = ReadConfig.config?.plugin?.eroticPic?.api?.let { RequestUtils.get(it) } ?: return null
+        val result = ReadConfig.config.plugin.eroticPic.api.let { RequestUtils.get(it) } ?: return null
         val json = Gson().fromJson(result, EroticPicDto::class.java) ?: return null
         return json.data[0]
     }
@@ -80,7 +80,7 @@ class EroticPic : BotPlugin() {
 
     private fun recallMsgPic(msgId: Int, bot: Bot) = runBlocking {
         launch {
-            delay(ReadConfig.config?.plugin?.eroticPic?.recallMsgPicTime?.times(1000L) ?: 30000)
+            delay(ReadConfig.config.plugin.eroticPic.recallMsgPicTime.times(1000L) ?: 30000)
             bot.deleteMsg(msgId)
             log.info("撤回色图，消息ID：$msgId")
         }

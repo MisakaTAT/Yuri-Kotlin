@@ -10,7 +10,7 @@ class CheckUtils {
 
         // 管理员权限检查
         fun roleCheck(userId: Long, groupId: Long, bot: Bot): Boolean {
-            if (ReadConfig.config?.base?.adminList?.contains(userId) == true) return true
+            if (ReadConfig.config.base.adminList.contains(userId)) return true
             MsgSendUtils.sendAll(userId, groupId, bot, "您没有权限执行此操作")
             return false
         }

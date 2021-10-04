@@ -1,32 +1,32 @@
 package com.mikuac.yuri.common.config
 
 data class Config(
-    val base: Base? = null,
-    val command: Command? = null,
-    val plugin: Plugin? = null
+    val base: Base,
+    val command: Command,
+    val plugin: Plugin
 ) {
     data class Base(
-        val adminList: List<Long>? = null,
-        val botName: String? = null,
-        val botSelfId: Long? = null
+        val adminList: List<Long>,
+        val botName: String,
+        val botSelfId: Long
     )
 
     data class Command(
-        val prefix: String? = null
+        val prefix: String
     )
 
     data class Plugin(
-        val eroticPic: EroticPic? = null,
-        val repeat: Repeat? = null,
+        val eroticPic: EroticPic,
+        val repeat: Repeat,
     ) {
         data class EroticPic(
-            val api: String? = null,
-            val cdTime: Int? = null,
-            val recallMsgPicTime: Int? = null
+            val api: String,
+            val cdTime: Int,
+            val recallMsgPicTime: Int
         )
-
+ 
         data class Repeat(
-            val thresholdValue: Int? = null
+            val thresholdValue: Int
         )
     }
 
