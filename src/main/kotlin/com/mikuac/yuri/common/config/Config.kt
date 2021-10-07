@@ -18,6 +18,7 @@ data class Config(
     data class Plugin(
         val eroticPic: EroticPic,
         val repeat: Repeat,
+        val httpCat: HttpCat
     ) {
         data class EroticPic(
             val api: String,
@@ -27,6 +28,10 @@ data class Config(
 
         data class Repeat(
             val thresholdValue: Int
+        )
+
+        data class HttpCat(
+            val api: String
         )
     }
 
