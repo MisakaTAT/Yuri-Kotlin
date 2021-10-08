@@ -3,18 +3,15 @@ package com.mikuac.yuri.plugins.filter
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
-import com.mikuac.yuri.common.log.Slf4j.Companion.log
+import com.mikuac.yuri.common.utils.LogUtils
 import org.springframework.stereotype.Component
 
 @Component
 class TencentBotFilter : BotPlugin() {
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        val userId = event.userId
-        val startId = 2854196300L
-        val endId = 2854216399L
-        if (userId in startId..endId) {
-            log.info("已拦截QQ官方机器人消息 内容：${event.message}")
+        if (event.userId in 2854196300L..2854216399L) {
+            LogUtils.debug("过滤腾讯官方BOT消息（账号：${event.userId} 群：${event.groupId} 消息：${event.message}）")
             return MESSAGE_BLOCK
         }
         return MESSAGE_IGNORE

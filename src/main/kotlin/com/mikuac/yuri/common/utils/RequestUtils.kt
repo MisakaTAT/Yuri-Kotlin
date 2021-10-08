@@ -1,11 +1,13 @@
 package com.mikuac.yuri.common.utils
 
 import cn.hutool.http.HttpRequest
-import com.mikuac.yuri.common.log.Slf4j.Companion.log
+import mu.KotlinLogging
 
 class RequestUtils {
 
     companion object {
+
+        private val log = KotlinLogging.logger {}
 
         fun get(url: String): String? {
             return try {
@@ -13,7 +15,7 @@ class RequestUtils {
                 if (exec.status != 200) return null
                 exec.body()
             } catch (e: Exception) {
-                log.error("RequestUtils Get 请求异常：${e.message}")
+                log.error("Request utils get exception: ${e.message}")
                 null
             }
         }
@@ -28,7 +30,7 @@ class RequestUtils {
                 if (exec.status != 200) return null
                 exec.body()
             } catch (e: Exception) {
-                log.error("RequestUtils Get 请求异常：${e.message}")
+                log.error("Request utils get exception: ${e.message}")
                 null
             }
         }
@@ -41,7 +43,7 @@ class RequestUtils {
                 if (exec.status != 200) return null
                 exec.body()
             } catch (e: Exception) {
-                log.error("RequestUtils Post 请求异常：${e.message}")
+                log.error("Request utils post exception: ${e.message}")
                 null
             }
         }

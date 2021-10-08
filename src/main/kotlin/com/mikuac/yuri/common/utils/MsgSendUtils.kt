@@ -11,5 +11,10 @@ class MsgSendUtils {
             if (groupId == 0L) bot.sendPrivateMsg(userId, text, false)
         }
 
+        fun sendAll(msgId: Int, userId: Long, groupId: Long, bot: Bot, text: String) {
+            if (groupId != 0L) bot.sendGroupMsg(groupId, MsgUtils.builder().reply(msgId).text(text).build(), false)
+            if (groupId == 0L) bot.sendPrivateMsg(userId, text, false)
+        }
+
     }
 }

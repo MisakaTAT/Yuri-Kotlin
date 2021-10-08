@@ -4,7 +4,7 @@ import javax.persistence.*
 
 
 @Entity
-data class BlackListEntity(
+data class UserBlackListEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

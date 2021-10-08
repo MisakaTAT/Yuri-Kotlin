@@ -7,17 +7,19 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.common.config.ReadConfig
-import com.mikuac.yuri.common.log.Slf4j.Companion.log
+import com.mikuac.yuri.common.utils.LogUtils
 import org.springframework.stereotype.Component
 
 
 @Component
 class Repeat : BotPlugin() {
 
+    private val waitTime = ReadConfig.config.plugin.repeat.waitTime
+
     /**
-     * 创建缓存，1分钟内不复读同一内容
+     * 创建缓存 过期时间内不复读重复内容
      */
-    private val timedCache: TimedCache<Long, String> = CacheUtil.newTimedCache(60 * 1000L)
+    private val timedCache: TimedCache<Long, String> = CacheUtil.newTimedCache(waitTime.times(1000L))
 
     /**
      * 最后一条消息
@@ -28,8 +30,6 @@ class Repeat : BotPlugin() {
      * 消息统计
      */
     private val countMap: HashMap<Long, Int> = HashMap()
-
-    val thresholdValue = RandomUtil.randomInt(ReadConfig.config.plugin.repeat.thresholdValue)
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
         val msg = event.message
@@ -50,11 +50,11 @@ class Repeat : BotPlugin() {
 
         if (msg.equals(lastMsg)) {
             countMap[groupId] = ++count
-            if (count == thresholdValue) {
+            if (count == RandomUtil.randomInt(ReadConfig.config.plugin.repeat.thresholdValue)) {
                 bot.sendGroupMsg(groupId, msg, false)
                 timedCache.put(groupId, msg)
                 countMap[groupId] = 0
-                log.info("复读成功，复读内容：${msg}")
+                LogUtils.debug("复读消息（群：${groupId} 内容：${msg}）")
             }
         } else {
             lastMsgMap[groupId] = msg

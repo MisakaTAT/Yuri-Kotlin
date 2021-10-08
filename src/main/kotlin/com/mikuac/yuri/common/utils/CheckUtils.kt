@@ -2,8 +2,8 @@ package com.mikuac.yuri.common.utils
 
 import com.mikuac.shiro.core.Bot
 import com.mikuac.yuri.common.config.ReadConfig
-import com.mikuac.yuri.repository.BlackListRepository
 import com.mikuac.yuri.repository.PluginSwitchRepository
+import com.mikuac.yuri.repository.UserBlackListRepository
 
 class CheckUtils {
     companion object {
@@ -31,7 +31,7 @@ class CheckUtils {
         }
 
         // 检查用户是否在黑名单中
-        fun isBanned(repository: BlackListRepository, userId: Long, groupId: Long, bot: Bot): Boolean {
+        fun checkUserInBlackList(repository: UserBlackListRepository, userId: Long, groupId: Long, bot: Bot): Boolean {
             if (repository.findByUserId(userId).isPresent) {
                 MsgSendUtils.sendAll(userId, groupId, bot, "您当前被关小黑屋啦，请联系管理员试试吧～")
                 return true

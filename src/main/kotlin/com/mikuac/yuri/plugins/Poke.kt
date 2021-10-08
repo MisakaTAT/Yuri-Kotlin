@@ -5,7 +5,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.notice.PokeNoticeEvent
 import com.mikuac.yuri.common.config.ReadConfig
-import com.mikuac.yuri.common.log.Slf4j.Companion.log
+import com.mikuac.yuri.common.utils.LogUtils
 import org.springframework.stereotype.Component
 
 @Component
@@ -24,10 +24,10 @@ class Poke : BotPlugin() {
         val userInfo = bot.getGroupMemberInfo(groupId, userId, true).data
         val targetInfo = bot.getGroupMemberInfo(groupId, targetId, true).data
         if (userInfo != null && targetInfo != null) {
-            log.info("Poke事件：群[${groupId}] 用户[${userInfo.nickname}] 目标[${targetInfo.nickname}]")
+            LogUtils.debug("Poke事件（群：${groupId} 用户：${userInfo.nickname} 目标：${targetInfo.nickname}）")
             return MESSAGE_IGNORE
         }
-        log.info("Poke事件：群[${groupId}] 用户[${userId}] 目标[${targetId}]")
+        LogUtils.debug("Poke事件（群：${groupId} 用户：${userId} 目标：${targetId}）")
         return MESSAGE_IGNORE
     }
 

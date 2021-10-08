@@ -9,13 +9,12 @@ import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.common.config.ReadConfig
-import com.mikuac.yuri.common.log.Slf4j.Companion.log
 import com.mikuac.yuri.common.utils.CheckUtils
 import com.mikuac.yuri.common.utils.MsgSendUtils
 import com.mikuac.yuri.common.utils.RequestUtils
 import com.mikuac.yuri.dto.EroticPicDto
-import com.mikuac.yuri.repository.BlackListRepository
 import com.mikuac.yuri.repository.PluginSwitchRepository
+import com.mikuac.yuri.repository.UserBlackListRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -29,7 +28,7 @@ class EroticPic : BotPlugin() {
     private lateinit var psr: PluginSwitchRepository
 
     @Autowired
-    private lateinit var blr: BlackListRepository
+    private lateinit var blr: UserBlackListRepository
 
     private val cdTime = ReadConfig.config.plugin.eroticPic.cdTime
 
@@ -74,7 +73,7 @@ class EroticPic : BotPlugin() {
             return false
         }
         if (CheckUtils.pluginIsDisable(psr, this.javaClass.simpleName, userId, groupId, bot)) return false
-        if (CheckUtils.isBanned(blr, userId, groupId, bot)) return false
+        if (CheckUtils.checkUserInBlackList(blr, userId, groupId, bot)) return false
         return true
     }
 
@@ -82,7 +81,6 @@ class EroticPic : BotPlugin() {
         launch {
             delay(ReadConfig.config.plugin.eroticPic.recallMsgPicTime.times(1000L))
             bot.deleteMsg(msgId)
-            log.info("撤回色图，消息ID：$msgId")
         }
     }
 

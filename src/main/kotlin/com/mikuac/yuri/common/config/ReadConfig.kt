@@ -4,7 +4,7 @@ import cn.hutool.core.io.watch.SimpleWatcher
 import cn.hutool.core.io.watch.WatchMonitor
 import cn.hutool.core.io.watch.watchers.DelayWatcher
 import com.google.gson.Gson
-import com.mikuac.yuri.common.log.Slf4j.Companion.log
+import mu.KotlinLogging
 import org.springframework.stereotype.Component
 import org.yaml.snakeyaml.Yaml
 import java.io.File
@@ -16,11 +16,13 @@ import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 @Component
 class ReadConfig {
 
+    val configFileName = "config.yaml"
+
+    private val log = KotlinLogging.logger {}
+
     companion object {
         lateinit var config: Config
     }
-
-    val configFileName = "config.yaml"
 
     @PostConstruct
     private fun initConfig() {
@@ -36,7 +38,7 @@ class ReadConfig {
             override fun onModify(event: WatchEvent<*>?, currentPath: Path?) {
                 if (configFileName == event?.context().toString()) {
                     initConfig()
-                    log.info("配置文件 $configFileName 已重载")
+                    log.info("Config file $configFileName reload.")
                 }
             }
         }, 500) {})

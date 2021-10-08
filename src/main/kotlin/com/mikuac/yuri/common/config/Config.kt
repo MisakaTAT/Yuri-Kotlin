@@ -6,6 +6,7 @@ data class Config(
     val plugin: Plugin
 ) {
     data class Base(
+        val debug: Boolean,
         val adminList: List<Long>,
         val botName: String,
         val botSelfId: Long
@@ -27,6 +28,7 @@ data class Config(
         )
 
         data class Repeat(
+            val waitTime: Int,
             val thresholdValue: Int
         )
 

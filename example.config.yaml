@@ -1,16 +1,36 @@
+# 基础设置
 base:
+  # 开启 debug
+  debug: false
+  # 设置机器人昵称
   botName: "悠里"
-  botSelfId: 1234567
+  # 设置机器人账号
+  botSelfId: 123456789
+  # 管理员列表
   adminList:
-    - 1234567
+    - 123456789
+    - 987654321
+# 指令设置
 command:
+  # 指令前缀
   prefix: "."
+# 插件设置
 plugin:
+  # 色图插件
   eroticPic:
+    # api 设置
     api: "https://api.lolicon.app/setu/v2"
+    # 冷却时间（单位秒）[不支持热更新，重启生效]
     cdTime: 60
+    # 图片撤回时间（单位秒）
     recallMsgPicTime: 30
+  # 复读姬插件
   repeat:
+    # 多长时间内不复读重复内容（单位秒）[不支持热更新，重启生效]
+    waitTime: 60
+    # 复读阈值
     thresholdValue: 5
+  # Http Cat 插件
   httpCat:
+    # api 设置
     api: "https://http.cat/"
