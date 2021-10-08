@@ -75,7 +75,7 @@ class EroticPic : BotPlugin() {
 
     private fun check(groupId: Long, userId: Long, bot: Bot): Boolean {
         // 检查是否处于冷却时间
-        if (timedCache.get(groupId + userId) != null && timedCache.get((groupId + userId) - groupId) == userId) {
+        if (timedCache.get(groupId + userId) != null && timedCache.get(groupId + userId) == userId) {
             MsgSendUtils.sendAll(userId, groupId, bot, "整天色图色图，信不信把你变成色图？")
             return false
         }
