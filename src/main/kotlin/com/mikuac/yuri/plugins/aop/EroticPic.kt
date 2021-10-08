@@ -10,6 +10,7 @@ import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.common.config.ReadConfig
 import com.mikuac.yuri.common.utils.CheckUtils
+import com.mikuac.yuri.common.utils.LogUtils
 import com.mikuac.yuri.common.utils.MsgSendUtils
 import com.mikuac.yuri.common.utils.RequestUtils
 import com.mikuac.yuri.dto.EroticPicDto
@@ -24,6 +25,9 @@ import org.springframework.stereotype.Component
 @Component
 class EroticPic : BotPlugin() {
 
+    private val regex =
+        Regex("^[来來发發给給]([1一])?[张張个個幅点點份]([Rr]18的?)?[色瑟][图圖]|^setu(\\s[Rr]18)?|^[色瑟][图圖](\\s[Rr]18)?")
+
     @Autowired
     private lateinit var psr: PluginSwitchRepository
 
@@ -34,8 +38,11 @@ class EroticPic : BotPlugin() {
 
     private val timedCache: TimedCache<Long, Long> = CacheUtil.newTimedCache(cdTime.times(1000L))
 
-    private fun request(): EroticPicDto.Data? {
-        val result = ReadConfig.config.plugin.eroticPic.api.let { RequestUtils.get(it) } ?: return null
+    private fun request(r18: Boolean): EroticPicDto.Data? {
+        var api = ReadConfig.config.plugin.eroticPic.api
+        if (r18) api = ReadConfig.config.plugin.eroticPic.api + "?r18=1"
+        val result = RequestUtils.get(api) ?: return null
+        LogUtils.debug("色图请求（result：${result}）")
         val json = Gson().fromJson(result, EroticPicDto::class.java) ?: return null
         return json.data[0]
     }
@@ -46,8 +53,8 @@ class EroticPic : BotPlugin() {
      * 第二个参数为响应的文本内容
      * 第三个参数为图片链接（理论上请求成功就不会为null）
      */
-    private fun buildTextMsg(): Triple<Boolean, String, String?> {
-        val data = request() ?: return Triple(false, "诶呀...，请求好像出现了一些问题，要不重新试试？", null)
+    private fun buildTextMsg(r18: Boolean): Triple<Boolean, String, String?> {
+        val data = request(r18) ?: return Triple(false, "诶呀...，请求好像出现了一些问题，要不重新试试？", null)
         return Triple(
             true,
             MsgUtils.builder()
@@ -68,7 +75,7 @@ class EroticPic : BotPlugin() {
 
     private fun check(groupId: Long, userId: Long, bot: Bot): Boolean {
         // 检查是否处于冷却时间
-        if (timedCache.get(groupId) != null && timedCache.get(groupId) == userId) {
+        if (timedCache.get(groupId + userId) != null && timedCache.get((groupId + userId) - groupId) == userId) {
             MsgSendUtils.sendAll(userId, groupId, bot, "整天色图色图，信不信把你变成色图？")
             return false
         }
@@ -86,16 +93,18 @@ class EroticPic : BotPlugin() {
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
         val msg = event.message
-        if (msg.equals("test")) {
+        if (msg.matches(regex)) {
             val groupId = event.groupId
             val userId = event.userId
+            val r18 = msg.contains(Regex("(?i)r18"))
             // 一些前置检查
             if (!check(groupId, userId, bot)) return MESSAGE_IGNORE
-            bot.sendGroupMsg(groupId, buildTextMsg().second, false)
-            if (buildTextMsg().first) {
-                // 如果 buildTextMsg().first 为 true 则认为请求成功，这时候将请求者信息放入 Map
-                timedCache.put(groupId, userId)
-                val msgId = bot.sendGroupMsg(groupId, buildPicMsg(buildTextMsg().third), false).data.messageId
+            val buildTextMsg = buildTextMsg(r18)
+            bot.sendGroupMsg(groupId, buildTextMsg.second, false)
+            if (buildTextMsg.first) {
+                // 如果 buildTextMsg.first 为 true 则认为请求成功，这时候将请求者信息放入 Map
+                timedCache.put(groupId + userId, userId)
+                val msgId = bot.sendGroupMsg(groupId, buildPicMsg(buildTextMsg.third), false).data.messageId
                 recallMsgPic(msgId, bot)
             }
         }
@@ -103,6 +112,21 @@ class EroticPic : BotPlugin() {
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
+        val msg = event.message
+        if (msg.matches(regex)) {
+            val userId = event.userId
+            val r18 = msg.contains(Regex("(?i)r18"))
+            // 一些前置检查
+            if (!check(0L, userId, bot)) return MESSAGE_IGNORE
+            val buildTextMsg = buildTextMsg(r18)
+            bot.sendPrivateMsg(userId, buildTextMsg.second, false)
+            if (buildTextMsg.first) {
+                // 如果 buildTextMsg.first 为 true 则认为请求成功，这时候将请求者信息放入 Map
+                timedCache.put(userId, userId)
+                val msgId = bot.sendPrivateMsg(userId, buildPicMsg(buildTextMsg.third), false).data.messageId
+                recallMsgPic(msgId, bot)
+            }
+        }
         return MESSAGE_IGNORE
     }
 

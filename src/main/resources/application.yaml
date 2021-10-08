@@ -13,10 +13,10 @@ spring:
 
 shiro:
   plugin-list:
-    - com.mikuac.yuri.plugins.filter.TencentBotFilter
     - com.mikuac.yuri.plugins.EventLog
-    - com.mikuac.yuri.plugins.aop.EroticPic
+    - com.mikuac.yuri.plugins.filter.TencentBotFilter
     - com.mikuac.yuri.plugins.aop.PluginSwitch
+    - com.mikuac.yuri.plugins.aop.EroticPic
     - com.mikuac.yuri.plugins.Poke
     - com.mikuac.yuri.plugins.Repeat
     - com.mikuac.yuri.plugins.GroupJoinAndQuit
