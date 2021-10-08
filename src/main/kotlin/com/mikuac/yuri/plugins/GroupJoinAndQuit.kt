@@ -6,12 +6,19 @@ import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.notice.GroupDecreaseNoticeEvent
 import com.mikuac.shiro.dto.event.notice.GroupIncreaseNoticeEvent
 import com.mikuac.yuri.common.config.ReadConfig
+import com.mikuac.yuri.common.utils.CheckUtils
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
 class GroupJoinAndQuit : BotPlugin() {
 
+    @Autowired
+    private lateinit var checkUtils: CheckUtils
+
     override fun onGroupDecreaseNotice(bot: Bot, event: GroupDecreaseNoticeEvent): Int {
+        // 检查插件是否禁用
+        if (checkUtils.pluginIsDisable(this.javaClass.simpleName)) return MESSAGE_IGNORE
         val groupId = event.groupId
         val userId = event.userId
         val msg = MsgUtils.builder()
@@ -21,6 +28,8 @@ class GroupJoinAndQuit : BotPlugin() {
     }
 
     override fun onGroupIncreaseNotice(bot: Bot, event: GroupIncreaseNoticeEvent): Int {
+        // 检查插件是否禁用
+        if (checkUtils.pluginIsDisable(this.javaClass.simpleName)) return MESSAGE_IGNORE
         val groupId = event.groupId
         val userId = event.userId
         val botName = ReadConfig.config.base.botName

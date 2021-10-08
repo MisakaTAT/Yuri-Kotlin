@@ -19,16 +19,19 @@ import javax.annotation.PostConstruct
 @Component
 class PluginSwitch : BotPlugin() {
 
+    private val regex = Regex("^([启停])用插件\\s+(.*)")
+
     private val log = KotlinLogging.logger {}
 
-    private val regex = Regex("^([启停])用插件\\s+(.*)")
+    @Autowired
+    private lateinit var checkUtils: CheckUtils
 
     @Autowired
     private lateinit var repository: PluginSwitchRepository
 
     @PostConstruct
     fun init() {
-        val pluginList = listOf("Poke", "EroticPic")
+        val pluginList = listOf("Poke", "EroticPic", "HttpCat", "GroupJoinAndQuit", "Repeat")
         pluginList.forEach {
             if (repository.findByPluginName(it).isPresent) {
                 log.info("Plugin switch database table field $it skip.")
@@ -40,7 +43,7 @@ class PluginSwitch : BotPlugin() {
     }
 
     private fun check(groupId: Long, userId: Long, msg: String, bot: Bot): Boolean {
-        if (!CheckUtils.roleCheck(userId, groupId, bot)) return false
+        if (!checkUtils.roleCheck(userId, groupId, bot)) return false
         val pluginName = RegexUtils.group(regex, 2, msg)
         val action = RegexUtils.group(regex, 1, msg)
         val plugin = repository.findByPluginName(pluginName)

@@ -14,8 +14,6 @@ import com.mikuac.yuri.common.utils.LogUtils
 import com.mikuac.yuri.common.utils.MsgSendUtils
 import com.mikuac.yuri.common.utils.RequestUtils
 import com.mikuac.yuri.dto.EroticPicDto
-import com.mikuac.yuri.repository.PluginSwitchRepository
-import com.mikuac.yuri.repository.UserBlackListRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -29,10 +27,7 @@ class EroticPic : BotPlugin() {
         Regex("^[来來发發给給]([1一])?[张張个個幅点點份]([Rr]18的?)?[色瑟][图圖]|^setu(\\s[Rr]18)?|^[色瑟][图圖](\\s[Rr]18)?")
 
     @Autowired
-    private lateinit var psr: PluginSwitchRepository
-
-    @Autowired
-    private lateinit var blr: UserBlackListRepository
+    private lateinit var checkUtils: CheckUtils
 
     private val cdTime = ReadConfig.config.plugin.eroticPic.cdTime
 
@@ -74,13 +69,13 @@ class EroticPic : BotPlugin() {
     }
 
     private fun check(groupId: Long, userId: Long, bot: Bot): Boolean {
+        if (checkUtils.pluginIsDisable(this.javaClass.simpleName, userId, groupId, bot)) return false
         // 检查是否处于冷却时间
         if (timedCache.get(groupId + userId) != null && timedCache.get(groupId + userId) == userId) {
             MsgSendUtils.sendAll(userId, groupId, bot, "整天色图色图，信不信把你变成色图？")
             return false
         }
-        if (CheckUtils.pluginIsDisable(psr, this.javaClass.simpleName, userId, groupId, bot)) return false
-        if (CheckUtils.checkUserInBlackList(blr, userId, groupId, bot)) return false
+        if (checkUtils.checkUserInBlackList(userId, groupId, bot)) return false
         return true
     }
 
