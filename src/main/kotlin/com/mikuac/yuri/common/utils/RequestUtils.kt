@@ -2,6 +2,9 @@ package com.mikuac.yuri.common.utils
 
 import cn.hutool.http.HttpRequest
 import mu.KotlinLogging
+import org.springframework.http.HttpMethod
+import java.net.HttpURLConnection
+import java.net.URL
 
 class RequestUtils {
 
@@ -46,6 +49,26 @@ class RequestUtils {
                 log.error("Request utils post exception: ${e.message}")
                 null
             }
+        }
+
+        fun findLink(url: String): String? {
+            try {
+                val conn = URL(url).openConnection() as HttpURLConnection
+                conn.requestMethod = HttpMethod.GET.name
+                conn.connect()
+                var location = conn.getHeaderField("Location")
+                val code = conn.responseCode
+                location = if (code in 301..302) {
+                    findLink(location)
+                } else {
+                    conn.url.toString()
+                }
+                conn.disconnect()
+                return location
+            } catch (e: Exception) {
+                log.error("Request utils find link exception: ${e.message}")
+            }
+            return null
         }
 
     }

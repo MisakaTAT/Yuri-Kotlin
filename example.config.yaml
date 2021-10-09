@@ -34,3 +34,5 @@ plugin:
   httpCat:
     # api 设置
     api: "https://http.cat/"
+  antiBiliMiniApp:
+    api: "https://api.bilibili.com/x/web-interface/view?bvid="

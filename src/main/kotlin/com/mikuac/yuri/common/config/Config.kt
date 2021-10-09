@@ -19,7 +19,8 @@ data class Config(
     data class Plugin(
         val eroticPic: EroticPic,
         val repeat: Repeat,
-        val httpCat: HttpCat
+        val httpCat: HttpCat,
+        val antiBiliMiniApp: AntiBiliMiniApp
     ) {
         data class EroticPic(
             val api: String,
@@ -33,6 +34,10 @@ data class Config(
         )
 
         data class HttpCat(
+            val api: String
+        )
+
+        data class AntiBiliMiniApp(
             val api: String
         )
     }
