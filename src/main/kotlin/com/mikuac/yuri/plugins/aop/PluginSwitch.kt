@@ -5,7 +5,6 @@ import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.common.utils.CheckUtils
-import com.mikuac.yuri.common.utils.LogUtils
 import com.mikuac.yuri.common.utils.MsgSendUtils
 import com.mikuac.yuri.common.utils.RegexUtils
 import com.mikuac.yuri.entity.PluginSwitchEntity
@@ -34,9 +33,9 @@ class PluginSwitch : BotPlugin() {
         val pluginList = listOf("Poke", "EroticPic", "HttpCat", "GroupJoinAndQuit", "Repeat")
         pluginList.forEach {
             if (repository.findByPluginName(it).isPresent) {
-                log.info("Plugin switch database table field $it skip.")
+                log.info { "Plugin switch database table field $it skip." }
             } else {
-                log.warn("Plugin switch database table field $it init.")
+                log.info { "Plugin switch database table field $it init." }
                 repository.save(PluginSwitchEntity(0, it, false))
             }
         }
@@ -52,7 +51,7 @@ class PluginSwitch : BotPlugin() {
             return false
         }
         if (dbAction(plugin, action)) MsgSendUtils.sendAll(userId, groupId, bot, "插件${pluginName}已${action}用")
-        LogUtils.debug("插件${pluginName}已${action}用（操作者：${userId}）")
+        log.info { "Plugin $pluginName ${if (action == "启") "enable" else "disable"} User: $userId" }
         return true
     }
 

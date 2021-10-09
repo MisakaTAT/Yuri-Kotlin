@@ -7,11 +7,14 @@ import com.mikuac.shiro.dto.event.notice.GroupDecreaseNoticeEvent
 import com.mikuac.shiro.dto.event.notice.GroupIncreaseNoticeEvent
 import com.mikuac.yuri.common.config.ReadConfig
 import com.mikuac.yuri.common.utils.CheckUtils
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
 class GroupJoinAndQuit : BotPlugin() {
+
+    private val log = KotlinLogging.logger {}
 
     @Autowired
     private lateinit var checkUtils: CheckUtils
@@ -24,6 +27,7 @@ class GroupJoinAndQuit : BotPlugin() {
         val msg = MsgUtils.builder()
             .text(userId.toString() + "退出群聊")
         bot.sendGroupMsg(groupId, msg.build(), false)
+        log.info { "Group decrease notice - Group: $groupId User: $userId" }
         return MESSAGE_IGNORE
     }
 
@@ -38,8 +42,9 @@ class GroupJoinAndQuit : BotPlugin() {
         if (userId == ReadConfig.config.base.botSelfId) return MESSAGE_IGNORE
         val msg = MsgUtils.builder()
             .at(userId)
-            .text("Hi~ 我是${botName}，欢迎加入本群，如果想了解我，请发送 ${prefix}帮助 或 ${prefix}help 获取帮助信息。");
-        bot.sendGroupMsg(groupId, msg.build(), false);
+            .text("Hi~ 我是${botName}，欢迎加入本群，如果想了解我，请发送 ${prefix}帮助 或 ${prefix}help 获取帮助信息。")
+        bot.sendGroupMsg(groupId, msg.build(), false)
+        log.info { "Group increase notice - Group: $groupId User: $userId" }
         return MESSAGE_IGNORE
     }
 

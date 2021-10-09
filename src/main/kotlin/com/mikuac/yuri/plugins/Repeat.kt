@@ -8,13 +8,14 @@ import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.common.config.ReadConfig
 import com.mikuac.yuri.common.utils.CheckUtils
-import com.mikuac.yuri.common.utils.LogUtils
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-
 @Component
 class Repeat : BotPlugin() {
+
+    private val log = KotlinLogging.logger {}
 
     @Autowired
     private lateinit var checkUtils: CheckUtils
@@ -61,7 +62,7 @@ class Repeat : BotPlugin() {
                 bot.sendGroupMsg(groupId, msg, false)
                 timedCache.put(groupId, msg)
                 countMap[groupId] = 0
-                LogUtils.debug("复读消息（群：${groupId} 内容：${msg}）")
+                log.info { "Repeat group msg - Group: $groupId Msg: $msg" }
             }
         } else {
             lastMsgMap[groupId] = msg

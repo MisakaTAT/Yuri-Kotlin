@@ -17,6 +17,7 @@ import com.mikuac.yuri.dto.EroticPicDto
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -25,6 +26,8 @@ class EroticPic : BotPlugin() {
 
     private val regex =
         Regex("^[来來发發给給]([1一])?[张張个個幅点點份]([Rr]18的?)?[色瑟][图圖]|^setu(\\s[Rr]18)?|^[色瑟][图圖](\\s[Rr]18)?")
+
+    private val log = KotlinLogging.logger {}
 
     @Autowired
     private lateinit var checkUtils: CheckUtils
@@ -37,7 +40,7 @@ class EroticPic : BotPlugin() {
         var api = ReadConfig.config.plugin.eroticPic.api
         if (r18) api = ReadConfig.config.plugin.eroticPic.api + "?r18=1"
         val result = RequestUtils.get(api) ?: return null
-        LogUtils.debug("色图请求（result：${result}）")
+        LogUtils.debug("Erotic pic request result - $result")
         val json = Gson().fromJson(result, EroticPicDto::class.java) ?: return null
         return json.data[0]
     }
@@ -83,6 +86,7 @@ class EroticPic : BotPlugin() {
         launch {
             delay(ReadConfig.config.plugin.eroticPic.recallMsgPicTime.times(1000L))
             bot.deleteMsg(msgId)
+            log.info { "Recall erotic pic msg img - MsgID: $msgId" }
         }
     }
 
@@ -101,6 +105,7 @@ class EroticPic : BotPlugin() {
                 timedCache.put(groupId + userId, userId)
                 val msgId = bot.sendGroupMsg(groupId, buildPicMsg(buildTextMsg.third), false).data.messageId
                 recallMsgPic(msgId, bot)
+                log.info { "Erotic pic group - Group: $groupId User: $userId" }
             }
         }
         return MESSAGE_IGNORE
@@ -120,6 +125,7 @@ class EroticPic : BotPlugin() {
                 timedCache.put(userId, userId)
                 val msgId = bot.sendPrivateMsg(userId, buildPicMsg(buildTextMsg.third), false).data.messageId
                 recallMsgPic(msgId, bot)
+                log.info { "Erotic pic private - User: $userId" }
             }
         }
         return MESSAGE_IGNORE
