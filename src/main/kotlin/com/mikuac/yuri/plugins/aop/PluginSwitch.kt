@@ -51,7 +51,7 @@ class PluginSwitch : BotPlugin() {
             return false
         }
         if (dbAction(plugin, action)) MsgSendUtils.sendAll(userId, groupId, bot, "插件${pluginName}已${action}用")
-        log.info { "Plugin $pluginName ${if (action == "启") "enable" else "disable"} User: $userId" }
+        log.info { "Plugin $pluginName ${if (action == "启") "enable" else "disable"} - User: $userId" }
         return true
     }
 
