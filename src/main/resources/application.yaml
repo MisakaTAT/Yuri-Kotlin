@@ -21,3 +21,4 @@ shiro:
     - com.mikuac.yuri.plugins.Repeat
     - com.mikuac.yuri.plugins.GroupJoinAndQuit
     - com.mikuac.yuri.plugins.aop.HttpCat
+    - com.mikuac.yuri.plugins.aop.BvToAv
