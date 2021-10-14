@@ -7,7 +7,6 @@ import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.common.utils.LogUtils
 import com.mikuac.yuri.common.utils.MsgSendUtils
 import com.mikuac.yuri.common.utils.RegexUtils
-import mu.KotlinLogging
 import org.springframework.stereotype.Component
 import kotlin.math.pow
 
@@ -16,8 +15,6 @@ import kotlin.math.pow
 class BvToAv : BotPlugin() {
 
     private val regex = Regex("^(?i)bv[2转]av\\s(.*)|^(?i)av[2转]bv\\s(.*)")
-
-    private val log = KotlinLogging.logger {}
 
     // 算法来源 https://www.zhihu.com/question/381784377/answer/1099438784
     private val table = "fZodR9XQDSUm21yCkr6zBqiveYah8bt4xsWpHnJE7jL5VG3guMTKNPAwcF"
