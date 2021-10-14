@@ -6,14 +6,12 @@ import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.notice.PokeNoticeEvent
 import com.mikuac.yuri.common.config.ReadConfig
 import com.mikuac.yuri.common.utils.CheckUtils
-import mu.KotlinLogging
+import com.mikuac.yuri.common.utils.LogUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
 class Poke : BotPlugin() {
-
-    private val log = KotlinLogging.logger {}
 
     @Autowired
     private lateinit var checkUtils: CheckUtils
@@ -33,10 +31,20 @@ class Poke : BotPlugin() {
         val userInfo = bot.getGroupMemberInfo(groupId, userId, true).data
         val targetInfo = bot.getGroupMemberInfo(groupId, targetId, true).data
         if (userInfo != null && targetInfo != null) {
-            log.info { "Poke event - Group: $groupId User: ${userInfo.nickname} Target: ${targetInfo.nickname}" }
+            LogUtils.action(
+                userId,
+                groupId,
+                this.javaClass.simpleName,
+                "Group: $groupId User: ${userInfo.nickname} Target: ${targetInfo.nickname}"
+            )
             return MESSAGE_IGNORE
         }
-        log.info { "Poke event - Group: $groupId User: $userId Target: $targetId" }
+        LogUtils.action(
+            userId,
+            groupId,
+            this.javaClass.simpleName,
+            "Group: $groupId User: $userId Target: $targetId"
+        )
         return MESSAGE_IGNORE
     }
 

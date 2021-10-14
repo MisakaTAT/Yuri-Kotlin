@@ -7,9 +7,9 @@ import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.common.config.ReadConfig
 import com.mikuac.yuri.common.utils.CheckUtils
+import com.mikuac.yuri.common.utils.LogUtils
 import com.mikuac.yuri.common.utils.MsgSendUtils
 import com.mikuac.yuri.common.utils.RegexUtils
-import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -17,8 +17,6 @@ import org.springframework.stereotype.Component
 class HttpCat : BotPlugin() {
 
     private val regex = Regex("(?i)httpcat\\s([0-9]+)")
-
-    private val log = KotlinLogging.logger {}
 
     @Autowired
     private lateinit var checkUtils: CheckUtils
@@ -36,6 +34,7 @@ class HttpCat : BotPlugin() {
             val picMsg = MsgUtils.builder().img(api + statusCode).build()
             MsgSendUtils.sendAll(msgId, userId, groupId, bot, picMsg)
         }
+        LogUtils.action(userId, groupId, this.javaClass.simpleName, "Http Status Code: $statusCode")
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
@@ -43,7 +42,6 @@ class HttpCat : BotPlugin() {
         if (msg.matches(regex)) {
             if (!check(0L, event.userId, bot)) return MESSAGE_IGNORE
             buildMsg(event.messageId, event.userId, 0L, bot, msg)
-            log.info { "HttpCat private - User: ${event.userId}" }
         }
         return MESSAGE_IGNORE
     }
@@ -53,7 +51,6 @@ class HttpCat : BotPlugin() {
         if (msg.matches(regex)) {
             if (!check(event.groupId, event.userId, bot)) return MESSAGE_IGNORE
             buildMsg(event.messageId, event.userId, event.groupId, bot, msg)
-            log.info { "HttpCat group - User: ${event.userId} Group: ${event.groupId}" }
         }
         return MESSAGE_IGNORE
     }

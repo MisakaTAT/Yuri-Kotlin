@@ -5,6 +5,7 @@ import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.common.utils.CheckUtils
+import com.mikuac.yuri.common.utils.LogUtils
 import com.mikuac.yuri.common.utils.MsgSendUtils
 import com.mikuac.yuri.common.utils.RegexUtils
 import com.mikuac.yuri.entity.PluginSwitchEntity
@@ -51,7 +52,12 @@ class PluginSwitch : BotPlugin() {
             return false
         }
         if (dbAction(plugin, action)) MsgSendUtils.sendAll(userId, groupId, bot, "插件${pluginName}已${action}用")
-        log.info { "Plugin $pluginName ${if (action == "启") "enable" else "disable"} - User: $userId" }
+        LogUtils.action(
+            userId,
+            groupId,
+            this.javaClass.simpleName,
+            "Plugin $pluginName ${if (action == "启") "Enable" else "Disable"} (User: $userId)"
+        )
         return true
     }
 

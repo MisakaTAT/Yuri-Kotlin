@@ -10,15 +10,12 @@ import com.mikuac.yuri.common.utils.LogUtils
 import com.mikuac.yuri.common.utils.RegexUtils
 import com.mikuac.yuri.common.utils.RequestUtils
 import com.mikuac.yuri.dto.BiliMiniAppDto
-import mu.KotlinLogging
 import org.springframework.stereotype.Component
 
 @Component
 class AntiBiliMiniApp : BotPlugin() {
 
     private val regex = Regex("^(.*?)1109937557(.*)")
-
-    private val log = KotlinLogging.logger {}
 
     private fun request(bid: String): BiliMiniAppDto.Data? {
         val api = ReadConfig.config.plugin.antiBiliMiniApp.api
@@ -52,9 +49,11 @@ class AntiBiliMiniApp : BotPlugin() {
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
         val msg = event.message
+        val userId = event.userId
+        val groupId = event.groupId
         if (msg.matches(regex)) {
-            action(event.groupId, bot, msg)
-            log.info { "Parse bili mini app - User: ${event.userId} Group: ${event.groupId}" }
+            action(groupId, bot, msg)
+            LogUtils.action(userId, groupId, this.javaClass.simpleName, "")
         }
         return MESSAGE_IGNORE
     }

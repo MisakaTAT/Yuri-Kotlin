@@ -13,12 +13,12 @@ class EventLog : BotPlugin() {
     private val log = KotlinLogging.logger {}
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        log.info { "Received group msg - Group: ${event.groupId} User: ${event.userId} Msg: ${event.message}" }
+        log.info { "[GROUP] Received Msg - Group: ${event.groupId} User: ${event.userId} Msg: ${event.message}" }
         return MESSAGE_IGNORE
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        log.info { "Received private msg - User: ${event.userId} Msg: ${event.message}" }
+        log.info { "[PRIVATE] Received Msg - User: ${event.userId} Msg: ${event.message}" }
         return MESSAGE_IGNORE
     }
 

@@ -4,6 +4,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
+import com.mikuac.yuri.common.utils.LogUtils
 import com.mikuac.yuri.common.utils.MsgSendUtils
 import com.mikuac.yuri.common.utils.RegexUtils
 import mu.KotlinLogging
@@ -63,7 +64,7 @@ class BvToAv : BotPlugin() {
                 }
                 val aid = bv2av(bvId)
                 MsgSendUtils.sendAll(userId, groupId, bot, aid)
-                log.info { "BVID to AVID - BVID: $bvId AVID: $aid" }
+                LogUtils.action(userId, groupId, this.javaClass.simpleName, "BID: $bvId To AID: $aid")
             }
             if (avId.isNotEmpty()) {
                 if (!avId.matches(Regex("^(?i)AV(.*)"))) {
@@ -72,7 +73,7 @@ class BvToAv : BotPlugin() {
                 }
                 val bid = av2bv(avId)
                 MsgSendUtils.sendAll(userId, groupId, bot, bid)
-                log.info { "AVID to BVID - AVID: $avId BVID: $bid" }
+                LogUtils.action(userId, groupId, this.javaClass.simpleName, "AID: $avId To BID: $bid")
             }
         } catch (e: Exception) {
             e.message?.let { MsgSendUtils.sendAll(userId, groupId, bot, "转换异常（${it}）") }

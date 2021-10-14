@@ -104,8 +104,8 @@ class EroticPic : BotPlugin() {
                 // 如果 buildTextMsg.first 为 true 则认为请求成功，这时候将请求者信息放入 Map
                 timedCache.put(groupId + userId, userId)
                 val msgId = bot.sendGroupMsg(groupId, buildPicMsg(buildTextMsg.third), false).data.messageId
+                LogUtils.action(userId, groupId, this.javaClass.simpleName, "")
                 recallMsgPic(msgId, bot)
-                log.info { "Erotic pic group - Group: $groupId User: $userId" }
             }
         }
         return MESSAGE_IGNORE
@@ -124,8 +124,8 @@ class EroticPic : BotPlugin() {
                 // 如果 buildTextMsg.first 为 true 则认为请求成功，这时候将请求者信息放入 Map
                 timedCache.put(userId, userId)
                 val msgId = bot.sendPrivateMsg(userId, buildPicMsg(buildTextMsg.third), false).data.messageId
+                LogUtils.action(userId, 0L, this.javaClass.simpleName, "")
                 recallMsgPic(msgId, bot)
-                log.info { "Erotic pic private - User: $userId" }
             }
         }
         return MESSAGE_IGNORE
