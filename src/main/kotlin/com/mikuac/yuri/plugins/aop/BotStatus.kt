@@ -20,7 +20,8 @@ class BotStatus : BotPlugin() {
 
     private val regex = Regex("^(?i)status|^[状狀][态態]")
 
-    private fun buildMsg(userId: Long, groupId: Long, bot: Bot) {
+    private fun buildMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
+        if (!msg.matches(regex)) return
         LogUtils.action(userId, groupId, this.javaClass.simpleName, "")
         val upTime = TimeUnit.MILLISECONDS.toMinutes(ManagementFactory.getRuntimeMXBean().uptime)
         val jvmInfo = SystemUtil.getJvmInfo()
@@ -58,20 +59,16 @@ class BotStatus : BotPlugin() {
             .text("\nMotherBoard Version: ${computerSys.baseboard.version}")
             .text("\nMotherBoard Manufacturer: ${computerSys.baseboard.manufacturer}")
             .build()
-        MsgSendUtils.sendAll(userId, groupId, bot, buildMsg)
+        MsgSendUtils.atSend(userId, groupId, bot, buildMsg)
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        if (event.message.matches(regex)) {
-            buildMsg(event.userId, 0L, bot)
-        }
+        buildMsg(event.message, event.userId, 0L, bot)
         return MESSAGE_IGNORE
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        if (event.message.matches(regex)) {
-            buildMsg(event.userId, event.groupId, bot)
-        }
+        buildMsg(event.message, event.userId, event.groupId, bot)
         return MESSAGE_IGNORE
     }
 

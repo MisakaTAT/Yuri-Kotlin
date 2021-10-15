@@ -20,7 +20,7 @@ class AntiBiliMiniApp : BotPlugin() {
     private fun request(bid: String): BiliMiniAppDto.Data? {
         val api = ReadConfig.config.plugin.antiBiliMiniApp.api
         val result = RequestUtils.get(api + bid) ?: return null
-        LogUtils.debug("Parse bili mini app result - $result")
+        LogUtils.debug("Parse Bili Mini App Result - $result")
         return Gson().fromJson(result, BiliMiniAppDto::class.java).data
     }
 

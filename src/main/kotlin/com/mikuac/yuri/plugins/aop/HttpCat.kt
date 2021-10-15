@@ -27,31 +27,25 @@ class HttpCat : BotPlugin() {
         return true
     }
 
-    private fun buildMsg(msgId: Int, userId: Long, groupId: Long, bot: Bot, msg: String) {
+    private fun buildMsg(msg: String, msgId: Int, userId: Long, groupId: Long, bot: Bot) {
+        if (!msg.matches(regex)) return
+        if (!check(groupId, userId, bot)) return
         val api = ReadConfig.config.plugin.httpCat.api
         val statusCode = RegexUtils.group(regex, 1, msg)
         if (statusCode.isNotEmpty()) {
             val picMsg = MsgUtils.builder().img(api + statusCode).build()
-            MsgSendUtils.sendAll(msgId, userId, groupId, bot, picMsg)
+            MsgSendUtils.replySend(msgId, userId, groupId, bot, picMsg)
         }
         LogUtils.action(userId, groupId, this.javaClass.simpleName, "Http Status Code: $statusCode")
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        val msg = event.message
-        if (msg.matches(regex)) {
-            if (!check(0L, event.userId, bot)) return MESSAGE_IGNORE
-            buildMsg(event.messageId, event.userId, 0L, bot, msg)
-        }
+        buildMsg(event.message, event.messageId, event.userId, 0L, bot)
         return MESSAGE_IGNORE
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        val msg = event.message
-        if (msg.matches(regex)) {
-            if (!check(event.groupId, event.userId, bot)) return MESSAGE_IGNORE
-            buildMsg(event.messageId, event.userId, event.groupId, bot, msg)
-        }
+        buildMsg(event.message, event.messageId, event.userId, event.groupId, bot)
         return MESSAGE_IGNORE
     }
 

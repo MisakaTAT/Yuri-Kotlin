@@ -42,23 +42,23 @@ class PluginSwitch : BotPlugin() {
         }
     }
 
-    private fun check(groupId: Long, userId: Long, msg: String, bot: Bot): Boolean {
-        if (!checkUtils.roleCheck(userId, groupId, bot)) return false
+    private fun check(msg: String, userId: Long, groupId: Long, bot: Bot) {
+        if (!msg.matches(regex)) return
+        if (!checkUtils.roleCheck(userId, groupId, bot)) return
         val pluginName = RegexUtils.group(regex, 2, msg)
         val action = RegexUtils.group(regex, 1, msg)
         val plugin = repository.findByPluginName(pluginName)
         if (!plugin.isPresent) {
-            MsgSendUtils.sendAll(userId, groupId, bot, "插件${pluginName}不存在，请检查指令是否正确！")
-            return false
+            MsgSendUtils.atSend(userId, groupId, bot, "插件${pluginName}不存在，请检查指令是否正确！")
+            return
         }
-        if (dbAction(plugin, action)) MsgSendUtils.sendAll(userId, groupId, bot, "插件${pluginName}已${action}用")
+        if (dbAction(plugin, action)) MsgSendUtils.atSend(userId, groupId, bot, "插件${pluginName}已${action}用")
         LogUtils.action(
             userId,
             groupId,
             this.javaClass.simpleName,
             "Plugin $pluginName ${if (action == "启") "Enable" else "Disable"} (User: $userId)"
         )
-        return true
     }
 
     private fun dbAction(plugin: Optional<PluginSwitchEntity>, action: String): Boolean {
@@ -76,21 +76,12 @@ class PluginSwitch : BotPlugin() {
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        val msg = event.message
-        if (msg.matches(regex)) {
-            val userId = event.userId
-            if (!check(0L, userId, msg, bot)) return MESSAGE_IGNORE
-        }
+        check(event.message, event.userId, 0L, bot)
         return MESSAGE_IGNORE;
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        val msg = event.message
-        if (msg.matches(regex)) {
-            val groupId = event.groupId
-            val userId = event.userId
-            if (check(groupId, userId, msg, bot)) return MESSAGE_IGNORE
-        }
+        check(event.message, event.userId, event.groupId, bot)
         return MESSAGE_IGNORE
     }
 

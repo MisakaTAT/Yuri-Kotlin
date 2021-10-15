@@ -50,46 +50,41 @@ class BvToAv : BotPlugin() {
         return stringBuilder.toString()
     }
 
-    private fun action(userId: Long, groupId: Long, bot: Bot, msg: String) {
+    private fun action(msg: String, userId: Long, groupId: Long, bot: Bot) {
+        if (!msg.matches(regex)) return
         try {
             val bvId = RegexUtils.group(regex, 1, msg)
             val avId = RegexUtils.group(regex, 2, msg)
             if (bvId.isNotEmpty()) {
                 if (!bvId.matches(Regex("^(?i)BV(.*)"))) {
-                    MsgSendUtils.sendAll(userId, groupId, bot, "BV号格式化不正确，请检查后重试。")
+                    MsgSendUtils.atSend(userId, groupId, bot, "BV号格式化不正确，请检查后重试。")
                     return
                 }
                 val aid = bv2av(bvId)
-                MsgSendUtils.sendAll(userId, groupId, bot, aid)
+                MsgSendUtils.atSend(userId, groupId, bot, aid)
                 LogUtils.action(userId, groupId, this.javaClass.simpleName, "BID: $bvId To AID: $aid")
             }
             if (avId.isNotEmpty()) {
                 if (!avId.matches(Regex("^(?i)AV(.*)"))) {
-                    MsgSendUtils.sendAll(userId, groupId, bot, "AV号格式化不正确，请检查后重试。")
+                    MsgSendUtils.atSend(userId, groupId, bot, "AV号格式化不正确，请检查后重试。")
                     return
                 }
                 val bid = av2bv(avId)
-                MsgSendUtils.sendAll(userId, groupId, bot, bid)
+                MsgSendUtils.atSend(userId, groupId, bot, bid)
                 LogUtils.action(userId, groupId, this.javaClass.simpleName, "AID: $avId To BID: $bid")
             }
         } catch (e: Exception) {
-            e.message?.let { MsgSendUtils.sendAll(userId, groupId, bot, "转换异常（${it}）") }
+            e.message?.let { MsgSendUtils.atSend(userId, groupId, bot, "转换异常（${it}）") }
         }
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        val msg = event.message
-        if (msg.matches(regex)) {
-            action(event.userId, event.groupId, bot, msg)
-        }
+        action(event.message, event.userId, event.groupId, bot)
         return MESSAGE_IGNORE
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        val msg = event.message
-        if (msg.matches(regex)) {
-            action(event.userId, 0L, bot, msg)
-        }
+        action(event.message, event.userId, 0L, bot)
         return MESSAGE_IGNORE
     }
 

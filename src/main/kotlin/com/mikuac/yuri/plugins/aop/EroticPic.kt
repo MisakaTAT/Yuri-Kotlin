@@ -40,7 +40,7 @@ class EroticPic : BotPlugin() {
         var api = ReadConfig.config.plugin.eroticPic.api
         if (r18) api = ReadConfig.config.plugin.eroticPic.api + "?r18=1"
         val result = RequestUtils.get(api) ?: return null
-        LogUtils.debug("Erotic pic request result - $result")
+        LogUtils.debug("Erotic Api Result - $result")
         val json = Gson().fromJson(result, EroticPicDto::class.java) ?: return null
         return json.data[0]
     }
@@ -75,7 +75,7 @@ class EroticPic : BotPlugin() {
         if (checkUtils.pluginIsDisable(this.javaClass.simpleName, userId, groupId, bot)) return false
         // 检查是否处于冷却时间
         if (timedCache.get(groupId + userId) != null && timedCache.get(groupId + userId) == userId) {
-            MsgSendUtils.sendAll(userId, groupId, bot, "整天色图色图，信不信把你变成色图？")
+            MsgSendUtils.atSend(userId, groupId, bot, "整天色图色图，信不信把你变成色图？")
             return false
         }
         if (checkUtils.checkUserInBlackList(userId, groupId, bot)) return false
@@ -90,44 +90,30 @@ class EroticPic : BotPlugin() {
         }
     }
 
-    override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        val msg = event.message
+    private fun sendMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (msg.matches(regex)) {
-            val groupId = event.groupId
-            val userId = event.userId
             val r18 = msg.contains(Regex("(?i)r18"))
             // 一些前置检查
-            if (!check(groupId, userId, bot)) return MESSAGE_IGNORE
+            if (!check(groupId, userId, bot)) return
             val buildTextMsg = buildTextMsg(r18)
-            bot.sendGroupMsg(groupId, buildTextMsg.second, false)
+            MsgSendUtils.send(userId, groupId, bot, buildTextMsg.second)
             if (buildTextMsg.first) {
                 // 如果 buildTextMsg.first 为 true 则认为请求成功，这时候将请求者信息放入 Map
                 timedCache.put(groupId + userId, userId)
-                val msgId = bot.sendGroupMsg(groupId, buildPicMsg(buildTextMsg.third), false).data.messageId
+                val msgId = MsgSendUtils.send(userId, groupId, bot, buildPicMsg(buildTextMsg.third))
                 LogUtils.action(userId, groupId, this.javaClass.simpleName, "")
                 recallMsgPic(msgId, bot)
             }
         }
+    }
+
+    override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
+        sendMsg(event.message, event.userId, event.groupId, bot)
         return MESSAGE_IGNORE
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        val msg = event.message
-        if (msg.matches(regex)) {
-            val userId = event.userId
-            val r18 = msg.contains(Regex("(?i)r18"))
-            // 一些前置检查
-            if (!check(0L, userId, bot)) return MESSAGE_IGNORE
-            val buildTextMsg = buildTextMsg(r18)
-            bot.sendPrivateMsg(userId, buildTextMsg.second, false)
-            if (buildTextMsg.first) {
-                // 如果 buildTextMsg.first 为 true 则认为请求成功，这时候将请求者信息放入 Map
-                timedCache.put(userId, userId)
-                val msgId = bot.sendPrivateMsg(userId, buildPicMsg(buildTextMsg.third), false).data.messageId
-                LogUtils.action(userId, 0L, this.javaClass.simpleName, "")
-                recallMsgPic(msgId, bot)
-            }
-        }
+        sendMsg(event.message, event.userId, 0L, bot)
         return MESSAGE_IGNORE
     }
 
