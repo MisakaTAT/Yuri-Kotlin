@@ -10,9 +10,9 @@
     </parent>
     <groupId>com.mikuac</groupId>
     <artifactId>yuri</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>yuri</name>
-    <description>yuri</description>
+    <version>1.0.0</version>
+    <name>Yuri</name>
+    <description>一只可爱的人工智障少女</description>
     <properties>
         <java.version>11</java.version>
         <kotlin.version>1.5.31</kotlin.version>
@@ -86,7 +86,6 @@
             <artifactId>oshi-core</artifactId>
             <version>5.8.1</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
