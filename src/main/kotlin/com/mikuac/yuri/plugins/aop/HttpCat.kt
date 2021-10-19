@@ -5,7 +5,6 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
-import com.mikuac.yuri.common.config.ReadConfig
 import com.mikuac.yuri.common.utils.CheckUtils
 import com.mikuac.yuri.common.utils.LogUtils
 import com.mikuac.yuri.common.utils.MsgSendUtils
@@ -30,10 +29,9 @@ class HttpCat : BotPlugin() {
     private fun buildMsg(msg: String, msgId: Int, userId: Long, groupId: Long, bot: Bot) {
         if (!msg.matches(regex)) return
         if (!check(groupId, userId, bot)) return
-        val api = ReadConfig.config.plugin.httpCat.api
         val statusCode = RegexUtils.group(regex, 1, msg)
         if (statusCode.isNotEmpty()) {
-            val picMsg = MsgUtils.builder().img(api + statusCode).build()
+            val picMsg = MsgUtils.builder().img("https://http.cat/${statusCode}").build()
             MsgSendUtils.replySend(msgId, userId, groupId, bot, picMsg)
         }
         LogUtils.action(userId, groupId, this.javaClass.simpleName, "Http Status Code: $statusCode")

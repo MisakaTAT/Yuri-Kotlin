@@ -5,7 +5,6 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
-import com.mikuac.yuri.common.config.ReadConfig
 import com.mikuac.yuri.common.utils.LogUtils
 import com.mikuac.yuri.common.utils.RegexUtils
 import com.mikuac.yuri.common.utils.RequestUtils
@@ -18,8 +17,7 @@ class AntiBiliMiniApp : BotPlugin() {
     private val regex = Regex("^(.*?)1109937557(.*)")
 
     private fun request(bid: String): BiliMiniAppDto.Data? {
-        val api = ReadConfig.config.plugin.antiBiliMiniApp.api
-        val result = RequestUtils.get(api + bid) ?: return null
+        val result = RequestUtils.get("https://api.bilibili.com/x/web-interface/view?bvid=${bid}") ?: return null
         LogUtils.debug("Parse Bili Mini App Result - $result")
         return Gson().fromJson(result, BiliMiniAppDto::class.java).data
     }

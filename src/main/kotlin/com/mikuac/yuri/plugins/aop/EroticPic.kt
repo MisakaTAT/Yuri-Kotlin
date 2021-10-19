@@ -37,7 +37,7 @@ class EroticPic : BotPlugin() {
     private val timedCache: TimedCache<Long, Long> = CacheUtil.newTimedCache(cdTime.times(1000L))
 
     private fun request(r18: Boolean): EroticPicDto.Data? {
-        var api = ReadConfig.config.plugin.eroticPic.api
+        var api = "https://api.lolicon.app/setu/v2"
         if (r18) api = ReadConfig.config.plugin.eroticPic.api + "?r18=1"
         val result = RequestUtils.get(api) ?: return null
         LogUtils.debug("Erotic Api Result - $result")

@@ -24,3 +24,4 @@ shiro:
     - com.mikuac.yuri.plugins.aop.BvToAv
     - com.mikuac.yuri.plugins.AntiBiliMiniApp
     - com.mikuac.yuri.plugins.aop.BotStatus
+    - com.mikuac.yuri.plugins.aop.GithubRepo

@@ -18,8 +18,6 @@ command:
 plugin:
   # 色图插件
   eroticPic:
-    # api 设置
-    api: "https://api.lolicon.app/setu/v2"
     # 冷却时间（单位秒）[不支持热更新，重启生效]
     cdTime: 60
     # 图片撤回时间（单位秒）
@@ -30,9 +28,3 @@ plugin:
     waitTime: 60
     # 复读阈值
     thresholdValue: 5
-  # Http Cat 插件
-  httpCat:
-    # api 设置
-    api: "https://http.cat/"
-  antiBiliMiniApp:
-    api: "https://api.bilibili.com/x/web-interface/view?bvid="

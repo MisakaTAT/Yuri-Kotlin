@@ -31,7 +31,7 @@ class PluginSwitch : BotPlugin() {
 
     @PostConstruct
     fun init() {
-        val pluginList = listOf("Poke", "EroticPic", "HttpCat", "GroupJoinAndQuit", "Repeat")
+        val pluginList = listOf("Poke", "EroticPic", "HttpCat", "GroupJoinAndQuit", "Repeat", "GithubRepo")
         pluginList.forEach {
             if (repository.findByPluginName(it).isPresent) {
                 log.info { "Plugin switch database table field $it skip." }
