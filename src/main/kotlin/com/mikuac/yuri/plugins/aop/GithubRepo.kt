@@ -47,7 +47,7 @@ class GithubRepo : BotPlugin() {
                     .text("RepoName: ${data.fullName}")
                     .text("\nDefaultBranch: ${data.defaultBranch}")
                     .text("\nLanguage: ${data.language}")
-                    .text("\nStars/Forks/: ${data.stars}/${data.forks}")
+                    .text("\nStars/Forks: ${data.stars}/${data.forks}")
                     .text("\nLicense: ${data.license?.spdxId}")
                     .text("\n${data.description}")
                     .text("\n${data.htmlUrl}")
