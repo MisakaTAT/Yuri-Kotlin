@@ -36,25 +36,17 @@ class EroticPic : BotPlugin() {
 
     private val timedCache: TimedCache<Long, Long> = CacheUtil.newTimedCache(cdTime.times(1000L))
 
-    private fun request(r18: Boolean): EroticPicDto.Data? {
+    private fun request(r18: Boolean): EroticPicDto.Data {
         var api = "https://api.lolicon.app/setu/v2"
         if (r18) api = ReadConfig.config.plugin.eroticPic.api + "?r18=1"
-        val result = RequestUtils.get(api) ?: return null
-        LogUtils.debug("Erotic Api Result - $result")
-        val json = Gson().fromJson(result, EroticPicDto::class.java) ?: return null
+        val result = RequestUtils.get(api)
+        val json = Gson().fromJson(result, EroticPicDto::class.java)
         return json.data[0]
     }
 
-    /**
-     * Triple<Boolean, String, String?>
-     * 第一个参数为是否请求成功
-     * 第二个参数为响应的文本内容
-     * 第三个参数为图片链接（理论上请求成功就不会为null）
-     */
-    private fun buildTextMsg(r18: Boolean): Triple<Boolean, String, String?> {
-        val data = request(r18) ?: return Triple(false, "诶呀...，请求好像出现了一些问题，要不重新试试？", null)
-        return Triple(
-            true,
+    private fun buildTextMsg(r18: Boolean): Pair<String, String?> {
+        val data = request(r18)
+        return Pair(
             MsgUtils.builder()
                 .text("标题：${data.title}")
                 .text("\nPID：${data.pid}")
@@ -72,13 +64,12 @@ class EroticPic : BotPlugin() {
     }
 
     private fun check(groupId: Long, userId: Long, bot: Bot): Boolean {
-        if (checkUtils.pluginIsDisable(this.javaClass.simpleName, userId, groupId, bot)) return false
+        if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return false
         // 检查是否处于冷却时间
         if (timedCache.get(groupId + userId) != null && timedCache.get(groupId + userId) == userId) {
             MsgSendUtils.atSend(userId, groupId, bot, "整天色图色图，信不信把你变成色图？")
             return false
         }
-        if (checkUtils.checkUserInBlackList(userId, groupId, bot)) return false
         return true
     }
 
@@ -93,16 +84,16 @@ class EroticPic : BotPlugin() {
     private fun sendMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (msg.matches(regex)) {
             val r18 = msg.contains(Regex("(?i)r18"))
-            // 一些前置检查
             if (!check(groupId, userId, bot)) return
-            val buildTextMsg = buildTextMsg(r18)
-            MsgSendUtils.send(userId, groupId, bot, buildTextMsg.second)
-            if (buildTextMsg.first) {
-                // 如果 buildTextMsg.first 为 true 则认为请求成功，这时候将请求者信息放入 Map
+            try {
+                val buildTextMsg = buildTextMsg(r18)
+                MsgSendUtils.send(userId, groupId, bot, buildTextMsg.first)
                 timedCache.put(groupId + userId, userId)
-                val msgId = MsgSendUtils.send(userId, groupId, bot, buildPicMsg(buildTextMsg.third))
+                val msgId = MsgSendUtils.send(userId, groupId, bot, buildPicMsg(buildTextMsg.second))
                 LogUtils.action(userId, groupId, this.javaClass.simpleName, "")
                 recallMsgPic(msgId, bot)
+            } catch (e: Exception) {
+                MsgSendUtils.atSend(userId, groupId, bot, "色图请求失败 ${e.message}")
             }
         }
     }

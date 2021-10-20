@@ -16,6 +16,12 @@ class CheckUtils {
     @Autowired
     private lateinit var userBlackListRepository: UserBlackListRepository
 
+    fun basicCheck(className: String, userId: Long, groupId: Long, bot: Bot): Boolean {
+        if (pluginIsDisable(className, userId, groupId, bot)) return false
+        if (checkUserInBlackList(userId, groupId, bot)) return false
+        return true
+    }
+
     // 管理员权限检查
     fun roleCheck(userId: Long, groupId: Long, bot: Bot): Boolean {
         if (ReadConfig.config.base.adminList.contains(userId)) return true

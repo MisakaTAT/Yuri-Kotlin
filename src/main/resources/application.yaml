@@ -25,3 +25,4 @@ shiro:
     - com.mikuac.yuri.plugins.AntiBiliMiniApp
     - com.mikuac.yuri.plugins.aop.BotStatus
     - com.mikuac.yuri.plugins.aop.GithubRepo
+    - com.mikuac.yuri.plugins.aop.WhatAnime

@@ -6,7 +6,10 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
-import com.mikuac.yuri.common.utils.*
+import com.mikuac.yuri.common.utils.CheckUtils
+import com.mikuac.yuri.common.utils.MsgSendUtils
+import com.mikuac.yuri.common.utils.RegexUtils
+import com.mikuac.yuri.common.utils.RequestUtils
 import com.mikuac.yuri.dto.GithubRepoDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -22,21 +25,14 @@ class GithubRepo : BotPlugin() {
     private fun getRepoInfo(repoName: String): GithubRepoDto {
         val api = "https://api.github.com/search/repositories?q=${repoName}"
         val result = RequestUtils.get(api)
-        LogUtils.debug("Github Api Result - $result")
         val json = Gson().fromJson(result, GithubRepoDto::class.java)
         if (json.totalCount <= 0) throw Exception("未找到相关仓库")
         return json
     }
 
-    private fun check(groupId: Long, userId: Long, bot: Bot): Boolean {
-        if (checkUtils.pluginIsDisable(this.javaClass.simpleName, userId, groupId, bot)) return false
-        if (checkUtils.checkUserInBlackList(userId, groupId, bot)) return false
-        return true
-    }
-
     private fun sendMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (!msg.matches(regex)) return
-        if (!check(groupId, userId, bot)) return
+        if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
         try {
             val searchName = RegexUtils.group(regex, 2, msg)
             val data = getRepoInfo(searchName).items[0]
@@ -55,7 +51,7 @@ class GithubRepo : BotPlugin() {
             }
             MsgSendUtils.send(userId, groupId, bot, buildMsg)
         } catch (e: Exception) {
-            MsgSendUtils.atSend(userId, groupId, bot, e.message.toString())
+            MsgSendUtils.atSend(userId, groupId, bot, "GitHub仓库查询失败 ${e.message}")
         }
     }
 

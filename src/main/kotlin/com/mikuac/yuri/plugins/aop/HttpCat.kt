@@ -20,15 +20,9 @@ class HttpCat : BotPlugin() {
     @Autowired
     private lateinit var checkUtils: CheckUtils
 
-    private fun check(groupId: Long, userId: Long, bot: Bot): Boolean {
-        if (checkUtils.pluginIsDisable(this.javaClass.simpleName, userId, groupId, bot)) return false
-        if (checkUtils.checkUserInBlackList(userId, groupId, bot)) return false
-        return true
-    }
-
     private fun buildMsg(msg: String, msgId: Int, userId: Long, groupId: Long, bot: Bot) {
         if (!msg.matches(regex)) return
-        if (!check(groupId, userId, bot)) return
+        if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
         val statusCode = RegexUtils.group(regex, 1, msg)
         if (statusCode.isNotEmpty()) {
             val picMsg = MsgUtils.builder().img("https://http.cat/${statusCode}").build()

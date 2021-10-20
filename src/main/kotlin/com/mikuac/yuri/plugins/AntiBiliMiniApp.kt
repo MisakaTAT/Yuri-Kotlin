@@ -6,6 +6,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.common.utils.LogUtils
+import com.mikuac.yuri.common.utils.MsgSendUtils
 import com.mikuac.yuri.common.utils.RegexUtils
 import com.mikuac.yuri.common.utils.RequestUtils
 import com.mikuac.yuri.dto.BiliMiniAppDto
@@ -16,33 +17,36 @@ class AntiBiliMiniApp : BotPlugin() {
 
     private val regex = Regex("^(.*?)1109937557(.*)")
 
-    private fun request(bid: String): BiliMiniAppDto.Data? {
-        val result = RequestUtils.get("https://api.bilibili.com/x/web-interface/view?bvid=${bid}") ?: return null
-        LogUtils.debug("Parse Bili Mini App Result - $result")
+    private fun request(bid: String): BiliMiniAppDto.Data {
+        val result = RequestUtils.get("https://api.bilibili.com/x/web-interface/view?bvid=${bid}")
         return Gson().fromJson(result, BiliMiniAppDto::class.java).data
     }
 
-    private fun buildMsg(bid: String, groupId: Long, bot: Bot) {
-        val data = request(bid) ?: return
-        val sendMsg = MsgUtils.builder()
-            .img(data.pic)
-            .text("\n${data.title}")
-            .text("\nUP：${data.owner.name}")
-            .text("\n播放：${data.stat.view} 弹幕：${data.stat.danmaku}")
-            .text("\n投币：${data.stat.coin} 点赞：${data.stat.like}")
-            .text("\n评论：${data.stat.reply} 分享：${data.stat.share}")
-            .text("\nhttps://www.bilibili.com/video/av${data.stat.aid}")
-            .text("\nhttps://www.bilibili.com/video/${data.bvid}")
-            .build()
-        bot.sendGroupMsg(groupId, sendMsg, false)
+    private fun buildMsg(bid: String, userId: Long, groupId: Long, bot: Bot) {
+        try {
+            val data = request(bid)
+            val sendMsg = MsgUtils.builder()
+                .img(data.pic)
+                .text("\n${data.title}")
+                .text("\nUP：${data.owner.name}")
+                .text("\n播放：${data.stat.view} 弹幕：${data.stat.danmaku}")
+                .text("\n投币：${data.stat.coin} 点赞：${data.stat.like}")
+                .text("\n评论：${data.stat.reply} 分享：${data.stat.share}")
+                .text("\nhttps://www.bilibili.com/video/av${data.stat.aid}")
+                .text("\nhttps://www.bilibili.com/video/${data.bvid}")
+                .build()
+            bot.sendGroupMsg(groupId, sendMsg, false)
+        } catch (e: Exception) {
+            MsgSendUtils.atSend(userId, groupId, bot, "哔哩哔哩小程序解析失败 ${e.message}")
+        }
     }
 
-    private fun action(groupId: Long, bot: Bot, msg: String) {
+    private fun action(userId: Long, groupId: Long, bot: Bot, msg: String) {
         var url = RegexUtils.group(Regex("(?<=\"qqdocurl\":\")(.*)(?=\\?share_medium)"), 1, msg)
         url = url.replace("\\\\".toRegex(), "")
         val realUrl = RequestUtils.findLink(url) ?: return
         val bid = RegexUtils.group(Regex("(?<=video/)(.*)(?=\\?p=)"), 1, realUrl)
-        buildMsg(bid, groupId, bot)
+        buildMsg(bid, userId, groupId, bot)
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
@@ -50,7 +54,7 @@ class AntiBiliMiniApp : BotPlugin() {
         val userId = event.userId
         val groupId = event.groupId
         if (msg.matches(regex)) {
-            action(groupId, bot, msg)
+            action(userId, groupId, bot, msg)
             LogUtils.action(userId, groupId, this.javaClass.simpleName, "")
         }
         return MESSAGE_IGNORE
