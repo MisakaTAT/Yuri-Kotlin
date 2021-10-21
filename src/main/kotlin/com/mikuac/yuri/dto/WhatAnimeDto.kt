@@ -1,9 +1,12 @@
 package com.mikuac.yuri.dto
 
+import com.google.gson.annotations.SerializedName
+
 data class WhatAnimeDto(
     val data: Data
 ) {
     data class Data(
+        @SerializedName("Media")
         val media: Media
     ) {
         data class Media(
