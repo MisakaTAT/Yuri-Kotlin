@@ -106,7 +106,7 @@ class WhatAnime : BotPlugin() {
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        buildMsg(event.message, event.userId, event.userId, bot)
+//        buildMsg(event.message, event.userId, event.userId, bot)
         return MESSAGE_IGNORE
     }
 

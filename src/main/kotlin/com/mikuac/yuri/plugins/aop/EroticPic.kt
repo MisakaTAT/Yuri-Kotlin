@@ -1,7 +1,5 @@
 package com.mikuac.yuri.plugins.aop
 
-import cn.hutool.cache.CacheUtil
-import cn.hutool.cache.impl.TimedCache
 import com.google.gson.Gson
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
@@ -18,8 +16,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import net.jodah.expiringmap.ExpirationPolicy
+import net.jodah.expiringmap.ExpiringMap
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.util.concurrent.TimeUnit
 
 @Component
 class EroticPic : BotPlugin() {
@@ -32,9 +33,11 @@ class EroticPic : BotPlugin() {
     @Autowired
     private lateinit var checkUtils: CheckUtils
 
-    private val cdTime = ReadConfig.config.plugin.eroticPic.cdTime
-
-    private val timedCache: TimedCache<Long, Long> = CacheUtil.newTimedCache(cdTime.times(1000L))
+    private val expiringMap: ExpiringMap<Long, Long> = ExpiringMap.builder()
+        .variableExpiration()
+        .expirationPolicy(ExpirationPolicy.CREATED)
+        .expiration(ReadConfig.config.plugin.eroticPic.cdTime.times(1000L), TimeUnit.MILLISECONDS)
+        .build()
 
     private fun request(r18: Boolean): EroticPicDto.Data {
         var api = "https://api.lolicon.app/setu/v2"
@@ -66,8 +69,9 @@ class EroticPic : BotPlugin() {
     private fun check(groupId: Long, userId: Long, bot: Bot): Boolean {
         if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return false
         // 检查是否处于冷却时间
-        if (timedCache.get(groupId + userId) != null && timedCache.get(groupId + userId) == userId) {
-            MsgSendUtils.atSend(userId, groupId, bot, "整天色图色图，信不信把你变成色图？")
+        if (expiringMap[groupId + userId] != null && expiringMap[groupId + userId] == userId) {
+            val expectedExpiration = expiringMap.getExpectedExpiration(groupId + userId) / 1000
+            MsgSendUtils.atSend(userId, groupId, bot, "整天色图色图，信不信把你变成色图？冷却：[${expectedExpiration}秒]")
             return false
         }
         return true
@@ -88,7 +92,8 @@ class EroticPic : BotPlugin() {
             try {
                 val buildTextMsg = buildTextMsg(r18)
                 MsgSendUtils.send(userId, groupId, bot, buildTextMsg.first)
-                timedCache.put(groupId + userId, userId)
+                val cdTime = ReadConfig.config.plugin.eroticPic.cdTime.times(1000L)
+                expiringMap.put(groupId + userId, userId, cdTime, TimeUnit.MILLISECONDS)
                 val msgId = MsgSendUtils.send(userId, groupId, bot, buildPicMsg(buildTextMsg.second))
                 LogUtils.action(userId, groupId, this.javaClass.simpleName, "")
                 recallMsgPic(msgId, bot)

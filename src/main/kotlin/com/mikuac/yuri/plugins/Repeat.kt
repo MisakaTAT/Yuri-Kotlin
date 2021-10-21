@@ -1,7 +1,5 @@
 package com.mikuac.yuri.plugins
 
-import cn.hutool.cache.CacheUtil
-import cn.hutool.cache.impl.TimedCache
 import cn.hutool.core.util.RandomUtil
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
@@ -9,22 +7,26 @@ import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.common.config.ReadConfig
 import com.mikuac.yuri.common.utils.CheckUtils
 import com.mikuac.yuri.common.utils.LogUtils
+import net.jodah.expiringmap.ExpirationPolicy
+import net.jodah.expiringmap.ExpiringMap
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.util.concurrent.TimeUnit
 
 @Component
 class Repeat : BotPlugin() {
 
-
     @Autowired
     private lateinit var checkUtils: CheckUtils
-
-    private val waitTime = ReadConfig.config.plugin.repeat.waitTime
 
     /**
      * 创建缓存 过期时间内不复读重复内容
      */
-    private val timedCache: TimedCache<Long, String> = CacheUtil.newTimedCache(waitTime.times(1000L))
+    private val expiringMap: ExpiringMap<Long, String> = ExpiringMap.builder()
+        .variableExpiration()
+        .expirationPolicy(ExpirationPolicy.CREATED)
+        .expiration(ReadConfig.config.plugin.repeat.waitTime.times(1000L), TimeUnit.MILLISECONDS)
+        .build()
 
     /**
      * 最后一条消息
@@ -46,8 +48,8 @@ class Repeat : BotPlugin() {
         if (msg.startsWith(ReadConfig.config.command.prefix)) return MESSAGE_IGNORE
 
         // 如果缓存中存在内容则不进行复读
-        val cache = timedCache.get(groupId, false)
-        if (cache != null && cache.equals(msg)) return MESSAGE_IGNORE
+        val cache = expiringMap[groupId]
+        if (cache != null && cache == msg) return MESSAGE_IGNORE
 
         // 获取Map中当前群组最后一条消息内容
         val lastMsg = lastMsgMap.getOrDefault(groupId, "")
@@ -59,7 +61,8 @@ class Repeat : BotPlugin() {
             countMap[groupId] = ++count
             if (count == RandomUtil.randomInt(ReadConfig.config.plugin.repeat.thresholdValue)) {
                 bot.sendGroupMsg(groupId, msg, false)
-                timedCache.put(groupId, msg)
+                val waitTime = ReadConfig.config.plugin.repeat.waitTime.times(1000L)
+                expiringMap.put(groupId, msg, waitTime, TimeUnit.MILLISECONDS)
                 countMap[groupId] = 0
                 LogUtils.action(event.userId, groupId, this.javaClass.simpleName, "")
             }

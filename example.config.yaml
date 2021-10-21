@@ -18,13 +18,13 @@ command:
 plugin:
   # 色图插件
   eroticPic:
-    # 冷却时间（单位秒）[不支持热更新，重启生效]
+    # 冷却时间（单位秒）
     cdTime: 60
     # 图片撤回时间（单位秒）
     recallMsgPicTime: 30
   # 复读姬插件
   repeat:
-    # 多长时间内不复读重复内容（单位秒）[不支持热更新，重启生效]
+    # 多长时间内不复读重复内容（单位秒）
     waitTime: 60
     # 复读阈值
     thresholdValue: 5

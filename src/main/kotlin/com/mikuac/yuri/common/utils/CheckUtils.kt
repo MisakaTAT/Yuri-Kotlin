@@ -31,7 +31,9 @@ class CheckUtils {
 
     // 检查插件是否停用
     fun pluginIsDisable(pluginName: String, userId: Long, groupId: Long, bot: Bot): Boolean {
-        if (pluginSwitchRepository.findByPluginName(pluginName).get().disable) {
+        val result = pluginSwitchRepository.findByPluginName(pluginName)
+        if (!result.isPresent) return false
+        if (result.get().disable) {
             MsgSendUtils.atSend(userId, groupId, bot, "此模块已停用")
             return true
         }
@@ -40,7 +42,9 @@ class CheckUtils {
 
     // 检查插件是否停用
     fun pluginIsDisable(pluginName: String): Boolean {
-        if (pluginSwitchRepository.findByPluginName(pluginName).get().disable) return true
+        val result = pluginSwitchRepository.findByPluginName(pluginName)
+        if (!result.isPresent) return false
+        if (result.get().disable) return true
         return false
     }
 
