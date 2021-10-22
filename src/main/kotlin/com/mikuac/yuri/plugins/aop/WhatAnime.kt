@@ -5,8 +5,6 @@ import com.google.gson.Gson
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
-import com.mikuac.shiro.dto.event.message.GroupMessageEvent
-import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.common.utils.*
 import com.mikuac.yuri.dto.WhatAnimeBasicDto
 import com.mikuac.yuri.dto.WhatAnimeDto
@@ -117,14 +115,14 @@ class WhatAnime : BotPlugin() {
         }
     }
 
-    override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        buildMsg(event.message, event.userId, 0L, bot)
-        return MESSAGE_IGNORE
-    }
-
-    override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        buildMsg(event.message, event.userId, event.groupId, bot)
-        return MESSAGE_IGNORE
-    }
+//    override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
+//        buildMsg(event.message, event.userId, 0L, bot)
+//        return MESSAGE_IGNORE
+//    }
+//
+//    override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
+//        buildMsg(event.message, event.userId, event.groupId, bot)
+//        return MESSAGE_IGNORE
+//    }
 
 }

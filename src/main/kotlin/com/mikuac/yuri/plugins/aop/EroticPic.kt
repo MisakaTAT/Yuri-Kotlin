@@ -41,7 +41,7 @@ class EroticPic : BotPlugin() {
 
     private fun request(r18: Boolean): EroticPicDto.Data {
         var api = "https://api.lolicon.app/setu/v2"
-        if (r18) api = ReadConfig.config.plugin.eroticPic.api + "?r18=1"
+        if (r18) api = "$api?r18=1"
         val result = RequestUtils.get(api)
         val json = Gson().fromJson(result, EroticPicDto::class.java)
         return json.data[0]
@@ -87,8 +87,12 @@ class EroticPic : BotPlugin() {
 
     private fun sendMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (msg.matches(regex)) {
-            val r18 = msg.contains(Regex("(?i)r18"))
             if (!check(groupId, userId, bot)) return
+            val r18 = msg.contains(Regex("(?i)r18"))
+            if (!ReadConfig.config.plugin.eroticPic.r18 && r18) {
+                MsgSendUtils.atSend(userId, groupId, bot, "NSFW禁止！")
+                return
+            }
             try {
                 val buildTextMsg = buildTextMsg(r18)
                 MsgSendUtils.send(userId, groupId, bot, buildTextMsg.first)

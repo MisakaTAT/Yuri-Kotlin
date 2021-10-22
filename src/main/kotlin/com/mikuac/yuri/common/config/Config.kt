@@ -23,6 +23,7 @@ data class Config(
         val antiBiliMiniApp: AntiBiliMiniApp
     ) {
         data class EroticPic(
+            val r18: Boolean,
             val api: String,
             val cdTime: Int,
             val recallMsgPicTime: Int
