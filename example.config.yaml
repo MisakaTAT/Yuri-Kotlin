@@ -18,6 +18,8 @@ command:
 plugin:
   # 色图插件
   eroticPic:
+    # 是否允许请求 r18 色图
+    r18: true
     # 冷却时间（单位秒）
     cdTime: 60
     # 图片撤回时间（单位秒）
