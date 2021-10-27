@@ -8,18 +8,13 @@ import com.mikuac.yuri.common.utils.SearchModeUtils
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
-import org.aspectj.lang.annotation.Pointcut
 import org.springframework.stereotype.Component
 
 @Aspect
 @Component
 class CommandPrefixAspect {
 
-    @Pointcut(value = "execution(int com.mikuac.yuri.plugins.aop.*.on*Message(..))")
-    private fun point() {
-    }
-
-    @Around(value = "point()")
+    @Around(value = "execution(int com.mikuac.yuri.plugins.aop.*.on*Message(..))")
     private fun prefixCheck(pjp: ProceedingJoinPoint): Int {
         val prefix = ReadConfig.config.command.prefix
         val args = pjp.args

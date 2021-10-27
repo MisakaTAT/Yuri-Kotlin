@@ -6,10 +6,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
-import com.mikuac.yuri.common.utils.CheckUtils
-import com.mikuac.yuri.common.utils.MsgSendUtils
-import com.mikuac.yuri.common.utils.RegexUtils
-import com.mikuac.yuri.common.utils.RequestUtils
+import com.mikuac.yuri.common.utils.*
 import com.mikuac.yuri.dto.GithubRepoDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -52,6 +49,8 @@ class GithubRepo : BotPlugin() {
             MsgSendUtils.send(userId, groupId, bot, buildMsg)
         } catch (e: Exception) {
             MsgSendUtils.atSend(userId, groupId, bot, "GitHub仓库查询失败 ${e.message}")
+            LogUtils.debug("${DateUtils.getTime()} ${this.javaClass.simpleName} Exception")
+            LogUtils.debug(e.stackTraceToString())
         }
     }
 

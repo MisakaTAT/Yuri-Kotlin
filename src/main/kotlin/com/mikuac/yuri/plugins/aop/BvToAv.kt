@@ -4,6 +4,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
+import com.mikuac.yuri.common.utils.DateUtils
 import com.mikuac.yuri.common.utils.LogUtils
 import com.mikuac.yuri.common.utils.MsgSendUtils
 import com.mikuac.yuri.common.utils.RegexUtils
@@ -74,7 +75,9 @@ class BvToAv : BotPlugin() {
                 LogUtils.action(userId, groupId, this.javaClass.simpleName, "AID: $avId To BID: $bid")
             }
         } catch (e: Exception) {
-            e.message?.let { MsgSendUtils.atSend(userId, groupId, bot, "转换异常（${it}）") }
+            MsgSendUtils.atSend(userId, groupId, bot, "转换异常 ${e.message}")
+            LogUtils.debug("${DateUtils.getTime()} ${this.javaClass.simpleName} Exception")
+            LogUtils.debug(e.stackTraceToString())
         }
     }
 

@@ -5,10 +5,7 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
-import com.mikuac.yuri.common.utils.LogUtils
-import com.mikuac.yuri.common.utils.MsgSendUtils
-import com.mikuac.yuri.common.utils.RegexUtils
-import com.mikuac.yuri.common.utils.RequestUtils
+import com.mikuac.yuri.common.utils.*
 import com.mikuac.yuri.dto.BiliMiniAppDto
 import org.springframework.stereotype.Component
 
@@ -38,6 +35,8 @@ class AntiBiliMiniApp : BotPlugin() {
             bot.sendGroupMsg(groupId, sendMsg, false)
         } catch (e: Exception) {
             MsgSendUtils.atSend(userId, groupId, bot, "哔哩哔哩小程序解析失败 ${e.message}")
+            LogUtils.debug("${DateUtils.getTime()} ${this.javaClass.simpleName} Exception")
+            LogUtils.debug(e.stackTraceToString())
         }
     }
 

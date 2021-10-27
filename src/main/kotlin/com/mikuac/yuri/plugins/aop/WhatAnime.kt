@@ -5,6 +5,8 @@ import com.google.gson.Gson
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
+import com.mikuac.shiro.dto.event.message.GroupMessageEvent
+import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.common.utils.*
 import com.mikuac.yuri.dto.WhatAnimeBasicDto
 import com.mikuac.yuri.dto.WhatAnimeDto
@@ -15,8 +17,6 @@ import org.springframework.stereotype.Component
 class WhatAnime : BotPlugin() {
 
     private val regex = Regex("^[搜识找識](索)?番([剧劇])?(模式)?")
-
-    private val searchMode = "WhatAnime"
 
     @Autowired
     private lateinit var checkUtils: CheckUtils
@@ -80,25 +80,25 @@ class WhatAnime : BotPlugin() {
                 MsgSendUtils.atSend(userId, groupId, bot, "您已经处于搜番模式啦，请直接发送需要检索的图片~")
                 return
             }
-            SearchModeUtils.expiringMap[key] = searchMode
+            SearchModeUtils.expiringMap[key] = this.javaClass.simpleName
             MsgSendUtils.atSend(userId, groupId, bot, "您已进入搜番模式，请发送您需要搜索的图片试试吧～")
             return
         }
+
+        // 判断是否处于搜索模式
+        if (!SearchModeUtils.isSearchMode(key)) return
 
         try {
             val imgUrl = RegexUtils.group(Regex("^\\[CQ:image(.*)url=(.*)]"), 2, msg)
             val basic = getBasicInfo(imgUrl).result[0]
             val detailed = doSearch(basic.aniList).data.media
-            var animeName = detailed.title.chinese
-            if ("" == animeName) {
-                animeName = detailed.title.native
-            }
+            val animeName = detailed.title.chinese.ifEmpty { detailed.title.native }
             val startTime = "${detailed.startDate.year}年${detailed.startDate.month}月${detailed.startDate.day}日"
             val endTime = "${detailed.endDate.year}年${detailed.endDate.month}月${detailed.endDate.day}日"
             val msgUtils = MsgUtils.builder()
                 .img(detailed.coverImage.large)
                 .text("\n该截图出自番剧${animeName}第${basic.episode}集")
-                .text("\n截图位于 ${TimeUtils.sToMS(basic.from)} 至 ${TimeUtils.sToMS(basic.to)} 附近")
+                .text("\n截图位于 ${DateUtils.sToMS(basic.from)} 至 ${DateUtils.sToMS(basic.to)} 附近")
                 .text("\n番剧类型：${detailed.type}-${detailed.format}")
                 .text("\n状态：${detailed.status}")
                 .text("\n总集数：${detailed.episodes}")
@@ -110,19 +110,20 @@ class WhatAnime : BotPlugin() {
             MsgSendUtils.send(userId, groupId, bot, msgUtils)
 //            MsgSendUtils.send(userId, groupId, bot, MsgUtils.builder().video(basic.video,).build())
         } catch (e: Exception) {
-            e.printStackTrace()
             MsgSendUtils.atSend(userId, groupId, bot, "WhatAnime检索失败 ${e.message}")
+            LogUtils.debug("${DateUtils.getTime()} ${this.javaClass.simpleName} Exception")
+            LogUtils.debug(e.stackTraceToString())
         }
     }
 
-//    override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-//        buildMsg(event.message, event.userId, 0L, bot)
-//        return MESSAGE_IGNORE
-//    }
-//
-//    override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-//        buildMsg(event.message, event.userId, event.groupId, bot)
-//        return MESSAGE_IGNORE
-//    }
+    override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
+        buildMsg(event.message, event.userId, 0L, bot)
+        return MESSAGE_IGNORE
+    }
+
+    override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
+        buildMsg(event.message, event.userId, event.groupId, bot)
+        return MESSAGE_IGNORE
+    }
 
 }

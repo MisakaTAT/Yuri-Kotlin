@@ -7,10 +7,7 @@ import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.common.config.ReadConfig
-import com.mikuac.yuri.common.utils.CheckUtils
-import com.mikuac.yuri.common.utils.LogUtils
-import com.mikuac.yuri.common.utils.MsgSendUtils
-import com.mikuac.yuri.common.utils.RequestUtils
+import com.mikuac.yuri.common.utils.*
 import com.mikuac.yuri.dto.EroticPicDto
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -103,6 +100,8 @@ class EroticPic : BotPlugin() {
                 recallMsgPic(msgId, bot)
             } catch (e: Exception) {
                 MsgSendUtils.atSend(userId, groupId, bot, "色图请求失败 ${e.message}")
+                LogUtils.debug("${DateUtils.getTime()} ${this.javaClass.simpleName} Exception")
+                LogUtils.debug(e.stackTraceToString())
             }
         }
     }

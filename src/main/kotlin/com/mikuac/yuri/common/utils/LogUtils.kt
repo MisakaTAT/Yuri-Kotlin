@@ -20,7 +20,7 @@ class LogUtils {
 
         fun debug(txt: String) {
             if (ReadConfig.config.base.debug) {
-                log.warn { "DEBUG: $txt" }
+                log.error { "[DEBUG] $txt" }
             }
         }
 
