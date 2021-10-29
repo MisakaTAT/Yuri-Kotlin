@@ -17,3 +17,5 @@ plugin: # 插件设置
     thresholdValue: 5 # 复读阈值
   whatAnime: # 番剧检索
     sendPreviewVideo: true # 是否发送预览视频
+  sauceNao:
+    key: "582304f9aaadf7ec60bfwaa0016b12tre4de2bv3b21ep"

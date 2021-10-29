@@ -22,6 +22,7 @@ data class Config(
         val eroticPic: EroticPic,
         val repeat: Repeat,
         val whatAnime: WhatAnime,
+        val sauceNao: SauceNao
     ) {
         data class EroticPic(
             val r18: Boolean,
@@ -36,6 +37,10 @@ data class Config(
 
         data class WhatAnime(
             val sendPreviewVideo: Boolean
+        )
+
+        data class SauceNao(
+            val key: String
         )
     }
 }
