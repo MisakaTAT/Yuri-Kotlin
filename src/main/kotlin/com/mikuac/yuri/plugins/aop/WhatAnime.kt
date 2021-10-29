@@ -7,7 +7,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
-import com.mikuac.yuri.bean.SearchModeBean
+import com.mikuac.yuri.common.config.ReadConfig
 import com.mikuac.yuri.common.utils.*
 import com.mikuac.yuri.dto.WhatAnimeBasicDto
 import com.mikuac.yuri.dto.WhatAnimeDto
@@ -77,16 +77,10 @@ class WhatAnime : BotPlugin() {
 
         val key = userId + groupId
         if (msg.matches(regex)) {
-            if (SearchModeUtils.isSearchMode(key)) {
-                MsgSendUtils.atSend(userId, groupId, bot, "您已经处于搜番模式啦，请直接发送需要检索的图片~")
-                return
-            }
-            val smb = SearchModeBean(userId = userId, groupId = groupId, mode = this.javaClass.simpleName, bot)
-            SearchModeUtils.expiringMap[key] = smb
-            MsgSendUtils.atSend(userId, groupId, bot, "您已进入搜番模式，请发送您需要搜索的图片试试吧～")
+            // 进入搜索模式
+            SearchModeUtils.setSearchMode(key, this.javaClass.simpleName, userId, groupId, bot)
             return
         }
-
         // 判断是否处于搜索模式
         if (!SearchModeUtils.isSearchMode(key)) return
 
@@ -110,7 +104,14 @@ class WhatAnime : BotPlugin() {
                 .text("\n数据来源：WhatAnime")
                 .build()
             MsgSendUtils.send(userId, groupId, bot, msgUtils)
-//            MsgSendUtils.send(userId, groupId, bot, MsgUtils.builder().video(basic.video,).build())
+            // 发送预览视频
+            val sendVideo = ReadConfig.config.plugin.whatAnime.sendPreviewVideo
+            if (sendVideo) MsgSendUtils.send(
+                userId,
+                groupId,
+                bot,
+                MsgUtils.builder().video(basic.video, imgUrl).build()
+            )
         } catch (e: Exception) {
             MsgSendUtils.atSend(userId, groupId, bot, "WhatAnime检索失败 ${e.message}")
             LogUtils.debug("${DateUtils.getTime()} ${this.javaClass.simpleName} Exception")

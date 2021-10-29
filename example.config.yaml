@@ -1,32 +1,19 @@
-# 基础设置
-base:
-  # 开启 debug
-  debug: false
-  # 设置机器人昵称
-  botName: "悠里"
-  # 设置机器人账号
-  botSelfId: 123456789
-  # 管理员列表
-  adminList:
+base: # 基础设置
+  debug: false # 开启 debug
+  botName: "悠里" # 设置机器人昵称
+  botSelfId: 123456789 # 设置机器人账号
+  adminList: # 管理员列表
     - 123456789
     - 987654321
-# 指令设置
-command:
-  # 指令前缀
-  prefix: "."
-# 插件设置
-plugin:
-  # 色图插件
-  eroticPic:
-    # 是否允许请求 r18 色图
-    r18: true
-    # 冷却时间（单位秒）
-    cdTime: 60
-    # 图片撤回时间（单位秒）
-    recallMsgPicTime: 30
-  # 复读姬插件
-  repeat:
-    # 多长时间内不复读重复内容（单位秒）
-    waitTime: 60
-    # 复读阈值
-    thresholdValue: 5
+command: # 指令设置
+  prefix: "." # 指令前缀
+plugin: # 插件设置
+  eroticPic: # 色图插件
+    r18: true  # 是否允许请求 r18 色图
+    cdTime: 60 # 冷却时间（单位秒）
+    recallMsgPicTime: 30 # 图片撤回时间（单位秒）
+  repeat: # 复读姬插件
+    waitTime: 60 # 多长时间内不复读重复内容（单位秒）
+    thresholdValue: 5 # 复读阈值
+  whatAnime: # 番剧检索
+    sendPreviewVideo: true # 是否发送预览视频

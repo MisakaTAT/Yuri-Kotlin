@@ -1,5 +1,7 @@
 package com.mikuac.yuri.common.config
 
+import com.mikuac.yuri.plugins.aop.WhatAnime
+
 data class Config(
     val base: Base,
     val command: Command,
@@ -19,6 +21,7 @@ data class Config(
     data class Plugin(
         val eroticPic: EroticPic,
         val repeat: Repeat,
+        val whatAnime: WhatAnime,
     ) {
         data class EroticPic(
             val r18: Boolean,
@@ -29,6 +32,10 @@ data class Config(
         data class Repeat(
             val waitTime: Int,
             val thresholdValue: Int
+        )
+
+        data class WhatAnime(
+            val sendPreviewVideo: Boolean
         )
     }
 }
