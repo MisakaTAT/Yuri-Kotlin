@@ -7,6 +7,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
+import com.mikuac.yuri.bean.SearchModeBean
 import com.mikuac.yuri.common.utils.*
 import com.mikuac.yuri.dto.WhatAnimeBasicDto
 import com.mikuac.yuri.dto.WhatAnimeDto
@@ -80,7 +81,8 @@ class WhatAnime : BotPlugin() {
                 MsgSendUtils.atSend(userId, groupId, bot, "您已经处于搜番模式啦，请直接发送需要检索的图片~")
                 return
             }
-            SearchModeUtils.expiringMap[key] = this.javaClass.simpleName
+            val smb = SearchModeBean(userId = userId, groupId = groupId, mode = this.javaClass.simpleName, bot)
+            SearchModeUtils.expiringMap[key] = smb
             MsgSendUtils.atSend(userId, groupId, bot, "您已进入搜番模式，请发送您需要搜索的图片试试吧～")
             return
         }

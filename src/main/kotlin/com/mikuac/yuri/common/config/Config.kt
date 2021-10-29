@@ -31,5 +31,4 @@ data class Config(
             val thresholdValue: Int
         )
     }
-
 }
