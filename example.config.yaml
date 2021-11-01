@@ -5,6 +5,8 @@ base: # 基础设置
   adminList: # 管理员列表
     - 123456789
     - 987654321
+  searchMode:
+    timeout: 30
 command: # 指令设置
   prefix: "." # 指令前缀
 plugin: # 插件设置

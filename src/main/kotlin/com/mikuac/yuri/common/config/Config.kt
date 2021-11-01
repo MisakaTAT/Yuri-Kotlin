@@ -11,8 +11,13 @@ data class Config(
         val debug: Boolean,
         val adminList: List<Long>,
         val botName: String,
-        val botSelfId: Long
-    )
+        val botSelfId: Long,
+        val searchMode: SearchMode
+    ) {
+        data class SearchMode(
+            val timeout: Int
+        )
+    }
 
     data class Command(
         val prefix: String

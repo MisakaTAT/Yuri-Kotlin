@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component
 @Component
 class WhatAnime : BotPlugin() {
 
-    private val regex = Regex("^[搜识找識](索)?番([剧劇])?(模式)?")
+    private val regex = Regex("^[搜识找識]([索别])?番([剧劇])?(模式)?")
 
     @Autowired
     private lateinit var checkUtils: CheckUtils
@@ -74,17 +74,11 @@ class WhatAnime : BotPlugin() {
 
     private fun buildMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
-
-        val key = userId + groupId
-        if (msg.matches(regex)) {
-            // 进入搜索模式
-            SearchModeUtils.setSearchMode(key, this.javaClass.simpleName, userId, groupId, bot)
-            return
-        }
-        // 判断是否处于搜索模式
-        if (!SearchModeUtils.isSearchMode(key)) return
-
+        if (!SearchModeUtils.set(msg, regex, this.javaClass.simpleName, userId, groupId, bot)) return
+        LogUtils.action(userId, groupId, this.javaClass.simpleName, "")
         try {
+            // 重新设置过期时间
+            SearchModeUtils.resetExpiration(userId, groupId)
             val imgUrl = RegexUtils.group(Regex("^\\[CQ:image(.*)url=(.*)]"), 2, msg)
             val basic = getBasicInfo(imgUrl).result[0]
             val detailed = doSearch(basic.aniList).data.media

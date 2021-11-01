@@ -7,20 +7,19 @@ data class SauceNaoDto(
     val results: List<Result>
 ) {
     data class Header(
-        val account_type: String,
+        @SerializedName("account_type")
+        val accountType: String,
         @SerializedName("long_limit")
         val longLimit: String,
-        val long_remaining: Int,
-        val minimum_similarity: Int,
-        val query_image: String,
-        val query_image_display: String,
-        val results_requested: Int,
-        val results_returned: Int,
-        val search_depth: String,
-        val short_limit: String,
-        val short_remaining: Int,
-        val status: Int,
-        val user_id: String
+        @SerializedName("long_remaining")
+        var longRemaining: Int,
+        @SerializedName("short_limit")
+        val shortLimit: String,
+        @SerializedName("short_remaining")
+        val shortRemaining: Int,
+        @SerializedName("user_id")
+        val userId: String,
+        val status: Int
     )
 
     data class Result(
