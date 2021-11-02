@@ -64,6 +64,8 @@ class SearchModeUtils {
             if (!isSearchMode(key)) return false
             // 判断当前检索模式是否一致，否则会执行所有检索插件
             if (expiringMap[key]?.mode != mode) return false
+            // 不是图片消息就拦截（否则处于搜图模式会从文本消息内提取图片链接）
+            if (!msg.contains("[CQ:image")) return false
             return true
         }
 
