@@ -11,6 +11,8 @@ class SearchModeUtils {
 
     companion object {
 
+        private val unsetRegex = Regex("^退出[搜检][索图圖本推](模式)?")
+
         private val hashMap = hashMapOf("WhatAnime" to "番", "SauceNao" to "图")
 
         val expiringMap: ExpiringMap<Long, SearchModeBean> = ExpiringMap.builder()
@@ -47,16 +49,20 @@ class SearchModeUtils {
             expiringMap.resetExpiration(key)
         }
 
-        fun remove(userId: Long, groupId: Long, bot: Bot) {
+        private fun remove(userId: Long, groupId: Long, bot: Bot) {
             val key = userId + groupId
             expiringMap.remove(key)
-            MsgSendUtils.atSend(userId, groupId, bot, "帮您退出检索模式了啦～")
+            MsgSendUtils.atSend(userId, groupId, bot, "帮您退出检索模式啦～")
         }
 
         fun set(msg: String, regex: Regex, mode: String, userId: Long, groupId: Long, bot: Bot): Boolean {
             val key = userId + groupId
+            // 退出搜索模式
+            if (msg.matches(unsetRegex) && isSearchMode(key)) {
+                remove(userId, groupId, bot)
+            }
+            // 进入搜索模式
             if (msg.matches(regex)) {
-                // 进入搜索模式
                 setSearchMode(key, mode, userId, groupId, bot)
                 return false
             }
