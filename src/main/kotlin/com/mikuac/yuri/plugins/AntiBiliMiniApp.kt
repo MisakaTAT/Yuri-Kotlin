@@ -45,7 +45,7 @@ class AntiBiliMiniApp : BotPlugin() {
         LogUtils.action(userId, groupId, this.javaClass.simpleName, "")
         var url = RegexUtils.group(Regex("(?<=\"qqdocurl\":\")(.*)(?=\\?share_medium)"), 1, msg)
         url = url.replace("\\\\".toRegex(), "")
-        val realUrl = RequestUtils.findLink(url) ?: return
+        val realUrl = RequestUtils.findLink(url)
         val bid = RegexUtils.group(Regex("(?<=video/)(.*)(?=\\?p=)"), 1, realUrl)
         buildMsg(bid, userId, groupId, bot)
     }

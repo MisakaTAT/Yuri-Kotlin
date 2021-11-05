@@ -16,11 +16,11 @@ class SearchModeUtils {
         val expiringMap: ExpiringMap<Long, SearchModeBean> = ExpiringMap.builder()
             .variableExpiration()
             .expirationPolicy(ExpirationPolicy.CREATED)
-            .asyncExpirationListener { key: Long, value: SearchModeBean -> expCallBack(key, value) }
+            .asyncExpirationListener { _: Long, value: SearchModeBean -> expCallBack(value) }
             .build()
 
         // 过期通知
-        private fun expCallBack(key: Long, value: SearchModeBean) {
+        private fun expCallBack(value: SearchModeBean) {
             MsgSendUtils.atSend(value.userId, value.groupId, value.bot, "您已经很久没有发送图片啦，帮您退出检索模式了哟～")
         }
 
