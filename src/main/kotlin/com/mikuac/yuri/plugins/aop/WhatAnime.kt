@@ -17,7 +17,9 @@ import org.springframework.stereotype.Component
 @Component
 class WhatAnime : BotPlugin() {
 
-    private val regex = Regex("^[搜识找識]([索别])?番([剧劇])?(模式)?")
+    private val setRegex = Regex("^[搜识找識]([索别])?番([剧劇])?(模式)?")
+
+    private val unsetRegex = Regex("^退出[搜识找識]([索别])?番([剧劇])?(模式)?")
 
     @Autowired
     private lateinit var checkUtils: CheckUtils
@@ -72,9 +74,9 @@ class WhatAnime : BotPlugin() {
         return Gson().fromJson(result, WhatAnimeDto::class.java)
     }
 
-    private fun buildMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
+    private fun buildMsg(mode: String, msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
-        if (!SearchModeUtils.set(msg, regex, this.javaClass.simpleName, userId, groupId, bot)) return
+        if (!SearchModeUtils.check(setRegex, unsetRegex, msg, mode, userId, groupId, bot)) return
         LogUtils.action(userId, groupId, this.javaClass.simpleName, "")
         try {
             // 重新设置过期时间
@@ -114,12 +116,12 @@ class WhatAnime : BotPlugin() {
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        buildMsg(event.message, event.userId, 0L, bot)
+        buildMsg(this.javaClass.simpleName, event.message, event.userId, 0L, bot)
         return MESSAGE_IGNORE
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        buildMsg(event.message, event.userId, event.groupId, bot)
+        buildMsg(this.javaClass.simpleName, event.message, event.userId, event.groupId, bot)
         return MESSAGE_IGNORE
     }
 

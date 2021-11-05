@@ -11,8 +11,6 @@ class SearchModeUtils {
 
     companion object {
 
-        private val unsetRegex = Regex("^退出[搜检][索图圖本推](模式)?")
-
         private val hashMap = hashMapOf("WhatAnime" to "番", "SauceNao" to "图")
 
         val expiringMap: ExpiringMap<Long, SearchModeBean> = ExpiringMap.builder()
@@ -30,12 +28,13 @@ class SearchModeUtils {
             return expiringMap[key] != null
         }
 
-        private fun setSearchMode(key: Long, mode: String, userId: Long, groupId: Long, bot: Bot) {
+        private fun setSearchMode(mode: String, userId: Long, groupId: Long, bot: Bot) {
+            val key = userId + groupId
             val info = SearchModeBean(userId = userId, groupId = groupId, mode = mode, bot)
             val nativeMode: String
             if (isSearchMode(key)) {
                 nativeMode = hashMap[expiringMap[key]?.mode].toString()
-                MsgSendUtils.atSend(userId, groupId, bot, "当前已处于搜${nativeMode}模式，请直接发送需要检索的图片。")
+                MsgSendUtils.atSend(userId, groupId, bot, "当前已经处于搜${nativeMode}模式啦，请直接发送需要检索的图片。")
                 return
             }
             val timeout = ReadConfig.config.base.searchMode.timeout.times(1000L)
@@ -55,21 +54,30 @@ class SearchModeUtils {
             MsgSendUtils.atSend(userId, groupId, bot, "帮您退出检索模式啦～")
         }
 
-        fun set(msg: String, regex: Regex, mode: String, userId: Long, groupId: Long, bot: Bot): Boolean {
+        fun check(
+            setRegex: Regex,
+            unsetRegex: Regex,
+            msg: String,
+            mode: String,
+            userId: Long,
+            groupId: Long,
+            bot: Bot
+        ): Boolean {
             val key = userId + groupId
-            // 退出搜索模式
-            if (msg.matches(unsetRegex) && isSearchMode(key)) {
-                remove(userId, groupId, bot)
+            // 进入检索模式
+            if (msg.matches(setRegex)) {
+                setSearchMode(mode, userId, groupId, bot)
+                return false
             }
-            // 进入搜索模式
-            if (msg.matches(regex)) {
-                setSearchMode(key, mode, userId, groupId, bot)
+            // 判断当前检索模式与 SearchModeBean 中是否一致，否则会执行所有检索插件
+            if (expiringMap[key]?.mode != mode) return false
+            // 退出检索模式
+            if (msg.matches(unsetRegex)) {
+                remove(userId, groupId, bot)
                 return false
             }
             // 判断是否处于搜索模式
             if (!isSearchMode(key)) return false
-            // 判断当前检索模式是否一致，否则会执行所有检索插件
-            if (expiringMap[key]?.mode != mode) return false
             // 不是图片消息就拦截（否则处于搜图模式会从文本消息内提取图片链接）
             if (!msg.contains("[CQ:image")) return false
             return true

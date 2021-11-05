@@ -84,6 +84,7 @@ class EroticPic : BotPlugin() {
 
     private fun sendMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (msg.matches(regex)) {
+            LogUtils.action(userId, groupId, this.javaClass.simpleName, "")
             if (!check(groupId, userId, bot)) return
             val r18 = msg.contains(Regex("(?i)r18"))
             if (!ReadConfig.config.plugin.eroticPic.r18 && r18) {
@@ -96,7 +97,6 @@ class EroticPic : BotPlugin() {
                 val cdTime = ReadConfig.config.plugin.eroticPic.cdTime.times(1000L)
                 expiringMap.put(groupId + userId, userId, cdTime, TimeUnit.MILLISECONDS)
                 val msgId = MsgSendUtils.send(userId, groupId, bot, buildPicMsg(buildTextMsg.second))
-                LogUtils.action(userId, groupId, this.javaClass.simpleName, "")
                 recallMsgPic(msgId, bot)
             } catch (e: Exception) {
                 MsgSendUtils.atSend(userId, groupId, bot, "色图请求失败 ${e.message}")

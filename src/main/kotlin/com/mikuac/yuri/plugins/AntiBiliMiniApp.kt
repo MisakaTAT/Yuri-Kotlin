@@ -41,6 +41,8 @@ class AntiBiliMiniApp : BotPlugin() {
     }
 
     private fun action(userId: Long, groupId: Long, bot: Bot, msg: String) {
+        if (!msg.matches(regex)) return
+        LogUtils.action(userId, groupId, this.javaClass.simpleName, "")
         var url = RegexUtils.group(Regex("(?<=\"qqdocurl\":\")(.*)(?=\\?share_medium)"), 1, msg)
         url = url.replace("\\\\".toRegex(), "")
         val realUrl = RequestUtils.findLink(url) ?: return
@@ -49,13 +51,7 @@ class AntiBiliMiniApp : BotPlugin() {
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        val msg = event.message
-        val userId = event.userId
-        val groupId = event.groupId
-        if (msg.matches(regex)) {
-            action(userId, groupId, bot, msg)
-            LogUtils.action(userId, groupId, this.javaClass.simpleName, "")
-        }
+        action(event.userId, event.groupId, bot, event.message)
         return MESSAGE_IGNORE
     }
 
