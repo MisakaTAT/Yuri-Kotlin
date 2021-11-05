@@ -7,6 +7,7 @@ import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.common.utils.*
 import com.mikuac.yuri.dto.BiliMiniAppDto
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
@@ -14,13 +15,20 @@ class AntiBiliMiniApp : BotPlugin() {
 
     private val regex = Regex("^(.*?)1109937557(.*)")
 
+    @Autowired
+    private lateinit var checkUtils: CheckUtils
+
     private fun request(bid: String): BiliMiniAppDto.Data {
         val result = RequestUtils.get("https://api.bilibili.com/x/web-interface/view?bvid=${bid}")
         return Gson().fromJson(result, BiliMiniAppDto::class.java).data
     }
 
-    private fun buildMsg(bid: String, userId: Long, groupId: Long, bot: Bot) {
+    private fun buildMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
         try {
+            var url = RegexUtils.group(Regex("(?<=\"qqdocurl\":\")(.*)(?=\\?share_medium)"), 1, msg)
+            url = url.replace("\\\\".toRegex(), "")
+            val realUrl = RequestUtils.findLink(url)
+            val bid = RegexUtils.group(Regex("(?<=video/)(.*)(?=\\?p=)"), 1, realUrl)
             val data = request(bid)
             val sendMsg = MsgUtils.builder()
                 .img(data.pic)
@@ -40,18 +48,15 @@ class AntiBiliMiniApp : BotPlugin() {
         }
     }
 
-    private fun action(userId: Long, groupId: Long, bot: Bot, msg: String) {
+    private fun check(userId: Long, groupId: Long, bot: Bot, msg: String) {
         if (!msg.matches(regex)) return
-        LogUtils.action(userId, groupId, this.javaClass.simpleName, "")
-        var url = RegexUtils.group(Regex("(?<=\"qqdocurl\":\")(.*)(?=\\?share_medium)"), 1, msg)
-        url = url.replace("\\\\".toRegex(), "")
-        val realUrl = RequestUtils.findLink(url)
-        val bid = RegexUtils.group(Regex("(?<=video/)(.*)(?=\\?p=)"), 1, realUrl)
-        buildMsg(bid, userId, groupId, bot)
+        if (checkUtils.pluginIsDisable(this.javaClass.simpleName)) return
+        LogUtils.action(userId, groupId, this.javaClass.simpleName)
+        buildMsg(msg, userId, groupId, bot)
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        action(event.userId, event.groupId, bot, event.message)
+        check(event.userId, event.groupId, bot, event.message)
         return MESSAGE_IGNORE
     }
 

@@ -74,10 +74,14 @@ class WhatAnime : BotPlugin() {
         return Gson().fromJson(result, WhatAnimeDto::class.java)
     }
 
-    private fun buildMsg(mode: String, msg: String, userId: Long, groupId: Long, bot: Bot) {
-        if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
+    private fun check(mode: String, msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (!SearchModeUtils.check(setRegex, unsetRegex, msg, mode, userId, groupId, bot)) return
-        LogUtils.action(userId, groupId, this.javaClass.simpleName, "")
+        if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
+        buildMsg(msg, userId, groupId, bot)
+        LogUtils.action(userId, groupId, this.javaClass.simpleName)
+    }
+
+    private fun buildMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
         try {
             // 重新设置过期时间
             SearchModeUtils.resetExpiration(userId, groupId)
@@ -116,12 +120,12 @@ class WhatAnime : BotPlugin() {
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        buildMsg(this.javaClass.simpleName, event.message, event.userId, 0L, bot)
+        check(this.javaClass.simpleName, event.message, event.userId, 0L, bot)
         return MESSAGE_IGNORE
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        buildMsg(this.javaClass.simpleName, event.message, event.userId, event.groupId, bot)
+        check(this.javaClass.simpleName, event.message, event.userId, event.groupId, bot)
         return MESSAGE_IGNORE
     }
 

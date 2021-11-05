@@ -63,15 +63,17 @@ class EroticPic : BotPlugin() {
         return MsgUtils.builder().img(url).build()
     }
 
-    private fun check(groupId: Long, userId: Long, bot: Bot): Boolean {
-        if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return false
+    private fun check(msg: String, userId: Long, groupId: Long, bot: Bot) {
+        if (!msg.matches(regex)) return
+        if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
         // 检查是否处于冷却时间
         if (expiringMap[groupId + userId] != null && expiringMap[groupId + userId] == userId) {
             val expectedExpiration = expiringMap.getExpectedExpiration(groupId + userId) / 1000
             MsgSendUtils.atSend(userId, groupId, bot, "整天色图色图，信不信把你变成色图？冷却：[${expectedExpiration}秒]")
-            return false
+            return
         }
-        return true
+        LogUtils.action(userId, groupId, this.javaClass.simpleName)
+        buildMsg(msg, userId, groupId, bot)
     }
 
     private fun recallMsgPic(msgId: Int, bot: Bot) = runBlocking {
@@ -82,37 +84,33 @@ class EroticPic : BotPlugin() {
         }
     }
 
-    private fun sendMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
-        if (msg.matches(regex)) {
-            LogUtils.action(userId, groupId, this.javaClass.simpleName, "")
-            if (!check(groupId, userId, bot)) return
-            val r18 = msg.contains(Regex("(?i)r18"))
-            if (!ReadConfig.config.plugin.eroticPic.r18 && r18) {
-                MsgSendUtils.atSend(userId, groupId, bot, "NSFW禁止！")
-                return
-            }
-            try {
-                val buildTextMsg = buildTextMsg(r18)
-                MsgSendUtils.send(userId, groupId, bot, buildTextMsg.first)
-                val cdTime = ReadConfig.config.plugin.eroticPic.cdTime.times(1000L)
-                expiringMap.put(groupId + userId, userId, cdTime, TimeUnit.MILLISECONDS)
-                val msgId = MsgSendUtils.send(userId, groupId, bot, buildPicMsg(buildTextMsg.second))
-                recallMsgPic(msgId, bot)
-            } catch (e: Exception) {
-                MsgSendUtils.atSend(userId, groupId, bot, "色图请求失败 ${e.message}")
-                LogUtils.debug("${DateUtils.getTime()} ${this.javaClass.simpleName} Exception")
-                LogUtils.debug(e.stackTraceToString())
-            }
+    private fun buildMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
+        val r18 = msg.contains(Regex("(?i)r18"))
+        if (!ReadConfig.config.plugin.eroticPic.r18 && r18) {
+            MsgSendUtils.atSend(userId, groupId, bot, "NSFW禁止！")
+            return
+        }
+        try {
+            val buildTextMsg = buildTextMsg(r18)
+            MsgSendUtils.send(userId, groupId, bot, buildTextMsg.first)
+            val cdTime = ReadConfig.config.plugin.eroticPic.cdTime.times(1000L)
+            expiringMap.put(groupId + userId, userId, cdTime, TimeUnit.MILLISECONDS)
+            val msgId = MsgSendUtils.send(userId, groupId, bot, buildPicMsg(buildTextMsg.second))
+            recallMsgPic(msgId, bot)
+        } catch (e: Exception) {
+            MsgSendUtils.atSend(userId, groupId, bot, "色图请求失败 ${e.message}")
+            LogUtils.debug("${DateUtils.getTime()} ${this.javaClass.simpleName} Exception")
+            LogUtils.debug(e.stackTraceToString())
         }
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        sendMsg(event.message, event.userId, event.groupId, bot)
+        check(event.message, event.userId, event.groupId, bot)
         return MESSAGE_IGNORE
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        sendMsg(event.message, event.userId, 0L, bot)
+        check(event.message, event.userId, 0L, bot)
         return MESSAGE_IGNORE
     }
 

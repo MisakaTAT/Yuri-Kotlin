@@ -25,7 +25,7 @@ class GroupJoinAndQuit : BotPlugin() {
         val msg = MsgUtils.builder()
             .text(userId.toString() + "退出群聊")
         bot.sendGroupMsg(groupId, msg.build(), false)
-        LogUtils.action(userId, groupId, this.javaClass.simpleName, "Group Decrease (Group: $groupId User: $userId)")
+        LogUtils.action(userId, groupId, this.javaClass.simpleName)
         return MESSAGE_IGNORE
     }
 
@@ -42,7 +42,7 @@ class GroupJoinAndQuit : BotPlugin() {
             .at(userId)
             .text("Hi~ 我是${botName}，欢迎加入本群，如果想了解我，请发送 ${prefix}帮助 或 ${prefix}help 获取帮助信息。")
         bot.sendGroupMsg(groupId, msg.build(), false)
-        LogUtils.action(userId, groupId, this.javaClass.simpleName, "Group Increase (Group: $groupId User: $userId)")
+        LogUtils.action(userId, groupId, this.javaClass.simpleName)
         return MESSAGE_IGNORE
     }
 

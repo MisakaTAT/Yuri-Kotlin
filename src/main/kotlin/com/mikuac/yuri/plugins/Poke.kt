@@ -28,23 +28,7 @@ class Poke : BotPlugin() {
                 bot.sendGroupMsg(groupId, MsgUtils.builder().poke(userId).build(), false)
             }
         }
-        val userInfo = bot.getGroupMemberInfo(groupId, userId, true).data
-        val targetInfo = bot.getGroupMemberInfo(groupId, targetId, true).data
-        if (userInfo != null && targetInfo != null) {
-            LogUtils.action(
-                userId,
-                groupId,
-                this.javaClass.simpleName,
-                "Group: $groupId User: ${userInfo.nickname} Target: ${targetInfo.nickname}"
-            )
-            return MESSAGE_IGNORE
-        }
-        LogUtils.action(
-            userId,
-            groupId,
-            this.javaClass.simpleName,
-            "Group: $groupId User: $userId Target: $targetId"
-        )
+        LogUtils.action(userId, groupId, this.javaClass.simpleName)
         return MESSAGE_IGNORE
     }
 

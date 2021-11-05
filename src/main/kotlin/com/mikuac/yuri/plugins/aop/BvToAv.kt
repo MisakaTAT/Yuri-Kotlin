@@ -4,10 +4,8 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
-import com.mikuac.yuri.common.utils.DateUtils
-import com.mikuac.yuri.common.utils.LogUtils
-import com.mikuac.yuri.common.utils.MsgSendUtils
-import com.mikuac.yuri.common.utils.RegexUtils
+import com.mikuac.yuri.common.utils.*
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import kotlin.math.pow
 
@@ -16,6 +14,9 @@ import kotlin.math.pow
 class BvToAv : BotPlugin() {
 
     private val regex = Regex("^(?i)bv[2转]av\\s(.*)|^(?i)av[2转]bv\\s(.*)")
+
+    @Autowired
+    private lateinit var checkUtils: CheckUtils
 
     // 算法来源 https://www.zhihu.com/question/381784377/answer/1099438784
     private val table = "fZodR9XQDSUm21yCkr6zBqiveYah8bt4xsWpHnJE7jL5VG3guMTKNPAwcF"
@@ -51,8 +52,14 @@ class BvToAv : BotPlugin() {
         return stringBuilder.toString()
     }
 
-    private fun action(msg: String, userId: Long, groupId: Long, bot: Bot) {
+    private fun check(msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (!msg.matches(regex)) return
+        if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
+        LogUtils.action(userId, groupId, this.javaClass.simpleName)
+        buildMsg(msg, userId, groupId, bot)
+    }
+
+    private fun buildMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
         try {
             val bvId = RegexUtils.group(regex, 1, msg)
             val avId = RegexUtils.group(regex, 2, msg)
@@ -63,7 +70,6 @@ class BvToAv : BotPlugin() {
                 }
                 val aid = bv2av(bvId)
                 MsgSendUtils.atSend(userId, groupId, bot, aid)
-                LogUtils.action(userId, groupId, this.javaClass.simpleName, "BID: $bvId To AID: $aid")
             }
             if (avId.isNotEmpty()) {
                 if (!avId.matches(Regex("^(?i)AV(.*)"))) {
@@ -72,7 +78,6 @@ class BvToAv : BotPlugin() {
                 }
                 val bid = av2bv(avId)
                 MsgSendUtils.atSend(userId, groupId, bot, bid)
-                LogUtils.action(userId, groupId, this.javaClass.simpleName, "AID: $avId To BID: $bid")
             }
         } catch (e: Exception) {
             MsgSendUtils.atSend(userId, groupId, bot, "转换异常 ${e.message}")
@@ -82,12 +87,12 @@ class BvToAv : BotPlugin() {
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        action(event.message, event.userId, event.groupId, bot)
+        check(event.message, event.userId, event.groupId, bot)
         return MESSAGE_IGNORE
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        action(event.message, event.userId, 0L, bot)
+        check(event.message, event.userId, 0L, bot)
         return MESSAGE_IGNORE
     }
 

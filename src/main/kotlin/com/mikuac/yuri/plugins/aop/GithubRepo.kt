@@ -27,9 +27,14 @@ class GithubRepo : BotPlugin() {
         return json
     }
 
-    private fun sendMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
+    private fun check(msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (!msg.matches(regex)) return
         if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
+        LogUtils.action(userId, groupId, this.javaClass.simpleName)
+        buildMsg(msg, userId, groupId, bot)
+    }
+
+    private fun buildMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
         try {
             val searchName = RegexUtils.group(regex, 2, msg)
             val data = getRepoInfo(searchName).items[0]
@@ -55,12 +60,12 @@ class GithubRepo : BotPlugin() {
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        sendMsg(event.message, event.userId, 0L, bot)
+        check(event.message, event.userId, 0L, bot)
         return MESSAGE_IGNORE
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        sendMsg(event.message, event.userId, event.groupId, bot)
+        check(event.message, event.userId, event.groupId, bot)
         return MESSAGE_IGNORE
     }
 

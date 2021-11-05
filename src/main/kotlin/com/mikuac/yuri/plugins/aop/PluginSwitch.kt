@@ -31,7 +31,8 @@ class PluginSwitch : BotPlugin() {
 
     @PostConstruct
     fun init() {
-        val pluginList = listOf("Poke", "EroticPic", "HttpCat", "GroupJoinAndQuit", "Repeat", "GithubRepo")
+        val pluginList =
+            listOf("Poke", "EroticPic", "HttpCat", "GroupJoinAndQuit", "Repeat", "GithubRepo", "AntiBiliMiniApp")
         pluginList.forEach {
             if (repository.findByPluginName(it).isPresent) {
                 log.info { "Plugin switch database table field $it skip." }
@@ -53,12 +54,7 @@ class PluginSwitch : BotPlugin() {
             return
         }
         if (dbAction(plugin, action)) MsgSendUtils.atSend(userId, groupId, bot, "插件${pluginName}已${action}用")
-        LogUtils.action(
-            userId,
-            groupId,
-            this.javaClass.simpleName,
-            "Plugin $pluginName ${if (action == "启") "Enable" else "Disable"} (User: $userId)"
-        )
+        LogUtils.action(userId, groupId, this.javaClass.simpleName)
     }
 
     private fun dbAction(plugin: Optional<PluginSwitchEntity>, action: String): Boolean {

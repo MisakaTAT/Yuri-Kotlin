@@ -8,8 +8,10 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
+import com.mikuac.yuri.common.utils.CheckUtils
 import com.mikuac.yuri.common.utils.LogUtils
 import com.mikuac.yuri.common.utils.MsgSendUtils
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.lang.management.ManagementFactory
 import java.util.concurrent.TimeUnit
@@ -20,9 +22,17 @@ class BotStatus : BotPlugin() {
 
     private val regex = Regex("^(?i)status|^[状狀][态態]")
 
-    private fun buildMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
+    @Autowired
+    private lateinit var checkUtils: CheckUtils
+
+    private fun check(msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (!msg.matches(regex)) return
-        LogUtils.action(userId, groupId, this.javaClass.simpleName, "")
+        if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
+        LogUtils.action(userId, groupId, this.javaClass.simpleName)
+        buildMsg(userId, groupId, bot)
+    }
+
+    private fun buildMsg(userId: Long, groupId: Long, bot: Bot) {
         val upTime = TimeUnit.MILLISECONDS.toMinutes(ManagementFactory.getRuntimeMXBean().uptime)
         val jvmInfo = SystemUtil.getJvmInfo()
         val osInfo = SystemUtil.getOsInfo()
@@ -63,12 +73,12 @@ class BotStatus : BotPlugin() {
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        buildMsg(event.message, event.userId, 0L, bot)
+        check(event.message, event.userId, 0L, bot)
         return MESSAGE_IGNORE
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        buildMsg(event.message, event.userId, event.groupId, bot)
+        check(event.message, event.userId, event.groupId, bot)
         return MESSAGE_IGNORE
     }
 

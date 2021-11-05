@@ -20,24 +20,28 @@ class HttpCat : BotPlugin() {
     @Autowired
     private lateinit var checkUtils: CheckUtils
 
-    private fun buildMsg(msg: String, msgId: Int, userId: Long, groupId: Long, bot: Bot) {
+    private fun check(msg: String, msgId: Int, userId: Long, groupId: Long, bot: Bot) {
         if (!msg.matches(regex)) return
         if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
+        LogUtils.action(userId, groupId, this.javaClass.simpleName)
+        buildMsg(msg, msgId, userId, groupId, bot)
+    }
+
+    private fun buildMsg(msg: String, msgId: Int, userId: Long, groupId: Long, bot: Bot) {
         val statusCode = RegexUtils.group(regex, 1, msg)
         if (statusCode.isNotEmpty()) {
             val picMsg = MsgUtils.builder().img("https://http.cat/${statusCode}").build()
             MsgSendUtils.replySend(msgId, userId, groupId, bot, picMsg)
         }
-        LogUtils.action(userId, groupId, this.javaClass.simpleName, "Http Status Code: $statusCode")
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        buildMsg(event.message, event.messageId, event.userId, 0L, bot)
+        check(event.message, event.messageId, event.userId, 0L, bot)
         return MESSAGE_IGNORE
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        buildMsg(event.message, event.messageId, event.userId, event.groupId, bot)
+        check(event.message, event.messageId, event.userId, event.groupId, bot)
         return MESSAGE_IGNORE
     }
 
