@@ -1,5 +1,6 @@
 package com.mikuac.yuri.common.config
 
+import com.mikuac.yuri.plugins.TencentNLP
 import com.mikuac.yuri.plugins.aop.WhatAnime
 
 data class Config(
@@ -27,7 +28,8 @@ data class Config(
         val eroticPic: EroticPic,
         val repeat: Repeat,
         val whatAnime: WhatAnime,
-        val sauceNao: SauceNao
+        val sauceNao: SauceNao,
+        val tencentNLP: TencentNLP
     ) {
         data class EroticPic(
             val r18: Boolean,
@@ -46,6 +48,12 @@ data class Config(
 
         data class SauceNao(
             val key: String
+        )
+
+        data class TencentNLP(
+            val region: String,
+            val secretId: String,
+            val secretKey: String
         )
     }
 }
