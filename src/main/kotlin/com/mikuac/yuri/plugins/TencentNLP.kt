@@ -47,7 +47,7 @@ class TencentNLP : BotPlugin() {
         val atList = ShiroUtils.getAtList(msg)
         if (!atList.contains(selfId.toString()) || atList.size > 1) return
         val handleMsg = msg.replace("^\\[CQ.*?]".toRegex(), "").trim()
-        if (handleMsg.length < 0) return
+        if (handleMsg.isEmpty()) return
         LogUtils.action(userId, groupId, this.javaClass.simpleName)
         buildMsg(msgId, handleMsg, userId, groupId, bot)
     }
