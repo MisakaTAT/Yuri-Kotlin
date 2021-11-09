@@ -9,26 +9,24 @@ import com.mikuac.yuri.common.utils.CheckUtils
 import com.mikuac.yuri.common.utils.LogUtils
 import com.mikuac.yuri.common.utils.MsgSendUtils
 import com.mikuac.yuri.common.utils.RegexUtils
+import com.mikuac.yuri.enums.RegexEnum
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
 class HttpCat : BotPlugin() {
 
-    private val regex = Regex("(?i)httpcat\\s([0-9]+)")
-
     @Autowired
     private lateinit var checkUtils: CheckUtils
 
     private fun check(msg: String, msgId: Int, userId: Long, groupId: Long, bot: Bot) {
-        if (!msg.matches(regex)) return
+        if (!msg.matches(RegexEnum.HTTP_CAT.value)) return
         if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
-        LogUtils.action(userId, groupId, this.javaClass.simpleName)
         buildMsg(msg, msgId, userId, groupId, bot)
     }
 
     private fun buildMsg(msg: String, msgId: Int, userId: Long, groupId: Long, bot: Bot) {
-        val statusCode = RegexUtils.group(regex, 1, msg)
+        val statusCode = RegexUtils.group(RegexEnum.HTTP_CAT.value, 1, msg)
         if (statusCode.isNotEmpty()) {
             val picMsg = MsgUtils.builder().img("https://http.cat/${statusCode}").build()
             MsgSendUtils.replySend(msgId, userId, groupId, bot, picMsg)

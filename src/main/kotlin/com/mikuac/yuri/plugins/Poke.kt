@@ -28,7 +28,6 @@ class Poke : BotPlugin() {
                 bot.sendGroupMsg(groupId, MsgUtils.builder().poke(userId).build(), false)
             }
         }
-        LogUtils.action(userId, groupId, this.javaClass.simpleName)
         return MESSAGE_IGNORE
     }
 

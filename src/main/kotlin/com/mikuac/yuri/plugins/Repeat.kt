@@ -64,7 +64,6 @@ class Repeat : BotPlugin() {
                 val waitTime = ReadConfig.config.plugin.repeat.waitTime.times(1000L)
                 expiringMap.put(groupId, msg, waitTime, TimeUnit.MILLISECONDS)
                 countMap[groupId] = 0
-                LogUtils.action(event.userId, groupId, this.javaClass.simpleName)
             }
         } else {
             lastMsgMap[groupId] = msg

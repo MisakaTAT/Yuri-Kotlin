@@ -9,15 +9,12 @@ import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.common.config.ReadConfig
 import com.mikuac.yuri.common.utils.*
 import com.mikuac.yuri.dto.SauceNaoDto
+import com.mikuac.yuri.enums.RegexEnum
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
 class SauceNao : BotPlugin() {
-
-    private val setRegex = Regex("^[搜识找識]([索别])?[图圖本推]([子特])?(模式)?")
-
-    private val unsetRegex = Regex("^退出[搜识找識]([索别])?[图圖本推]([子特])?(模式)?")
 
     @Autowired
     private lateinit var checkUtils: CheckUtils
@@ -34,10 +31,18 @@ class SauceNao : BotPlugin() {
     }
 
     private fun check(mode: String, msg: String, userId: Long, groupId: Long, bot: Bot) {
-        if (!SearchModeUtils.check(setRegex, unsetRegex, msg, mode, userId, groupId, bot)) return
+        if (!SearchModeUtils.check(
+                RegexEnum.SAUCE_NAO_SET.value,
+                RegexEnum.SAUCE_NAO_UNSET.value,
+                msg,
+                mode,
+                userId,
+                groupId,
+                bot
+            )
+        ) return
         if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
         buildMsg(msg, userId, groupId, bot)
-        LogUtils.action(userId, groupId, this.javaClass.simpleName)
     }
 
     private fun buildMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {

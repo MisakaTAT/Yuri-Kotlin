@@ -51,7 +51,6 @@ class AntiBiliMiniApp : BotPlugin() {
     private fun check(userId: Long, groupId: Long, bot: Bot, msg: String) {
         if (!msg.matches(regex)) return
         if (checkUtils.pluginIsDisable(this.javaClass.simpleName)) return
-        LogUtils.action(userId, groupId, this.javaClass.simpleName)
         buildMsg(msg, userId, groupId, bot)
     }
 

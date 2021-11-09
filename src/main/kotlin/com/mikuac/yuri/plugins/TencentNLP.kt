@@ -26,7 +26,7 @@ class TencentNLP : BotPlugin() {
         httpProfile.endpoint = "nlp.tencentcloudapi.com"
         val clientProfile = ClientProfile()
         clientProfile.httpProfile = httpProfile
-        val client = NlpClient(cred, config.region, clientProfile)
+        val client = NlpClient(cred, "ap-guangzhou", clientProfile)
         val req = ChatBotRequest()
         req.query = query
         return client.ChatBot(req).reply
@@ -48,7 +48,6 @@ class TencentNLP : BotPlugin() {
         if (!atList.contains(selfId.toString()) || atList.size > 1) return
         val handleMsg = msg.replace("^\\[CQ.*?]".toRegex(), "").trim()
         if (handleMsg.isEmpty()) return
-        LogUtils.action(userId, groupId, this.javaClass.simpleName)
         buildMsg(msgId, handleMsg, userId, groupId, bot)
     }
 

@@ -5,6 +5,7 @@ import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.common.utils.*
+import com.mikuac.yuri.enums.RegexEnum
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import kotlin.math.pow
@@ -12,8 +13,6 @@ import kotlin.math.pow
 
 @Component
 class BvToAv : BotPlugin() {
-
-    private val regex = Regex("^(?i)bv[2转]av\\s(.*)|^(?i)av[2转]bv\\s(.*)")
 
     @Autowired
     private lateinit var checkUtils: CheckUtils
@@ -53,16 +52,15 @@ class BvToAv : BotPlugin() {
     }
 
     private fun check(msg: String, userId: Long, groupId: Long, bot: Bot) {
-        if (!msg.matches(regex)) return
+        if (!msg.matches(RegexEnum.BV_TO_AV.value)) return
         if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
-        LogUtils.action(userId, groupId, this.javaClass.simpleName)
         buildMsg(msg, userId, groupId, bot)
     }
 
     private fun buildMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
         try {
-            val bvId = RegexUtils.group(regex, 1, msg)
-            val avId = RegexUtils.group(regex, 2, msg)
+            val bvId = RegexUtils.group(RegexEnum.BV_TO_AV.value, 1, msg)
+            val avId = RegexUtils.group(RegexEnum.BV_TO_AV.value, 2, msg)
             if (bvId.isNotEmpty()) {
                 if (!bvId.matches(Regex("^(?i)BV(.*)"))) {
                     MsgSendUtils.atSend(userId, groupId, bot, "BV号格式化不正确，请检查后重试。")

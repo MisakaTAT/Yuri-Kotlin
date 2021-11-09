@@ -8,13 +8,12 @@ import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.common.utils.*
 import com.mikuac.yuri.dto.GithubRepoDto
+import com.mikuac.yuri.enums.RegexEnum
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
 class GithubRepo : BotPlugin() {
-
-    private val regex = Regex("^(?i)github\\s(-p)?+\\s?(.*)\$")
 
     @Autowired
     private lateinit var checkUtils: CheckUtils
@@ -28,17 +27,16 @@ class GithubRepo : BotPlugin() {
     }
 
     private fun check(msg: String, userId: Long, groupId: Long, bot: Bot) {
-        if (!msg.matches(regex)) return
+        if (!msg.matches(RegexEnum.GITHUB_REPO.value)) return
         if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
-        LogUtils.action(userId, groupId, this.javaClass.simpleName)
         buildMsg(msg, userId, groupId, bot)
     }
 
     private fun buildMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
         try {
-            val searchName = RegexUtils.group(regex, 2, msg)
+            val searchName = RegexUtils.group(RegexEnum.GITHUB_REPO.value, 2, msg)
             val data = getRepoInfo(searchName).items[0]
-            val buildMsg: String = if (RegexUtils.group(regex, 1, msg) == "-p") {
+            val buildMsg: String = if (RegexUtils.group(RegexEnum.GITHUB_REPO.value, 1, msg) == "-p") {
                 MsgUtils.builder().img("https://opengraph.githubassets.com/0/${data.fullName}").build()
             } else {
                 MsgUtils.builder()

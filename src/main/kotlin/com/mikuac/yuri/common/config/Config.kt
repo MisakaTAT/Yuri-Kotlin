@@ -51,7 +51,6 @@ data class Config(
         )
 
         data class TencentNLP(
-            val region: String,
             val secretId: String,
             val secretKey: String
         )

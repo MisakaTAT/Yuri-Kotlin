@@ -9,6 +9,7 @@ import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.common.config.ReadConfig
 import com.mikuac.yuri.common.utils.*
 import com.mikuac.yuri.dto.EroticPicDto
+import com.mikuac.yuri.enums.RegexEnum
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -21,9 +22,6 @@ import java.util.concurrent.TimeUnit
 
 @Component
 class EroticPic : BotPlugin() {
-
-    private val regex =
-        Regex("^[来來发發给給]([1一])?[张張个個幅点點份]([Rr]18的?)?[色瑟][图圖]|^setu(\\s[Rr]18)?|^[色瑟][图圖](\\s[Rr]18)?")
 
     private val log = KotlinLogging.logger {}
 
@@ -64,7 +62,7 @@ class EroticPic : BotPlugin() {
     }
 
     private fun check(msg: String, userId: Long, groupId: Long, bot: Bot) {
-        if (!msg.matches(regex)) return
+        if (!msg.matches(RegexEnum.EROTIC_PIC.value)) return
         if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
         // 检查是否处于冷却时间
         if (expiringMap[groupId + userId] != null && expiringMap[groupId + userId] == userId) {
@@ -72,7 +70,6 @@ class EroticPic : BotPlugin() {
             MsgSendUtils.atSend(userId, groupId, bot, "整天色图色图，信不信把你变成色图？冷却：[${expectedExpiration}秒]")
             return
         }
-        LogUtils.action(userId, groupId, this.javaClass.simpleName)
         buildMsg(msg, userId, groupId, bot)
     }
 

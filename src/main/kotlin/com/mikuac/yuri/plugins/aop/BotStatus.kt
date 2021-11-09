@@ -11,6 +11,7 @@ import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.common.utils.CheckUtils
 import com.mikuac.yuri.common.utils.LogUtils
 import com.mikuac.yuri.common.utils.MsgSendUtils
+import com.mikuac.yuri.enums.RegexEnum
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.lang.management.ManagementFactory
@@ -20,15 +21,12 @@ import java.util.concurrent.TimeUnit
 @Component
 class BotStatus : BotPlugin() {
 
-    private val regex = Regex("^(?i)status|^[状狀][态態]")
-
     @Autowired
     private lateinit var checkUtils: CheckUtils
 
     private fun check(msg: String, userId: Long, groupId: Long, bot: Bot) {
-        if (!msg.matches(regex)) return
+        if (!msg.matches(RegexEnum.BOT_STATUS.value)) return
         if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
-        LogUtils.action(userId, groupId, this.javaClass.simpleName)
         buildMsg(userId, groupId, bot)
     }
 

@@ -18,7 +18,6 @@ class TencentBotFilter : BotPlugin() {
         val userId = event.userId
         if (userId in 2854196300L..2854216399L) {
             if (checkUtils.pluginIsDisable(this.javaClass.simpleName)) return MESSAGE_IGNORE
-            LogUtils.action(userId, event.groupId, this.javaClass.simpleName)
             return MESSAGE_BLOCK
         }
         return MESSAGE_IGNORE

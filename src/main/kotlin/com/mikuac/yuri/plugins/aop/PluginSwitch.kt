@@ -9,6 +9,7 @@ import com.mikuac.yuri.common.utils.LogUtils
 import com.mikuac.yuri.common.utils.MsgSendUtils
 import com.mikuac.yuri.common.utils.RegexUtils
 import com.mikuac.yuri.entity.PluginSwitchEntity
+import com.mikuac.yuri.enums.RegexEnum
 import com.mikuac.yuri.repository.PluginSwitchRepository
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,8 +19,6 @@ import javax.annotation.PostConstruct
 
 @Component
 class PluginSwitch : BotPlugin() {
-
-    private val regex = Regex("^([启停])用插件\\s+(.*)")
 
     private val log = KotlinLogging.logger {}
 
@@ -44,17 +43,16 @@ class PluginSwitch : BotPlugin() {
     }
 
     private fun check(msg: String, userId: Long, groupId: Long, bot: Bot) {
-        if (!msg.matches(regex)) return
+        if (!msg.matches(RegexEnum.PLUGIN_SWITCH.value)) return
         if (!checkUtils.roleCheck(userId, groupId, bot)) return
-        val pluginName = RegexUtils.group(regex, 2, msg)
-        val action = RegexUtils.group(regex, 1, msg)
+        val pluginName = RegexUtils.group(RegexEnum.PLUGIN_SWITCH.value, 2, msg)
+        val action = RegexUtils.group(RegexEnum.PLUGIN_SWITCH.value, 1, msg)
         val plugin = repository.findByPluginName(pluginName)
         if (!plugin.isPresent) {
             MsgSendUtils.atSend(userId, groupId, bot, "插件${pluginName}不存在，请检查指令是否正确！")
             return
         }
         if (dbAction(plugin, action)) MsgSendUtils.atSend(userId, groupId, bot, "插件${pluginName}已${action}用")
-        LogUtils.action(userId, groupId, this.javaClass.simpleName)
     }
 
     private fun dbAction(plugin: Optional<PluginSwitchEntity>, action: String): Boolean {
@@ -73,7 +71,7 @@ class PluginSwitch : BotPlugin() {
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
         check(event.message, event.userId, 0L, bot)
-        return MESSAGE_IGNORE;
+        return MESSAGE_IGNORE
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {

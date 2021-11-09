@@ -11,15 +11,12 @@ import com.mikuac.yuri.common.config.ReadConfig
 import com.mikuac.yuri.common.utils.*
 import com.mikuac.yuri.dto.WhatAnimeBasicDto
 import com.mikuac.yuri.dto.WhatAnimeDto
+import com.mikuac.yuri.enums.RegexEnum
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
 class WhatAnime : BotPlugin() {
-
-    private val setRegex = Regex("^[搜识找識]([索别])?番([剧劇])?(模式)?")
-
-    private val unsetRegex = Regex("^退出[搜识找識]([索别])?番([剧劇])?(模式)?")
 
     @Autowired
     private lateinit var checkUtils: CheckUtils
@@ -75,10 +72,18 @@ class WhatAnime : BotPlugin() {
     }
 
     private fun check(mode: String, msg: String, userId: Long, groupId: Long, bot: Bot) {
-        if (!SearchModeUtils.check(setRegex, unsetRegex, msg, mode, userId, groupId, bot)) return
+        if (!SearchModeUtils.check(
+                RegexEnum.WHAT_ANIME_SET.value,
+                RegexEnum.WHAT_ANIME_UNSET.value,
+                msg,
+                mode,
+                userId,
+                groupId,
+                bot
+            )
+        ) return
         if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
         buildMsg(msg, userId, groupId, bot)
-        LogUtils.action(userId, groupId, this.javaClass.simpleName)
     }
 
     private fun buildMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
