@@ -1,8 +1,5 @@
 package com.mikuac.yuri.common.config
 
-import com.mikuac.yuri.plugins.TencentNLP
-import com.mikuac.yuri.plugins.aop.WhatAnime
-
 data class Config(
     val base: Base,
     val command: Command,
@@ -25,13 +22,13 @@ data class Config(
     )
 
     data class Plugin(
-        val eroticPic: EroticPic,
+        val animePic: AnimePic,
         val repeat: Repeat,
         val whatAnime: WhatAnime,
         val sauceNao: SauceNao,
         val tencentNLP: TencentNLP
     ) {
-        data class EroticPic(
+        data class AnimePic(
             val r18: Boolean,
             val cdTime: Int,
             val recallMsgPicTime: Int

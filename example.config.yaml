@@ -10,7 +10,7 @@ base: # 基础设置
 command: # 指令设置
   prefix: "." # 指令前缀
 plugin: # 插件设置
-  eroticPic: # 色图插件
+  animePic: # 色图插件
     r18: true  # 是否允许请求 r18 色图
     cdTime: 60 # 冷却时间（单位秒）
     recallMsgPicTime: 30 # 图片撤回时间（单位秒）

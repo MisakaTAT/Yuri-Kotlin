@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 
 @Component
-class EroticPic : BotPlugin() {
+class AnimePic : BotPlugin() {
 
     private val log = KotlinLogging.logger {}
 
@@ -31,7 +31,7 @@ class EroticPic : BotPlugin() {
     private val expiringMap: ExpiringMap<Long, Long> = ExpiringMap.builder()
         .variableExpiration()
         .expirationPolicy(ExpirationPolicy.CREATED)
-        .expiration(ReadConfig.config.plugin.eroticPic.cdTime.times(1000L), TimeUnit.MILLISECONDS)
+        .expiration(ReadConfig.config.plugin.animePic.cdTime.times(1000L), TimeUnit.MILLISECONDS)
         .build()
 
     private fun request(r18: Boolean): EroticPicDto.Data {
@@ -75,7 +75,7 @@ class EroticPic : BotPlugin() {
 
     private fun recallMsgPic(msgId: Int, bot: Bot) = runBlocking {
         launch {
-            delay(ReadConfig.config.plugin.eroticPic.recallMsgPicTime.times(1000L))
+            delay(ReadConfig.config.plugin.animePic.recallMsgPicTime.times(1000L))
             bot.deleteMsg(msgId)
             log.info { "Recall erotic pic msg img - MsgID: $msgId" }
         }
@@ -83,14 +83,14 @@ class EroticPic : BotPlugin() {
 
     private fun buildMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
         val r18 = msg.contains(Regex("(?i)r18"))
-        if (!ReadConfig.config.plugin.eroticPic.r18 && r18) {
+        if (!ReadConfig.config.plugin.animePic.r18 && r18) {
             MsgSendUtils.atSend(userId, groupId, bot, "NSFW禁止！")
             return
         }
         try {
             val buildTextMsg = buildTextMsg(r18)
             MsgSendUtils.send(userId, groupId, bot, buildTextMsg.first)
-            val cdTime = ReadConfig.config.plugin.eroticPic.cdTime.times(1000L)
+            val cdTime = ReadConfig.config.plugin.animePic.cdTime.times(1000L)
             expiringMap.put(groupId + userId, userId, cdTime, TimeUnit.MILLISECONDS)
             val msgId = MsgSendUtils.send(userId, groupId, bot, buildPicMsg(buildTextMsg.second))
             recallMsgPic(msgId, bot)

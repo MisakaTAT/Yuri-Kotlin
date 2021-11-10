@@ -6,7 +6,6 @@ import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.notice.PokeNoticeEvent
 import com.mikuac.yuri.common.config.ReadConfig
 import com.mikuac.yuri.common.utils.CheckUtils
-import com.mikuac.yuri.common.utils.LogUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
