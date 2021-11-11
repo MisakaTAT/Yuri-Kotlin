@@ -7,11 +7,11 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
-import com.mikuac.yuri.common.config.ReadConfig
-import com.mikuac.yuri.common.utils.*
+import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.dto.WhatAnimeBasicDto
 import com.mikuac.yuri.dto.WhatAnimeDto
 import com.mikuac.yuri.enums.RegexEnum
+import com.mikuac.yuri.utils.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 

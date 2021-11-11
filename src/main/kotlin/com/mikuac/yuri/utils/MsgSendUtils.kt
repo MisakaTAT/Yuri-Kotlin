@@ -1,4 +1,4 @@
-package com.mikuac.yuri.common.utils
+package com.mikuac.yuri.utils
 
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot

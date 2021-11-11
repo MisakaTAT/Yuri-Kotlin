@@ -1,7 +1,7 @@
-package com.mikuac.yuri.common.utils
+package com.mikuac.yuri.utils
 
 import com.mikuac.shiro.core.Bot
-import com.mikuac.yuri.common.config.ReadConfig
+import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.repository.GroupBlackListRepository
 import com.mikuac.yuri.repository.PluginSwitchRepository
 import com.mikuac.yuri.repository.UserBlackListRepository

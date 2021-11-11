@@ -4,10 +4,10 @@ import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
-import com.mikuac.yuri.common.config.ReadConfig
-import com.mikuac.yuri.common.utils.DateUtils
-import com.mikuac.yuri.common.utils.LogUtils
-import com.mikuac.yuri.common.utils.MsgSendUtils
+import com.mikuac.yuri.config.ReadConfig
+import com.mikuac.yuri.utils.DateUtils
+import com.mikuac.yuri.utils.LogUtils
+import com.mikuac.yuri.utils.MsgSendUtils
 import com.tencentcloudapi.common.Credential
 import com.tencentcloudapi.common.exception.TencentCloudSDKException
 import com.tencentcloudapi.common.profile.ClientProfile

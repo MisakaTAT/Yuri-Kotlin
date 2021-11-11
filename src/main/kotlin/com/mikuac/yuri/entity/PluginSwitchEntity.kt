@@ -3,6 +3,7 @@ package com.mikuac.yuri.entity
 import javax.persistence.*
 
 @Entity
+@Table(name = "plugin_switch")
 data class PluginSwitchEntity(
 
     @Id

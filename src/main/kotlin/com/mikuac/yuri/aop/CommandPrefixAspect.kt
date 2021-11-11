@@ -3,8 +3,8 @@ package com.mikuac.yuri.aop
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
-import com.mikuac.yuri.common.config.ReadConfig
-import com.mikuac.yuri.common.utils.SearchModeUtils
+import com.mikuac.yuri.config.ReadConfig
+import com.mikuac.yuri.utils.SearchModeUtils
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect

@@ -4,6 +4,7 @@ import javax.persistence.*
 
 
 @Entity
+@Table(name = "user_blacklist")
 data class UserBlackListEntity(
 
     @Id

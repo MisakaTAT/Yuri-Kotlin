@@ -1,4 +1,4 @@
-package com.mikuac.yuri.common.utils
+package com.mikuac.yuri.utils
 
 import cn.hutool.http.HttpRequest
 import org.springframework.http.HttpMethod

@@ -5,8 +5,8 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
-import com.mikuac.yuri.common.utils.*
 import com.mikuac.yuri.dto.BiliMiniAppDto
+import com.mikuac.yuri.utils.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 

@@ -1,4 +1,4 @@
-package com.mikuac.yuri.common.utils
+package com.mikuac.yuri.utils
 
 class RegexUtils {
     companion object {

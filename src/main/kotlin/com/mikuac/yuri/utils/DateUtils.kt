@@ -1,4 +1,4 @@
-package com.mikuac.yuri.common.utils
+package com.mikuac.yuri.utils
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

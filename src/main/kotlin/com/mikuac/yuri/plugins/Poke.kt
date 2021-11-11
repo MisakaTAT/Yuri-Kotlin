@@ -4,8 +4,8 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.notice.PokeNoticeEvent
-import com.mikuac.yuri.common.config.ReadConfig
-import com.mikuac.yuri.common.utils.CheckUtils
+import com.mikuac.yuri.config.ReadConfig
+import com.mikuac.yuri.utils.CheckUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 

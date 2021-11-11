@@ -1,8 +1,8 @@
-package com.mikuac.yuri.common.utils
+package com.mikuac.yuri.utils
 
 import com.mikuac.shiro.core.Bot
 import com.mikuac.yuri.bean.SearchModeBean
-import com.mikuac.yuri.common.config.ReadConfig
+import com.mikuac.yuri.config.ReadConfig
 import net.jodah.expiringmap.ExpirationPolicy
 import net.jodah.expiringmap.ExpiringMap
 import java.util.concurrent.TimeUnit

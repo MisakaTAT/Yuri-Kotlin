@@ -4,8 +4,8 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
-import com.mikuac.yuri.common.utils.CheckUtils
-import com.mikuac.yuri.common.utils.MsgSendUtils
+import com.mikuac.yuri.utils.CheckUtils
+import com.mikuac.yuri.utils.MsgSendUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 

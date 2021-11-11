@@ -1,4 +1,4 @@
-package com.mikuac.yuri.common.config
+package com.mikuac.yuri.config
 
 data class Config(
     val base: Base,

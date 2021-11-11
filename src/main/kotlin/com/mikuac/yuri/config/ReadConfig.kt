@@ -1,4 +1,4 @@
-package com.mikuac.yuri.common.config
+package com.mikuac.yuri.config
 
 import cn.hutool.core.io.watch.SimpleWatcher
 import cn.hutool.core.io.watch.WatchMonitor

@@ -1,6 +1,6 @@
-package com.mikuac.yuri.common.utils
+package com.mikuac.yuri.utils
 
-import com.mikuac.yuri.common.config.ReadConfig
+import com.mikuac.yuri.config.ReadConfig
 import mu.KotlinLogging
 
 object LogUtils {
