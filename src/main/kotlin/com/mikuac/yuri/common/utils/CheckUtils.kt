@@ -2,6 +2,7 @@ package com.mikuac.yuri.common.utils
 
 import com.mikuac.shiro.core.Bot
 import com.mikuac.yuri.common.config.ReadConfig
+import com.mikuac.yuri.repository.GroupBlackListRepository
 import com.mikuac.yuri.repository.PluginSwitchRepository
 import com.mikuac.yuri.repository.UserBlackListRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,11 +17,8 @@ class CheckUtils {
     @Autowired
     private lateinit var userBlackListRepository: UserBlackListRepository
 
-    fun basicCheck(className: String, userId: Long, groupId: Long, bot: Bot): Boolean {
-        if (pluginIsDisable(className, userId, groupId, bot)) return false
-        if (checkUserInBlackList(userId, groupId, bot)) return false
-        return true
-    }
+    @Autowired
+    private lateinit var groupBlackListRepository: GroupBlackListRepository
 
     // 管理员权限检查
     fun roleCheck(userId: Long, groupId: Long, bot: Bot): Boolean {
@@ -49,11 +47,14 @@ class CheckUtils {
     }
 
     // 检查用户是否在黑名单中
-    fun checkUserInBlackList(userId: Long, groupId: Long, bot: Bot): Boolean {
-        if (userBlackListRepository.findByUserId(userId).isPresent) {
-            MsgSendUtils.atSend(userId, groupId, bot, "您当前被关小黑屋啦，请联系管理员试试吧～")
-            return true
-        }
+    fun checkUserInBlackList(userId: Long): Boolean {
+        if (userBlackListRepository.findByUserId(userId).isPresent) return true
+        return false
+    }
+
+    // 检查群组是否在黑名单中
+    fun checkGroupInBlackList(groupId: Long): Boolean {
+        if (groupBlackListRepository.findByGroupId(groupId).isPresent) return true
         return false
     }
 

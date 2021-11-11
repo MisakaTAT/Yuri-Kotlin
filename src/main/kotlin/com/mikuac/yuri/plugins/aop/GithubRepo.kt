@@ -28,7 +28,7 @@ class GithubRepo : BotPlugin() {
 
     private fun check(msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (!msg.matches(RegexEnum.GITHUB_REPO.value)) return
-        if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
+        // if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
         buildMsg(msg, userId, groupId, bot)
     }
 

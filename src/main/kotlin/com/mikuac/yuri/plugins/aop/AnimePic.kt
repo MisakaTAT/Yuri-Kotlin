@@ -63,7 +63,7 @@ class AnimePic : BotPlugin() {
 
     private fun check(msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (!msg.matches(RegexEnum.EROTIC_PIC.value)) return
-        if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
+        // if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
         // 检查是否处于冷却时间
         if (expiringMap[groupId + userId] != null && expiringMap[groupId + userId] == userId) {
             val expectedExpiration = expiringMap.getExpectedExpiration(groupId + userId) / 1000

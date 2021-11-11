@@ -20,7 +20,7 @@ class HttpCat : BotPlugin() {
 
     private fun check(msg: String, msgId: Int, userId: Long, groupId: Long, bot: Bot) {
         if (!msg.matches(RegexEnum.HTTP_CAT.value)) return
-        if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
+        // if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
         buildMsg(msg, msgId, userId, groupId, bot)
     }
 

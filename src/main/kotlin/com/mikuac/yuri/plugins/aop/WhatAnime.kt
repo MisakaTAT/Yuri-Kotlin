@@ -82,7 +82,8 @@ class WhatAnime : BotPlugin() {
                 bot
             )
         ) return
-        if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
+
+        // if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
         buildMsg(msg, userId, groupId, bot)
     }
 

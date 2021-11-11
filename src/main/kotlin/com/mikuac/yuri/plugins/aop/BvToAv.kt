@@ -53,7 +53,7 @@ class BvToAv : BotPlugin() {
 
     private fun check(msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (!msg.matches(RegexEnum.BV_TO_AV.value)) return
-        if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
+        // if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
         buildMsg(msg, userId, groupId, bot)
     }
 

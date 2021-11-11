@@ -25,7 +25,7 @@ class BotStatus : BotPlugin() {
 
     private fun check(msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (!msg.matches(RegexEnum.BOT_STATUS.value)) return
-        if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
+        // if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
         buildMsg(userId, groupId, bot)
     }
 
