@@ -8,36 +8,34 @@ import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.utils.DateUtils
 import com.mikuac.yuri.utils.LogUtils
 import com.mikuac.yuri.utils.MsgSendUtils
-import com.tencentcloudapi.common.Credential
-import com.tencentcloudapi.common.exception.TencentCloudSDKException
-import com.tencentcloudapi.common.profile.ClientProfile
-import com.tencentcloudapi.common.profile.HttpProfile
-import com.tencentcloudapi.nlp.v20190408.NlpClient
-import com.tencentcloudapi.nlp.v20190408.models.ChatBotRequest
+import com.mikuac.yuri.utils.TencentUtils
+import mu.KotlinLogging
 import org.springframework.stereotype.Component
 
 @Component
-class TencentNLP : BotPlugin() {
+class TencentCloudChat : BotPlugin() {
 
-    private fun request(query: String): String {
-        val config = ReadConfig.config.plugin.tencentNLP
-        val cred = Credential(config.secretId, config.secretKey)
-        val httpProfile = HttpProfile()
-        httpProfile.endpoint = "nlp.tencentcloudapi.com"
-        val clientProfile = ClientProfile()
-        clientProfile.httpProfile = httpProfile
-        val client = NlpClient(cred, "ap-guangzhou", clientProfile)
-        val req = ChatBotRequest()
-        req.query = query
-        return client.ChatBot(req).reply
-    }
+    private val log = KotlinLogging.logger {}
 
     private fun buildMsg(msgId: Int, query: String, userId: Long, groupId: Long, bot: Bot) {
         try {
-            val reply = request(query)
+            val tbpConfig = ReadConfig.config.plugin.tencentTBP
+            val nlpConfig = ReadConfig.config.plugin.tencentNLP
+            if (!tbpConfig.enable && !nlpConfig.enable) return
+            if (tbpConfig.enable && nlpConfig.enable) {
+                log.error { "TencentNLP and TencentTBP not allowed all enable" }
+                throw Exception("当前配置文件有误")
+            }
+            var reply = "请求失败了呢，你这话题人家没法回答QAQ"
+            if (tbpConfig.enable) {
+                reply = TencentUtils.tbp(query)
+            }
+            if (nlpConfig.enable) {
+                reply = TencentUtils.nlp(query)
+            }
             MsgSendUtils.replySend(msgId, userId, groupId, bot, reply)
-        } catch (e: TencentCloudSDKException) {
-            MsgSendUtils.atSend(userId, groupId, bot, "TencentNLP请求异常 ${e.message}")
+        } catch (e: Exception) {
+            MsgSendUtils.atSend(userId, groupId, bot, "智能对话异常 ${e.message}")
             LogUtils.debug("${DateUtils.getTime()} ${this.javaClass.simpleName} Exception")
             LogUtils.debug(e.stackTraceToString())
         }

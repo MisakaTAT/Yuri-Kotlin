@@ -28,4 +28,4 @@ shiro:
     - com.mikuac.yuri.plugins.aop.GithubRepo
     - com.mikuac.yuri.plugins.aop.WhatAnime
     - com.mikuac.yuri.plugins.aop.SauceNao
-    - com.mikuac.yuri.plugins.TencentNLP
+    - com.mikuac.yuri.plugins.TencentCloudChat
