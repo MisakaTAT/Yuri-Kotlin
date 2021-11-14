@@ -1,11 +1,12 @@
 package com.mikuac.yuri.plugins
 
 import com.google.gson.Gson
+import com.google.gson.JsonParser
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
-import com.mikuac.yuri.dto.BiliMiniAppDto
+import com.mikuac.yuri.dto.BiliVideoApiDto
 import com.mikuac.yuri.utils.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -13,20 +14,19 @@ import org.springframework.stereotype.Component
 @Component
 class AntiBiliMiniApp : BotPlugin() {
 
-    private val regex = Regex("^(.*?)1109937557(.*)")
-
     @Autowired
     private lateinit var checkUtils: CheckUtils
 
-    private fun request(bid: String): BiliMiniAppDto.Data {
+    private fun request(bid: String): BiliVideoApiDto.Data {
         val result = RequestUtils.get("https://api.bilibili.com/x/web-interface/view?bvid=${bid}")
-        return Gson().fromJson(result, BiliMiniAppDto::class.java).data
+        return Gson().fromJson(result, BiliVideoApiDto::class.java).data
     }
 
     private fun buildMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
         try {
-            var url = RegexUtils.group(Regex("(?<=\"qqdocurl\":\")(.*)(?=\\?share_medium)"), 1, msg)
-            url = url.replace("\\\\".toRegex(), "")
+            val jsonString = StringUtils.unescape(msg).replace("[CQ:json,data=", "").replace("]", "")
+            val jsonObject = JsonParser.parseString(jsonString)
+            val url = jsonObject.asJsonObject["meta"].asJsonObject["detail_1"].asJsonObject["qqdocurl"].asString
             val realUrl = RequestUtils.findLink(url)
             val bid = RegexUtils.group(Regex("(?<=video/)(.*)(?=\\?p=)"), 1, realUrl)
             val data = request(bid)
@@ -49,7 +49,7 @@ class AntiBiliMiniApp : BotPlugin() {
     }
 
     private fun check(userId: Long, groupId: Long, bot: Bot, msg: String) {
-        if (!msg.matches(regex)) return
+        if (!msg.contains("com.tencent.miniapp_01") && !msg.contains("哔哩哔哩")) return
         if (checkUtils.pluginIsDisable(this.javaClass.simpleName)) return
         buildMsg(msg, userId, groupId, bot)
     }

@@ -2,7 +2,7 @@ package com.mikuac.yuri.dto
 
 import com.alibaba.fastjson.annotation.JSONField
 
-data class BiliMiniAppDto(
+data class BiliVideoApiDto(
     val code: Int,
     val data: Data,
     val message: String,
