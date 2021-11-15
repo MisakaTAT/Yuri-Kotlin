@@ -1,6 +1,5 @@
 package com.mikuac.yuri.plugins
 
-import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
@@ -41,16 +40,17 @@ class TencentCloudChat : BotPlugin() {
         }
     }
 
-    private fun check(msgId: Int, msg: String, selfId: Long, userId: Long, groupId: Long, bot: Bot) {
-        val atList = ShiroUtils.getAtList(msg)
-        if (!atList.contains(selfId.toString()) || atList.size > 1) return
-        val handleMsg = msg.replace("^\\[CQ.*?]".toRegex(), "").trim()
-        if (handleMsg.isEmpty()) return
-        buildMsg(msgId, handleMsg, userId, groupId, bot)
+    private fun check(bot: Bot, event: GroupMessageEvent) {
+        event.arrayMsg.filter {
+            it.type == "at" && it.data["qq"] == event.selfId.toString()
+        }[0].data["qq"] ?: return
+        val msg = event.arrayMsg.filter { it.type == "text" }[0].data["text"]?.trim() ?: return
+        if (msg.isEmpty()) return
+        buildMsg(event.messageId, msg, event.userId, event.groupId, bot)
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        check(event.messageId, event.message, event.selfId, event.userId, event.groupId, bot)
+        check(bot, event)
         return MESSAGE_IGNORE
     }
 

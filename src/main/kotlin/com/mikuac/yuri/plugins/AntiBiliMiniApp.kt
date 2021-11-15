@@ -22,10 +22,9 @@ class AntiBiliMiniApp : BotPlugin() {
         return Gson().fromJson(result, BiliVideoApiDto::class.java).data
     }
 
-    private fun buildMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
+    private fun buildMsg(json: String, userId: Long, groupId: Long, bot: Bot) {
         try {
-            val jsonString = StringUtils.unescape(msg).replace("[CQ:json,data=", "").replace("]", "")
-            val jsonObject = JsonParser.parseString(jsonString)
+            val jsonObject = JsonParser.parseString(json)
             val url = jsonObject.asJsonObject["meta"].asJsonObject["detail_1"].asJsonObject["qqdocurl"].asString
             val realUrl = RequestUtils.findLink(url)
             val bid = RegexUtils.group(Regex("(?<=video/)(.*)(?=\\?p=)"), 1, realUrl)
@@ -48,14 +47,18 @@ class AntiBiliMiniApp : BotPlugin() {
         }
     }
 
-    private fun check(userId: Long, groupId: Long, bot: Bot, msg: String) {
+    private fun check(bot: Bot, event: GroupMessageEvent) {
+        val msg = event.message
         if (!msg.contains("com.tencent.miniapp_01") && !msg.contains("哔哩哔哩")) return
         if (checkUtils.pluginIsDisable(this.javaClass.simpleName)) return
-        buildMsg(msg, userId, groupId, bot)
+        val json = event.arrayMsg.filter {
+            it.type == "json"
+        }[0].data["data"] ?: return
+        buildMsg(json, event.userId, event.groupId, bot)
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        check(event.userId, event.groupId, bot, event.message)
+        check(bot, event)
         return MESSAGE_IGNORE
     }
 
