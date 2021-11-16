@@ -1,6 +1,7 @@
 package com.mikuac.yuri.enums
 
 enum class RegexEnum(val value: Regex) {
+    HELP("(?i)help|帮助".toRegex()),
     HTTP_CAT("(?i)httpcat\\s([0-9]+)".toRegex()),
     BOT_STATUS("^(?i)status|^[状狀][态態]".toRegex()),
     PLUGIN_SWITCH("^([启停])用插件\\s+(.*)".toRegex()),
