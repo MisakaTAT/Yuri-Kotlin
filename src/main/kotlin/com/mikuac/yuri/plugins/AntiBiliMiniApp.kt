@@ -49,7 +49,7 @@ class AntiBiliMiniApp : BotPlugin() {
 
     private fun check(bot: Bot, event: GroupMessageEvent) {
         val msg = event.message
-        if (!msg.contains("com.tencent.miniapp_01") && !msg.contains("哔哩哔哩")) return
+        if (!msg.contains("com.tencent.miniapp_01") || !msg.contains("哔哩哔哩")) return
         if (checkUtils.pluginIsDisable(this.javaClass.simpleName)) return
         val json = event.arrayMsg.filter {
             it.type == "json"
