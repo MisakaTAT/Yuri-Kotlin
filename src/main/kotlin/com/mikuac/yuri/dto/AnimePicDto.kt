@@ -1,6 +1,6 @@
 package com.mikuac.yuri.dto
 
-data class EroticPicDto(
+data class AnimePicDto(
     val data: List<Data>,
     val error: String
 ) {

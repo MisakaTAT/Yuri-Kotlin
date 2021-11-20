@@ -7,7 +7,7 @@ import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.config.ReadConfig
-import com.mikuac.yuri.dto.EroticPicDto
+import com.mikuac.yuri.dto.AnimePicDto
 import com.mikuac.yuri.enums.RegexEnum
 import com.mikuac.yuri.utils.*
 import kotlinx.coroutines.delay
@@ -34,11 +34,11 @@ class AnimePic : BotPlugin() {
         .expiration(ReadConfig.config.plugin.animePic.cdTime.times(1000L), TimeUnit.MILLISECONDS)
         .build()
 
-    private fun request(r18: Boolean): EroticPicDto.Data {
+    private fun request(r18: Boolean): AnimePicDto.Data {
         var api = "https://api.lolicon.app/setu/v2"
         if (r18) api = "$api?r18=1"
         val result = RequestUtils.get(api)
-        val json = Gson().fromJson(result, EroticPicDto::class.java)
+        val json = Gson().fromJson(result, AnimePicDto::class.java)
         return json.data[0]
     }
 
