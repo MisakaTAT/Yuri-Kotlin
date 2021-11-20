@@ -27,7 +27,8 @@ class AntiBiliMiniApp : BotPlugin() {
             val jsonObject = JsonParser.parseString(json)
             val url = jsonObject.asJsonObject["meta"].asJsonObject["detail_1"].asJsonObject["qqdocurl"].asString
             val realUrl = RequestUtils.findLink(url)
-            val bid = RegexUtils.group(Regex("(?<=video/)(.*)(?=\\?p=)"), 1, realUrl)
+            println(realUrl)
+            val bid = RegexUtils.group(Regex("(?<=video/)(.*)(?=\\?)"), 1, realUrl)
             val data = request(bid)
             val sendMsg = MsgUtils.builder()
                 .img(data.pic)
