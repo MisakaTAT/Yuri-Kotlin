@@ -5,17 +5,16 @@ import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.enums.RegexEnum
-import com.mikuac.yuri.utils.*
-import org.springframework.beans.factory.annotation.Autowired
+import com.mikuac.yuri.utils.DateUtils
+import com.mikuac.yuri.utils.LogUtils
+import com.mikuac.yuri.utils.MsgSendUtils
+import com.mikuac.yuri.utils.RegexUtils
 import org.springframework.stereotype.Component
 import kotlin.math.pow
 
 
 @Component
 class BvToAv : BotPlugin() {
-
-    @Autowired
-    private lateinit var checkUtils: CheckUtils
 
     // 算法来源 https://www.zhihu.com/question/381784377/answer/1099438784
     private val table = "fZodR9XQDSUm21yCkr6zBqiveYah8bt4xsWpHnJE7jL5VG3guMTKNPAwcF"
@@ -51,9 +50,8 @@ class BvToAv : BotPlugin() {
         return stringBuilder.toString()
     }
 
-    private fun check(msg: String, userId: Long, groupId: Long, bot: Bot) {
+    private fun handler(msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (!msg.matches(RegexEnum.BV_TO_AV.value)) return
-        // if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
         buildMsg(msg, userId, groupId, bot)
     }
 
@@ -85,12 +83,12 @@ class BvToAv : BotPlugin() {
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        check(event.message, event.userId, event.groupId, bot)
+        handler(event.message, event.userId, event.groupId, bot)
         return MESSAGE_IGNORE
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        check(event.message, event.userId, 0L, bot)
+        handler(event.message, event.userId, 0L, bot)
         return MESSAGE_IGNORE
     }
 

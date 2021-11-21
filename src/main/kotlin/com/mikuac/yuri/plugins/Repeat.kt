@@ -5,18 +5,13 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.config.ReadConfig
-import com.mikuac.yuri.utils.CheckUtils
 import net.jodah.expiringmap.ExpirationPolicy
 import net.jodah.expiringmap.ExpiringMap
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 
 @Component
 class Repeat : BotPlugin() {
-
-    @Autowired
-    private lateinit var checkUtils: CheckUtils
 
     /**
      * 创建缓存 过期时间内不复读重复内容
@@ -38,8 +33,6 @@ class Repeat : BotPlugin() {
     private val countMap: HashMap<Long, Int> = HashMap()
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        // 检查插件是否禁用
-        if (checkUtils.pluginIsDisable(this.javaClass.simpleName)) return MESSAGE_IGNORE
         val msg = event.message
         val groupId = event.groupId
 

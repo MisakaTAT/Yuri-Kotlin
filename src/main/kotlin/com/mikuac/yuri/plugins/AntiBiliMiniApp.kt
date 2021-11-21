@@ -8,14 +8,10 @@ import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.dto.BiliVideoApiDto
 import com.mikuac.yuri.utils.*
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
 class AntiBiliMiniApp : BotPlugin() {
-
-    @Autowired
-    private lateinit var checkUtils: CheckUtils
 
     private fun request(bid: String): BiliVideoApiDto.Data {
         val result = RequestUtils.get("https://api.bilibili.com/x/web-interface/view?bvid=${bid}")
@@ -48,10 +44,9 @@ class AntiBiliMiniApp : BotPlugin() {
         }
     }
 
-    private fun check(bot: Bot, event: GroupMessageEvent) {
+    private fun handler(bot: Bot, event: GroupMessageEvent) {
         val msg = event.message
         if (!msg.contains("com.tencent.miniapp_01") || !msg.contains("哔哩哔哩")) return
-        if (checkUtils.pluginIsDisable(this.javaClass.simpleName)) return
         val json = event.arrayMsg.filter {
             it.type == "json"
         }[0].data["data"] ?: return
@@ -59,7 +54,7 @@ class AntiBiliMiniApp : BotPlugin() {
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        check(bot, event)
+        handler(bot, event)
         return MESSAGE_IGNORE
     }
 

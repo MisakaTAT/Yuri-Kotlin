@@ -9,14 +9,16 @@ import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.dto.AnimePicDto
 import com.mikuac.yuri.enums.RegexEnum
-import com.mikuac.yuri.utils.*
+import com.mikuac.yuri.utils.DateUtils
+import com.mikuac.yuri.utils.LogUtils
+import com.mikuac.yuri.utils.MsgSendUtils
+import com.mikuac.yuri.utils.RequestUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.jodah.expiringmap.ExpirationPolicy
 import net.jodah.expiringmap.ExpiringMap
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 
@@ -24,9 +26,6 @@ import java.util.concurrent.TimeUnit
 class AnimePic : BotPlugin() {
 
     private val log = KotlinLogging.logger {}
-
-    @Autowired
-    private lateinit var checkUtils: CheckUtils
 
     private val expiringMap: ExpiringMap<Long, Long> = ExpiringMap.builder()
         .variableExpiration()
@@ -61,9 +60,8 @@ class AnimePic : BotPlugin() {
         return MsgUtils.builder().img(url).build()
     }
 
-    private fun check(msg: String, userId: Long, groupId: Long, bot: Bot) {
+    private fun handler(msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (!msg.matches(RegexEnum.EROTIC_PIC.value)) return
-        // if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
         // 检查是否处于冷却时间
         if (expiringMap[groupId + userId] != null && expiringMap[groupId + userId] == userId) {
             val expectedExpiration = expiringMap.getExpectedExpiration(groupId + userId) / 1000
@@ -102,12 +100,12 @@ class AnimePic : BotPlugin() {
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        check(event.message, event.userId, event.groupId, bot)
+        handler(event.message, event.userId, event.groupId, bot)
         return MESSAGE_IGNORE
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        check(event.message, event.userId, 0L, bot)
+        handler(event.message, event.userId, 0L, bot)
         return MESSAGE_IGNORE
     }
 

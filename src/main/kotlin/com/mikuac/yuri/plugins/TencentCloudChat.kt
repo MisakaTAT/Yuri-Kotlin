@@ -40,7 +40,7 @@ class TencentCloudChat : BotPlugin() {
         }
     }
 
-    private fun check(bot: Bot, event: GroupMessageEvent) {
+    private fun handler(bot: Bot, event: GroupMessageEvent) {
         event.arrayMsg.filter {
             it.type == "at" && it.data["qq"] == event.selfId.toString()
         }[0].data["qq"] ?: return
@@ -50,7 +50,7 @@ class TencentCloudChat : BotPlugin() {
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        check(bot, event)
+        handler(bot, event)
         return MESSAGE_IGNORE
     }
 

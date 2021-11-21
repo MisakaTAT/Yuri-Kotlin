@@ -3,16 +3,12 @@ package com.mikuac.yuri.utils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.repository.GroupBlackListRepository
-import com.mikuac.yuri.repository.PluginSwitchRepository
 import com.mikuac.yuri.repository.UserBlackListRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
 class CheckUtils {
-
-    @Autowired
-    private lateinit var pluginSwitchRepository: PluginSwitchRepository
 
     @Autowired
     private lateinit var userBlackListRepository: UserBlackListRepository
@@ -24,25 +20,6 @@ class CheckUtils {
     fun roleCheck(userId: Long, groupId: Long, bot: Bot): Boolean {
         if (ReadConfig.config.base.adminList.contains(userId)) return true
         MsgSendUtils.atSend(userId, groupId, bot, "您没有权限执行此操作")
-        return false
-    }
-
-    // 检查插件是否停用
-    fun pluginIsDisable(pluginName: String, userId: Long, groupId: Long, bot: Bot): Boolean {
-        val result = pluginSwitchRepository.findByPluginName(pluginName)
-        if (!result.isPresent) return false
-        if (result.get().disable) {
-            MsgSendUtils.atSend(userId, groupId, bot, "此模块已停用")
-            return true
-        }
-        return false
-    }
-
-    // 检查插件是否停用
-    fun pluginIsDisable(pluginName: String): Boolean {
-        val result = pluginSwitchRepository.findByPluginName(pluginName)
-        if (!result.isPresent) return false
-        if (result.get().disable) return true
         return false
     }
 

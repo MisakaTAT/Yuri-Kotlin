@@ -26,9 +26,8 @@ class GithubRepo : BotPlugin() {
         return json
     }
 
-    private fun check(msg: String, userId: Long, groupId: Long, bot: Bot) {
+    private fun handler(msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (!msg.matches(RegexEnum.GITHUB_REPO.value)) return
-        // if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
         buildMsg(msg, userId, groupId, bot)
     }
 
@@ -58,12 +57,12 @@ class GithubRepo : BotPlugin() {
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        check(event.message, event.userId, 0L, bot)
+        handler(event.message, event.userId, 0L, bot)
         return MESSAGE_IGNORE
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        check(event.message, event.userId, event.groupId, bot)
+        handler(event.message, event.userId, event.groupId, bot)
         return MESSAGE_IGNORE
     }
 

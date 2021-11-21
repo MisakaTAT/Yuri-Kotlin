@@ -12,14 +12,10 @@ import com.mikuac.yuri.dto.WhatAnimeBasicDto
 import com.mikuac.yuri.dto.WhatAnimeDto
 import com.mikuac.yuri.enums.RegexEnum
 import com.mikuac.yuri.utils.*
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
 class WhatAnime : BotPlugin() {
-
-    @Autowired
-    private lateinit var checkUtils: CheckUtils
 
     private val graphqlQuery = """
            query (${'$'}id: Int) {
@@ -71,7 +67,7 @@ class WhatAnime : BotPlugin() {
         return Gson().fromJson(result, WhatAnimeDto::class.java)
     }
 
-    private fun check(mode: String, msg: String, userId: Long, groupId: Long, bot: Bot) {
+    private fun handler(mode: String, msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (!SearchModeUtils.check(
                 RegexEnum.WHAT_ANIME_SET.value,
                 RegexEnum.WHAT_ANIME_UNSET.value,
@@ -82,8 +78,6 @@ class WhatAnime : BotPlugin() {
                 bot
             )
         ) return
-
-        // if (!checkUtils.basicCheck(this.javaClass.simpleName, userId, groupId, bot)) return
         buildMsg(msg, userId, groupId, bot)
     }
 
@@ -126,12 +120,12 @@ class WhatAnime : BotPlugin() {
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        check(this.javaClass.simpleName, event.message, event.userId, 0L, bot)
+        handler(this.javaClass.simpleName, event.message, event.userId, 0L, bot)
         return MESSAGE_IGNORE
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        check(this.javaClass.simpleName, event.message, event.userId, event.groupId, bot)
+        handler(this.javaClass.simpleName, event.message, event.userId, event.groupId, bot)
         return MESSAGE_IGNORE
     }
 
