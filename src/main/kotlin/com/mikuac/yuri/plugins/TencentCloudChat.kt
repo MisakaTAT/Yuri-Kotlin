@@ -1,13 +1,16 @@
 package com.mikuac.yuri.plugins
 
+import com.mikuac.shiro.annotation.GroupMessageHandler
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
+import com.mikuac.shiro.enums.AtEnum
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.utils.DateUtils
 import com.mikuac.yuri.utils.LogUtils
 import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.TencentUtils
+import com.sun.istack.NotNull
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
 
@@ -40,18 +43,11 @@ class TencentCloudChat : BotPlugin() {
         }
     }
 
-    private fun handler(bot: Bot, event: GroupMessageEvent) {
-        event.arrayMsg.filter {
-            it.type == "at" && it.data["qq"] == event.selfId.toString()
-        }[0].data["qq"] ?: return
+    @GroupMessageHandler(at = AtEnum.NEED)
+    fun handler(@NotNull bot: Bot, @NotNull event: GroupMessageEvent) {
         val msg = event.arrayMsg.filter { it.type == "text" }[0].data["text"]?.trim() ?: return
         if (msg.isEmpty()) return
         buildMsg(event.messageId, msg, event.userId, event.groupId, bot)
-    }
-
-    override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        handler(bot, event)
-        return MESSAGE_IGNORE
     }
 
 }
