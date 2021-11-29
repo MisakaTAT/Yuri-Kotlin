@@ -2,6 +2,7 @@ package com.mikuac.yuri.plugins
 
 import com.google.gson.Gson
 import com.google.gson.JsonParser
+import com.mikuac.shiro.annotation.GroupMessageHandler
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
@@ -43,18 +44,14 @@ class AntiBiliMiniApp : BotPlugin() {
         }
     }
 
-    private fun handler(bot: Bot, event: GroupMessageEvent) {
+    @GroupMessageHandler
+    fun handler(bot: Bot, event: GroupMessageEvent) {
         val msg = event.message
         if (!msg.contains("com.tencent.miniapp_01") || !msg.contains("哔哩哔哩")) return
         val json = event.arrayMsg.filter {
             it.type == "json"
         }[0].data["data"] ?: return
         buildMsg(json, event.userId, event.groupId, bot)
-    }
-
-    override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        handler(bot, event)
-        return MESSAGE_IGNORE
     }
 
 }
