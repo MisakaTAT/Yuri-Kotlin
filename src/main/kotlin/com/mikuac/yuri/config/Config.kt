@@ -26,8 +26,7 @@ data class Config(
         val repeat: Repeat,
         val whatAnime: WhatAnime,
         val sauceNao: SauceNao,
-        val tencentNLP: TencentNLP,
-        val tencentTBP: TencentTBP
+        val epic: Epic,
     ) {
         data class AnimePic(
             val r18: Boolean,
@@ -48,19 +47,8 @@ data class Config(
             val key: String
         )
 
-        data class TencentNLP(
-            val enable: Boolean,
-            val secretId: String,
-            val secretKey: String
-        )
-
-        data class TencentTBP(
-            val enable: Boolean,
-            val secretId: String,
-            val secretKey: String,
-            val botId: String,
-            val botEnv: String,
-            val terminalId: String
+        data class Epic(
+            val cacheTime: Int
         )
     }
 }

@@ -25,6 +25,14 @@ class RequestUtils {
             return HttpRequest.post(url).body(json).execute().body()
         }
 
+        fun post(url: String, json: String, headers: Map<String, String>): String? {
+            val req = HttpRequest.post(url).body(json)
+            headers.forEach {
+                req.header(it.key, it.value)
+            }
+            return req.execute().body()
+        }
+
         fun findLink(url: String): String {
             val conn = URL(url).openConnection() as HttpURLConnection
             conn.requestMethod = HttpMethod.GET.name

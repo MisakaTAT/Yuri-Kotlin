@@ -76,7 +76,7 @@ class BvToAv : BotPlugin() {
                 MsgSendUtils.atSend(userId, groupId, bot, bid)
             }
         } catch (e: Exception) {
-            MsgSendUtils.atSend(userId, groupId, bot, "转换异常 ${e.message}")
+            MsgSendUtils.atSend(userId, groupId, bot, "转换异常：${e.message}")
             LogUtils.debug("${DateUtils.getTime()} ${this.javaClass.simpleName} Exception")
             LogUtils.debug(e.stackTraceToString())
         }

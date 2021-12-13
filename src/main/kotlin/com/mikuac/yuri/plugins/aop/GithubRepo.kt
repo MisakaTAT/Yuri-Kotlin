@@ -9,14 +9,10 @@ import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.dto.GithubRepoDto
 import com.mikuac.yuri.enums.RegexEnum
 import com.mikuac.yuri.utils.*
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
 class GithubRepo : BotPlugin() {
-
-    @Autowired
-    private lateinit var checkUtils: CheckUtils
 
     private fun getRepoInfo(repoName: String): GithubRepoDto {
         val api = "https://api.github.com/search/repositories?q=${repoName}"
@@ -50,7 +46,7 @@ class GithubRepo : BotPlugin() {
             }
             MsgSendUtils.send(userId, groupId, bot, buildMsg)
         } catch (e: Exception) {
-            MsgSendUtils.atSend(userId, groupId, bot, "GitHub仓库查询失败 ${e.message}")
+            MsgSendUtils.atSend(userId, groupId, bot, "GitHub仓库查询失败：${e.message}")
             LogUtils.debug("${DateUtils.getTime()} ${this.javaClass.simpleName} Exception")
             LogUtils.debug(e.stackTraceToString())
         }

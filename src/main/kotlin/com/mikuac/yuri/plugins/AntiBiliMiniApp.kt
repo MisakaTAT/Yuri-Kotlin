@@ -38,7 +38,7 @@ class AntiBiliMiniApp : BotPlugin() {
                 .build()
             bot.sendGroupMsg(groupId, sendMsg, false)
         } catch (e: Exception) {
-            MsgSendUtils.atSend(userId, groupId, bot, "哔哩哔哩小程序解析失败 ${e.message}")
+            MsgSendUtils.atSend(userId, groupId, bot, "哔哩哔哩小程序解析失败：${e.message}")
             LogUtils.debug("${DateUtils.getTime()} ${this.javaClass.simpleName} Exception")
             LogUtils.debug(e.stackTraceToString())
         }

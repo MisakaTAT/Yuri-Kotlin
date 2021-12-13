@@ -93,7 +93,7 @@ class AnimePic : BotPlugin() {
             val msgId = MsgSendUtils.send(userId, groupId, bot, buildPicMsg(buildTextMsg.second))
             recallMsgPic(msgId, bot)
         } catch (e: Exception) {
-            MsgSendUtils.atSend(userId, groupId, bot, "色图请求失败 ${e.message}")
+            MsgSendUtils.atSend(userId, groupId, bot, "色图请求失败：${e.message}")
             LogUtils.debug("${DateUtils.getTime()} ${this.javaClass.simpleName} Exception")
             LogUtils.debug(e.stackTraceToString())
         }

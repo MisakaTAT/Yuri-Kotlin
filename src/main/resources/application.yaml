@@ -13,9 +13,9 @@ spring:
 
 shiro:
   plugin-list:
-    - com.mikuac.yuri.plugins.BlackListCheck
     - com.mikuac.yuri.plugins.aop.EventLog
     - com.mikuac.yuri.plugins.filter.TencentBotFilter
+    - com.mikuac.yuri.plugins.BlackListCheck
     - com.mikuac.yuri.plugins.aop.AnimePic
     - com.mikuac.yuri.plugins.aop.Help
     - com.mikuac.yuri.plugins.Poke
@@ -23,8 +23,8 @@ shiro:
     - com.mikuac.yuri.plugins.GroupJoinAndQuit
     - com.mikuac.yuri.plugins.aop.HttpCat
     - com.mikuac.yuri.plugins.aop.BvToAv
-    - com.mikuac.yuri.plugins.AntiBiliMiniApp
     - com.mikuac.yuri.plugins.aop.BotStatus
     - com.mikuac.yuri.plugins.aop.GithubRepo
     - com.mikuac.yuri.plugins.aop.WhatAnime
     - com.mikuac.yuri.plugins.aop.SauceNao
+    - com.mikuac.yuri.plugins.aop.EpicFreeGame

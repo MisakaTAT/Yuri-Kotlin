@@ -78,7 +78,7 @@ class SauceNao : BotPlugin() {
             }
             MsgSendUtils.send(userId, groupId, bot, sendMsg.build())
         } catch (e: Exception) {
-            MsgSendUtils.atSend(userId, groupId, bot, "SauceNao检索失败 ${e.message}")
+            MsgSendUtils.atSend(userId, groupId, bot, "SauceNao检索失败：${e.message}")
             LogUtils.debug("${DateUtils.getTime()} ${this.javaClass.simpleName} Exception")
             LogUtils.debug(e.stackTraceToString())
         }
