@@ -128,7 +128,7 @@ class EpicFreeGame : BotPlugin() {
 
                 if (gamePromotions.size() != 0) {
                     if (imageUrl.isNotEmpty()) msg.img(imageUrl)
-                    msg.text("${gameName}（${gamePrice}）")
+                    msg.text("\n${gameName}（${gamePrice}）")
                     msg.text("\n\n${gameDesc}")
                     msg.text("\n\n该游戏由 $developerName 制作，并由 $publisherName 发行。")
                     msg.text("\n\n限免时间为 $startDate 到 $endDate")
