@@ -22,9 +22,10 @@ class CommandPrefixAspect {
             if (arg is GroupMessageEvent) {
                 val msg = arg.message
                 // 如果消息未携带prefix，且未匹配到纯图片信息则拦截
-                if (!msg.startsWith(prefix) && !msg.matches(Regex("^\\[CQ:image(.*?)]"))) return BotPlugin.MESSAGE_IGNORE
+                val imgList = arg.arrayMsg.filter { "image" == it.type }
+                if (!msg.startsWith(prefix) && imgList.isEmpty()) return BotPlugin.MESSAGE_IGNORE
                 // 匹配到纯图片信息判断用户是否处于搜图模式，否则拦截
-                if (msg.matches(Regex("^\\[CQ:image(.*?)]"))) {
+                if (imgList.size == 1) {
                     SearchModeUtils.expiringMap[arg.userId + arg.groupId] ?: return BotPlugin.MESSAGE_IGNORE
                 }
                 // 去除消息prefix并放行
@@ -37,9 +38,10 @@ class CommandPrefixAspect {
             if (arg is PrivateMessageEvent) {
                 val msg = arg.message
                 // 如果消息未携带prefix，且未匹配到纯图片信息则拦截
-                if (!msg.startsWith(prefix) && !msg.matches(Regex("^\\[CQ:image(.*?)]"))) return BotPlugin.MESSAGE_IGNORE
+                val imgList = arg.arrayMsg.filter { "image" == it.type }
+                if (!msg.startsWith(prefix) && imgList.isEmpty()) return BotPlugin.MESSAGE_IGNORE
                 // 匹配到纯图片信息判断用户是否处于搜图模式，否则拦截
-                if (msg.matches(Regex("^\\[CQ:image(.*?)]"))) {
+                if (imgList.size == 1) {
                     SearchModeUtils.expiringMap[arg.userId] ?: return BotPlugin.MESSAGE_IGNORE
                 }
                 // 去除消息prefix并放行
