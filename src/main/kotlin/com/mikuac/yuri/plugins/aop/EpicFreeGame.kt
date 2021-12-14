@@ -2,11 +2,11 @@ package com.mikuac.yuri.plugins.aop
 
 import cn.hutool.core.date.DateField
 import cn.hutool.core.date.DateUtil
-import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.mikuac.shiro.common.utils.MsgUtils
+import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
@@ -78,7 +78,7 @@ class EpicFreeGame : BotPlugin() {
 
     private fun buildMsg(userId: Long, groupId: Long, selfId: Long, bot: Bot) {
         try {
-            val msgList = JSONArray()
+            val msgList = ArrayList<String>()
             val games = doRequest() ?: return
             var i = 1
             for (game in games.reversed()) {
@@ -124,18 +124,12 @@ class EpicFreeGame : BotPlugin() {
                     msg.text("\n${gamePage}")
                 }
 
-                val msgObj = JSONObject()
-                val msgDataObj = JSONObject()
-                msgObj["type"] = "node"
-                msgDataObj["name"] = ReadConfig.config.base.botName
-                msgDataObj["uin"] = selfId
-                msgDataObj["content"] = msg.build()
-                msgObj["data"] = msgDataObj
-                msgList.add(msgObj)
-
+                msgList.add(msg.build())
                 i++
             }
-            bot.sendGroupForwardMsg(groupId, msgList)
+            val msg = ShiroUtils.generateForwardMsg(selfId, ReadConfig.config.base.botName, msgList)
+                ?: throw Exception("合并转发消息创建失败")
+            bot.sendGroupForwardMsg(groupId, msg)
         } catch (e: Exception) {
             MsgSendUtils.atSend(userId, groupId, bot, "Epic免费游戏获取失败：${e.message}")
             LogUtils.debug("${DateUtils.getTime()} ${this.javaClass.simpleName} Exception")
