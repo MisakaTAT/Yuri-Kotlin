@@ -2,8 +2,8 @@ package com.mikuac.yuri.plugins.aop
 
 import cn.hutool.core.date.DateField
 import cn.hutool.core.date.DateUtil
-import com.alibaba.fastjson.JSONObject
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
@@ -35,27 +35,27 @@ class EpicFreeGame : BotPlugin() {
         "query searchStoreQuery(${'$'}allowCountries: String, ${'$'}category: String, ${'$'}count: Int, ${'$'}country: String!, ${'$'}keywords: String, ${'$'}locale: String, ${'$'}namespace: String, ${'$'}sortBy: String, ${'$'}sortDir: String, ${'$'}start: Int, ${'$'}tag: String, ${'$'}withPrice: Boolean = false, ${'$'}withPromotions: Boolean = false) {\n Catalog {\n searchStore(allowCountries: ${'$'}allowCountries, category: ${'$'}category, count: ${'$'}count, country: ${'$'}country, keywords: ${'$'}keywords, locale: ${'$'}locale, namespace: ${'$'}namespace, sortBy: ${'$'}sortBy, sortDir: ${'$'}sortDir, start: ${'$'}start, tag: ${'$'}tag) {\n elements {\n title\n id\n namespace\n description\n effectiveDate\n keyImages {\n type\n url\n }\n seller {\n id\n name\n }\n productSlug\n urlSlug\n url\n items {\n id\n namespace\n }\n customAttributes {\n key\n value\n }\n price(country: ${'$'}country) @include(if: ${'$'}withPrice) {\n totalPrice {\n discountPrice\n originalPrice\n voucherDiscount\n discount\n currencyCode\n currencyInfo {\n decimals\n }\n fmtPrice(locale: ${'$'}locale) {\n originalPrice\n discountPrice\n intermediatePrice\n }\n }\n lineOffers {\n appliedRules {\n id\n endDate\n discountSetting {\n discountType\n }\n }\n }\n }\n promotions(category: ${'$'}category) @include(if: ${'$'}withPromotions) {\n promotionalOffers {\n promotionalOffers {\n startDate\n endDate\n discountSetting {\n discountType\n discountPercentage\n }\n }\n }\n upcomingPromotionalOffers {\n promotionalOffers {\n startDate\n endDate\n discountSetting { discountType\n discountPercentage\n }\n }\n }\n }\n }\n  }\n }\n}\n"
 
     private fun doRequest(): EpicDto? {
-        val variables = JSONObject()
-        variables["allowCountries"] = "CN"
-        variables["category"] = "freegames"
-        variables["count"] = 1000
-        variables["country"] = "CN"
-        variables["locale"] = "zh-CN"
-        variables["sortBy"] = "effectiveDate"
-        variables["sortDir"] = "asc"
-        variables["withPrice"] = true
-        variables["withPromotions"] = true
+        val variables = JsonObject()
+        variables.addProperty("allowCountries", "CN")
+        variables.addProperty("category", "freegames")
+        variables.addProperty("count", 1000)
+        variables.addProperty("country", "CN")
+        variables.addProperty("locale", "zh-CN")
+        variables.addProperty("sortBy", "effectiveDate")
+        variables.addProperty("sortDir", "asc")
+        variables.addProperty("withPrice", true)
+        variables.addProperty("withPromotions", true)
 
-        val json = JSONObject()
-        json["query"] = graphqlQuery
-        json["variables"] = variables
+        val json = JsonObject()
+        json.addProperty("query", graphqlQuery)
+        json.add("variables", variables)
 
         val headers: HashMap<String, String> = HashMap()
         headers["Referer"] = "https://www.epicgames.com/store/zh-CN/"
         headers["Content-Type"] = "application/json; charset=utf-8"
 
         val result = RequestUtils.post(
-            "https://www.epicgames.com/store/backend/graphql-proxy", json.toJSONString(), headers
+            "https://www.epicgames.com/store/backend/graphql-proxy", json.toString(), headers
         )
 
         // 检查缓存
@@ -90,29 +90,24 @@ class EpicFreeGame : BotPlugin() {
                 val gameName = game.title
                 val gameDesc = game.description
                 val gamePrice = game.price.totalPrice.fmtPrice.originalPrice
-
                 val image = game.keyImages.filter {
                     "Thumbnail" == it.type || "VaultClosed" == it.type
                 }
                 var imageUrl: String? = null
                 if (image.isNotEmpty()) imageUrl = image[0].url
-
                 val publisherName: String = game.customAttributes.filter { it.key == "publisherName" }[0].value
                 val developerName: String = game.customAttributes.filter { it.key == "developerName" }[0].value
-
                 val gamePage = "https://www.epicgames.com/store/zh-CN/p/${game.urlSlug}"
 
                 val msg = MsgUtils.builder()
 
-                if (upon.isNotEmpty()) {
+                if (upon.isNotEmpty() && pons.isEmpty()) {
                     val startDate = formatDate(upon[0].promotionalOffers[0].startDate)
                     val endDate = formatDate(upon[0].promotionalOffers[0].endDate)
                     if (imageUrl != null) msg.img(imageUrl)
                     msg.text("\n即将解锁：$gameName")
                     msg.text("\n限免时间为 $startDate 到 $endDate")
-                }
-
-                if (pons.isNotEmpty()) {
+                } else {
                     val startDate = formatDate(pons[0].promotionalOffers[0].startDate)
                     val endDate = formatDate(pons[0].promotionalOffers[0].endDate)
                     if (imageUrl != null) msg.img(imageUrl)
