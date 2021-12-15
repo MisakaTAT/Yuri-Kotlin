@@ -1,6 +1,6 @@
 package com.mikuac.yuri.dto
 
-import com.alibaba.fastjson.annotation.JSONField
+import com.google.gson.annotations.SerializedName
 
 data class BiliVideoApiDto(
     val code: Int,
@@ -30,9 +30,9 @@ data class BiliVideoApiDto(
             val favorite: Int,
             val coin: Int,
             val share: Int,
-            @JSONField(name = "now_rank")
+            @SerializedName("now_rank")
             val nowRank: Int,
-            @JSONField(name = "his_rank")
+            @SerializedName("his_rank")
             val hisRank: Int,
             val like: Int
         )

@@ -1,7 +1,7 @@
 package com.mikuac.yuri.plugins.aop
 
-import com.alibaba.fastjson.JSONObject
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
@@ -58,12 +58,12 @@ class WhatAnime : BotPlugin() {
     }
 
     private fun doSearch(animeId: Long): WhatAnimeDto {
-        val variables = JSONObject()
-        variables["id"] = animeId
-        val json = JSONObject()
-        json["query"] = graphqlQuery
-        json["variables"] = variables
-        val result = RequestUtils.post("https://trace.moe/anilist/", json.toJSONString())
+        val variables = JsonObject()
+        variables.addProperty("id", animeId)
+        val json = JsonObject()
+        json.addProperty("query", graphqlQuery)
+        json.add("variables", variables)
+        val result = RequestUtils.post("https://trace.moe/anilist/", json.toString())
         return Gson().fromJson(result, WhatAnimeDto::class.java)
     }
 
