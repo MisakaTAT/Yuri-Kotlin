@@ -20,9 +20,9 @@ class SauceNao : BotPlugin() {
         val api = "https://saucenao.com/search.php?api_key=${key}&output_type=2&numres=3&db=999&url=${imgUrl}"
         val result = RequestUtils.get(api)
         val json = Gson().fromJson(result, SauceNaoDto::class.java)
-        if (json.header.longRemaining <= 0) throw Exception("今日的搜索配额已耗尽啦，明天再来吧～")
-        if (json.header.shortRemaining <= 0) throw Exception("短时间内搜索配额已耗尽，休息会再试试吧 _(:зゝ∠)_")
-        if (json.results.isEmpty()) throw Exception("非常抱歉，未能找到相似的内容。")
+        if (json.header.longRemaining <= 0) throw RuntimeException("今日的搜索配额已耗尽啦")
+        if (json.header.shortRemaining <= 0) throw RuntimeException("短时间内搜索配额已耗尽")
+        if (json.results.isEmpty()) throw RuntimeException("未能找到相似的内容")
         return json
     }
 
@@ -78,9 +78,11 @@ class SauceNao : BotPlugin() {
             }
             MsgSendUtils.send(userId, groupId, bot, sendMsg.build())
         } catch (e: Exception) {
-            MsgSendUtils.atSend(userId, groupId, bot, "SauceNao检索失败：${e.message}")
-            LogUtils.debug("${DateUtils.getTime()} ${this.javaClass.simpleName} Exception")
-            LogUtils.debug(e.stackTraceToString())
+            MsgSendUtils.errorSend(
+                userId, groupId, bot,
+                "检索失败啦，换张图或者稍后再试吧～（你可少看点二次元吧！", e.message
+            )
+            LogUtils.error(e.stackTraceToString())
         }
     }
 

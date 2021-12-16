@@ -36,5 +36,22 @@ class MsgSendUtils {
             return 0
         }
 
+        fun errorSend(userId: Long, groupId: Long, bot: Bot, tips: String, error: String?): Int {
+            if (groupId != 0L) return bot.sendGroupMsg(
+                groupId,
+                MsgUtils.builder().at(userId)
+                    .text(tips)
+                    .text(if (error != null) "\n[详情] $error" else "")
+                    .build(),
+                false
+            ).data.messageId
+            if (groupId == 0L) return bot.sendPrivateMsg(
+                userId,
+                tips + if (error != null) "\n[详情] $error" else "",
+                false
+            ).data.messageId
+            return 0
+        }
+
     }
 }

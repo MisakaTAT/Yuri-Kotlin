@@ -13,7 +13,6 @@ import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.dto.EpicDto
 import com.mikuac.yuri.enums.RegexEnum
-import com.mikuac.yuri.utils.DateUtils
 import com.mikuac.yuri.utils.LogUtils
 import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.RequestUtils
@@ -64,7 +63,7 @@ class EpicFreeGame : BotPlugin() {
         }
         val jsonObject = JsonParser.parseString(result)
         val elements = jsonObject.asJsonObject["data"].asJsonObject["Catalog"].asJsonObject["searchStore"]
-            .asJsonObject["elements"].asJsonArray ?: throw Exception("Epic 免费游戏获取失败")
+            .asJsonObject["elements"].asJsonArray ?: throw RuntimeException("游戏列表获取失败")
         val data = Gson().fromJson(elements, EpicDto::class.java)
         expiringMap["cache"] = data
         return data
@@ -123,12 +122,11 @@ class EpicFreeGame : BotPlugin() {
                 i++
             }
             val msg = ShiroUtils.generateForwardMsg(selfId, ReadConfig.config.base.botName, msgList)
-                ?: throw Exception("合并转发消息创建失败")
+                ?: throw RuntimeException("合并转发消息生成失败")
             bot.sendGroupForwardMsg(groupId, msg)
         } catch (e: Exception) {
-            MsgSendUtils.atSend(userId, groupId, bot, "Epic免费游戏获取失败：${e.message}")
-            LogUtils.debug("${DateUtils.getTime()} ${this.javaClass.simpleName} Exception")
-            LogUtils.debug(e.stackTraceToString())
+            MsgSendUtils.errorSend(userId, groupId, bot, "Epic服务器可能爆炸啦～（才不是我的问题呢", e.message)
+            LogUtils.error(e.stackTraceToString())
         }
     }
 

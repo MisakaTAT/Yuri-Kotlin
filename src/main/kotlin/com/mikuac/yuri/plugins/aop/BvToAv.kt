@@ -5,7 +5,6 @@ import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.enums.RegexEnum
-import com.mikuac.yuri.utils.DateUtils
 import com.mikuac.yuri.utils.LogUtils
 import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.RegexUtils
@@ -76,9 +75,8 @@ class BvToAv : BotPlugin() {
                 MsgSendUtils.atSend(userId, groupId, bot, bid)
             }
         } catch (e: Exception) {
-            MsgSendUtils.atSend(userId, groupId, bot, "转换异常：${e.message}")
-            LogUtils.debug("${DateUtils.getTime()} ${this.javaClass.simpleName} Exception")
-            LogUtils.debug(e.stackTraceToString())
+            MsgSendUtils.errorSend(userId, groupId, bot, "转换失败了呢，要不再试试看？", e.message)
+            LogUtils.error(e.stackTraceToString())
         }
     }
 

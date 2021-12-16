@@ -9,7 +9,6 @@ import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.dto.AnimePicDto
 import com.mikuac.yuri.enums.RegexEnum
-import com.mikuac.yuri.utils.DateUtils
 import com.mikuac.yuri.utils.LogUtils
 import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.RequestUtils
@@ -93,9 +92,8 @@ class AnimePic : BotPlugin() {
             val msgId = MsgSendUtils.send(userId, groupId, bot, buildPicMsg(buildTextMsg.second))
             recallMsgPic(msgId, bot)
         } catch (e: Exception) {
-            MsgSendUtils.atSend(userId, groupId, bot, "色图请求失败：${e.message}")
-            LogUtils.debug("${DateUtils.getTime()} ${this.javaClass.simpleName} Exception")
-            LogUtils.debug(e.stackTraceToString())
+            MsgSendUtils.errorSend(userId, groupId, bot, "色图请求失败惹 QAQ", e.message)
+            LogUtils.error(e.stackTraceToString())
         }
     }
 

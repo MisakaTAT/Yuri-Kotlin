@@ -113,9 +113,8 @@ class WhatAnime : BotPlugin() {
                 MsgUtils.builder().video(basic.video, imgUrl).build()
             )
         } catch (e: Exception) {
-            MsgSendUtils.atSend(userId, groupId, bot, "WhatAnime检索失败：${e.message}")
-            LogUtils.debug("${DateUtils.getTime()} ${this.javaClass.simpleName} Exception")
-            LogUtils.debug(e.stackTraceToString())
+            MsgSendUtils.errorSend(userId, groupId, bot, "检索失败啦，换张图或者稍后再试吧～（你可少看点二次元吧！", e.message)
+            LogUtils.error(e.stackTraceToString())
         }
     }
 

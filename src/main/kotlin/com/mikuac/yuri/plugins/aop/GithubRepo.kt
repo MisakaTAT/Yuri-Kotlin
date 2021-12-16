@@ -8,7 +8,10 @@ import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.yuri.dto.GithubRepoDto
 import com.mikuac.yuri.enums.RegexEnum
-import com.mikuac.yuri.utils.*
+import com.mikuac.yuri.utils.LogUtils
+import com.mikuac.yuri.utils.MsgSendUtils
+import com.mikuac.yuri.utils.RegexUtils
+import com.mikuac.yuri.utils.RequestUtils
 import org.springframework.stereotype.Component
 
 @Component
@@ -18,7 +21,7 @@ class GithubRepo : BotPlugin() {
         val api = "https://api.github.com/search/repositories?q=${repoName}"
         val result = RequestUtils.get(api)
         val json = Gson().fromJson(result, GithubRepoDto::class.java)
-        if (json.totalCount <= 0) throw Exception("未找到相关仓库")
+        if (json.totalCount <= 0) throw RuntimeException("未找到名为 $repoName 的仓库")
         return json
     }
 
@@ -46,9 +49,11 @@ class GithubRepo : BotPlugin() {
             }
             MsgSendUtils.send(userId, groupId, bot, buildMsg)
         } catch (e: Exception) {
-            MsgSendUtils.atSend(userId, groupId, bot, "GitHub仓库查询失败：${e.message}")
-            LogUtils.debug("${DateUtils.getTime()} ${this.javaClass.simpleName} Exception")
-            LogUtils.debug(e.stackTraceToString())
+            MsgSendUtils.errorSend(
+                userId, groupId, bot,
+                "查询失败啦，有没有一种可能，我只是说一种猜测，这个仓库不存在呢？TAT", e.message
+            )
+            LogUtils.error(e.stackTraceToString())
         }
     }
 
