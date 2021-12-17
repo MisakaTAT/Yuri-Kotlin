@@ -11,5 +11,6 @@ enum class RegexEnum(val value: Regex) {
     SAUCE_NAO_SET("^[搜识找識]([索别])?[图圖本推]([子特])?(模式)?".toRegex()),
     SAUCE_NAO_UNSET("^退出[搜识找識]([索别])?[图圖本推]([子特])?(模式)?".toRegex()),
     EROTIC_PIC("^[来來发發给給]([1一])?[张張个個幅点點份]([Rr]18的?)?[色瑟][图圖]|^setu(\\s[Rr]18)?|^[色瑟][图圖](\\s[Rr]18)?".toRegex()),
-    EPIC("^(?i)epic(免费游戏)?".toRegex())
+    EPIC("^(?i)epic(免费游戏)?".toRegex()),
+    PHOENIX_WRIGHT("^(?i)[逆n][转z][裁c][判p]\\s+(.*)\\s+(.*)".toRegex())
 }

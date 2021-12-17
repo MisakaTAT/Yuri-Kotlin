@@ -28,3 +28,4 @@ shiro:
     - com.mikuac.yuri.plugins.aop.WhatAnime
     - com.mikuac.yuri.plugins.aop.SauceNao
     - com.mikuac.yuri.plugins.aop.EpicFreeGame
+    - com.mikuac.yuri.plugins.aop.PhoenixWright
