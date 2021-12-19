@@ -94,8 +94,12 @@ class EpicFreeGame : BotPlugin() {
                 }
                 var imageUrl: String? = null
                 if (image.isNotEmpty()) imageUrl = image[0].url
-                val publisherName: String = game.customAttributes.filter { it.key == "publisherName" }[0].value
-                val developerName: String = game.customAttributes.filter { it.key == "developerName" }[0].value
+                var publisherName = "未知发行商"
+                val publisherNameFilter = game.customAttributes.filter { it.key == "publisherName" }
+                if (publisherNameFilter.size == 1) publisherName = publisherNameFilter[0].value
+                var developerName = "未知开发者"
+                val developerNameFilter = game.customAttributes.filter { it.key == "developerName" }
+                if (developerNameFilter.size == 1) developerName = developerNameFilter[0].value
                 val gamePage = "https://www.epicgames.com/store/zh-CN/p/${game.urlSlug}"
 
                 val msg = MsgUtils.builder()
