@@ -12,11 +12,13 @@ import org.springframework.stereotype.Component
 class GroupJoinAndQuit : BotPlugin() {
 
     override fun onGroupDecreaseNotice(bot: Bot, event: GroupDecreaseNoticeEvent): Int {
-        val groupId = event.groupId
-        val userId = event.userId
-        val msg = MsgUtils.builder()
-            .text(userId.toString() + "退出群聊")
-        bot.sendGroupMsg(groupId, msg.build(), false)
+        if ("kick" == event.subType) {
+            val nickname = bot.getGroupMemberInfo(event.groupId, event.operatorId, false).data.nickname
+            bot.sendGroupMsg(event.groupId, "${event.userId} 被 $nickname 移出群聊", false)
+        }
+        if ("leave" == event.subType) {
+            bot.sendGroupMsg(event.groupId, "${event.userId} 退出群聊", false)
+        }
         return MESSAGE_IGNORE
     }
 
