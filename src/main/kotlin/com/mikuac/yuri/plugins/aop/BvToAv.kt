@@ -49,12 +49,12 @@ class BvToAv : BotPlugin() {
         return stringBuilder.toString()
     }
 
-    private fun handler(msg: String, userId: Long, groupId: Long, bot: Bot) {
+    private fun handler(msgId: Int, msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (!msg.matches(RegexEnum.BV_TO_AV.value)) return
-        buildMsg(msg, userId, groupId, bot)
+        buildMsg(msgId, msg, userId, groupId, bot)
     }
 
-    private fun buildMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
+    private fun buildMsg(msgId: Int, msg: String, userId: Long, groupId: Long, bot: Bot) {
         try {
             val bvId = RegexUtils.group(RegexEnum.BV_TO_AV.value, 1, msg)
             val avId = RegexUtils.group(RegexEnum.BV_TO_AV.value, 2, msg)
@@ -75,18 +75,18 @@ class BvToAv : BotPlugin() {
                 MsgSendUtils.atSend(userId, groupId, bot, bid)
             }
         } catch (e: Exception) {
-            MsgSendUtils.errorSend(userId, groupId, bot, "转换失败了呢，要不再试试看？", e.message)
+            MsgSendUtils.errorSend(msgId, userId, groupId, bot, "AV/BV 转换失败", e.message)
             LogUtils.error(e.stackTraceToString())
         }
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        handler(event.message, event.userId, event.groupId, bot)
+        handler(event.messageId, event.message, event.userId, event.groupId, bot)
         return MESSAGE_IGNORE
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        handler(event.message, event.userId, 0L, bot)
+        handler(event.messageId, event.message, event.userId, 0L, bot)
         return MESSAGE_IGNORE
     }
 

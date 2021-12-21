@@ -26,7 +26,7 @@ class SauceNao : BotPlugin() {
         return json
     }
 
-    private fun handler(mode: String, msg: String, userId: Long, groupId: Long, bot: Bot) {
+    private fun handler(msgId: Int, mode: String, msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (!SearchModeUtils.check(
                 RegexEnum.SAUCE_NAO_SET.value,
                 RegexEnum.SAUCE_NAO_UNSET.value,
@@ -37,10 +37,10 @@ class SauceNao : BotPlugin() {
                 bot
             )
         ) return
-        buildMsg(msg, userId, groupId, bot)
+        buildMsg(msgId, msg, userId, groupId, bot)
     }
 
-    private fun buildMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
+    private fun buildMsg(msgId: Int, msg: String, userId: Long, groupId: Long, bot: Bot) {
         try {
             // 重新设置过期时间
             SearchModeUtils.resetExpiration(userId, groupId)
@@ -79,20 +79,20 @@ class SauceNao : BotPlugin() {
             MsgSendUtils.send(userId, groupId, bot, sendMsg.build())
         } catch (e: Exception) {
             MsgSendUtils.errorSend(
-                userId, groupId, bot,
-                "检索失败啦，换张图或者稍后再试吧～（你可少看点二次元吧！", e.message
+                msgId, userId, groupId, bot,
+                "SauceNao 检索失败", e.message
             )
             LogUtils.error(e.stackTraceToString())
         }
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        handler(this.javaClass.simpleName, event.message, event.userId, 0L, bot)
+        handler(event.messageId, this.javaClass.simpleName, event.message, event.userId, 0L, bot)
         return MESSAGE_IGNORE
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        handler(this.javaClass.simpleName, event.message, event.userId, event.groupId, bot)
+        handler(event.messageId, this.javaClass.simpleName, event.message, event.userId, event.groupId, bot)
         return MESSAGE_IGNORE
     }
 

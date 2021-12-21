@@ -25,12 +25,12 @@ class GithubRepo : BotPlugin() {
         return json
     }
 
-    private fun handler(msg: String, userId: Long, groupId: Long, bot: Bot) {
+    private fun handler(msgId: Int, msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (!msg.matches(RegexEnum.GITHUB_REPO.value)) return
-        buildMsg(msg, userId, groupId, bot)
+        buildMsg(msgId, msg, userId, groupId, bot)
     }
 
-    private fun buildMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
+    private fun buildMsg(msgId: Int, msg: String, userId: Long, groupId: Long, bot: Bot) {
         try {
             val searchName = RegexUtils.group(RegexEnum.GITHUB_REPO.value, 2, msg)
             val data = getRepoInfo(searchName).items[0]
@@ -50,20 +50,20 @@ class GithubRepo : BotPlugin() {
             MsgSendUtils.send(userId, groupId, bot, buildMsg)
         } catch (e: Exception) {
             MsgSendUtils.errorSend(
-                userId, groupId, bot,
-                "查询失败啦，有没有一种可能，我只是说一种猜测，这个仓库不存在呢？TAT", e.message
+                msgId, userId, groupId, bot,
+                "GitHub 仓库查询失败", e.message
             )
             LogUtils.error(e.stackTraceToString())
         }
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        handler(event.message, event.userId, 0L, bot)
+        handler(event.messageId, event.message, event.userId, 0L, bot)
         return MESSAGE_IGNORE
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        handler(event.message, event.userId, event.groupId, bot)
+        handler(event.messageId, event.message, event.userId, event.groupId, bot)
         return MESSAGE_IGNORE
     }
 

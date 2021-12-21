@@ -53,7 +53,7 @@ class WhatAnime : BotPlugin() {
         val result = RequestUtils.get("https://api.trace.moe/search?cutBorders&url=${imgUrl}")
         val json = Gson().fromJson(result, WhatAnimeBasicDto::class.java)
         if (json.error != "") throw Exception(json.error)
-        if (json.result.isEmpty()) throw Exception("未找到匹配内容")
+        if (json.result.isEmpty()) throw Exception("未找到匹配结果")
         return json
     }
 
@@ -67,7 +67,7 @@ class WhatAnime : BotPlugin() {
         return Gson().fromJson(result, WhatAnimeDto::class.java)
     }
 
-    private fun handler(mode: String, msg: String, userId: Long, groupId: Long, bot: Bot) {
+    private fun handler(msgId: Int, mode: String, msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (!SearchModeUtils.check(
                 RegexEnum.WHAT_ANIME_SET.value,
                 RegexEnum.WHAT_ANIME_UNSET.value,
@@ -78,10 +78,10 @@ class WhatAnime : BotPlugin() {
                 bot
             )
         ) return
-        buildMsg(msg, userId, groupId, bot)
+        buildMsg(msgId, msg, userId, groupId, bot)
     }
 
-    private fun buildMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
+    private fun buildMsg(msgId: Int, msg: String, userId: Long, groupId: Long, bot: Bot) {
         try {
             // 重新设置过期时间
             SearchModeUtils.resetExpiration(userId, groupId)
@@ -113,18 +113,18 @@ class WhatAnime : BotPlugin() {
                 MsgUtils.builder().video(basic.video, imgUrl).build()
             )
         } catch (e: Exception) {
-            MsgSendUtils.errorSend(userId, groupId, bot, "检索失败啦，换张图或者稍后再试吧～（你可少看点二次元吧！", e.message)
+            MsgSendUtils.errorSend(msgId, userId, groupId, bot, "WhatAnime 检索失败", e.message)
             LogUtils.error(e.stackTraceToString())
         }
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        handler(this.javaClass.simpleName, event.message, event.userId, 0L, bot)
+        handler(event.messageId, this.javaClass.simpleName, event.message, event.userId, 0L, bot)
         return MESSAGE_IGNORE
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        handler(this.javaClass.simpleName, event.message, event.userId, event.groupId, bot)
+        handler(event.messageId, this.javaClass.simpleName, event.message, event.userId, event.groupId, bot)
         return MESSAGE_IGNORE
     }
 

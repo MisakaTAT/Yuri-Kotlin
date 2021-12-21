@@ -53,20 +53,24 @@ class EpicFreeGame : BotPlugin() {
         headers["Referer"] = "https://www.epicgames.com/store/zh-CN/"
         headers["Content-Type"] = "application/json; charset=utf-8"
 
-        val result = RequestUtils.post(
-            "https://www.epicgames.com/store/backend/graphql-proxy", json.toString(), headers
-        )
-
         // 检查缓存
         if (expiringMap["cache"] != null) {
             return expiringMap["cache"]
         }
-        val jsonObject = JsonParser.parseString(result)
-        val elements = jsonObject.asJsonObject["data"].asJsonObject["Catalog"].asJsonObject["searchStore"]
-            .asJsonObject["elements"].asJsonArray ?: throw RuntimeException("游戏列表获取失败")
-        val data = Gson().fromJson(elements, EpicDto::class.java)
-        expiringMap["cache"] = data
-        return data
+
+        try {
+            val api = "https://www.epicgames.com/store/backend/graphql-proxy"
+            val result = RequestUtils.post(api, json.toString(), headers)
+
+            val jsonObject = JsonParser.parseString(result)
+            val elements = jsonObject.asJsonObject["data"].asJsonObject["Catalog"].asJsonObject["searchStore"]
+                .asJsonObject["elements"].asJsonArray
+            val data = Gson().fromJson(elements, EpicDto::class.java)
+            expiringMap["cache"] = data
+            return data
+        } catch (e: Exception) {
+            throw RuntimeException("响应数据解析失败")
+        }
     }
 
     private fun formatDate(rawDate: String): String {
@@ -75,67 +79,70 @@ class EpicFreeGame : BotPlugin() {
         return DateUtil.format(date, "yyy年MM月dd日 HH时mm分")
     }
 
-    private fun buildMsg(userId: Long, groupId: Long, selfId: Long, bot: Bot) {
+    private fun buildMsg(msgId: Int, userId: Long, groupId: Long, selfId: Long, bot: Bot) {
         try {
+            val games = doRequest() ?: throw RuntimeException("免费游戏列表获取失败")
             val msgList = ArrayList<String>()
-            val games = doRequest() ?: return
-            var i = 1
-            for (game in games.reversed()) {
-                // 取最新的三条
-                if (i > 3) break
-
-                val pons = game.promotions.promotionalOffers
-                val upon = game.promotions.upcomingPromotionalOffers
+            for (game in games) {
                 val gameName = game.title
-                val gameDesc = game.description
+                val gameCorp = game.seller.name
+                val keyImages = game.keyImages.filter { "Thumbnail" == it.type }
+                val vaultClosed = game.keyImages.filter { "VaultClosed" == it.type }
+                val gameThumbnail = if (keyImages.isNotEmpty()) keyImages[0].url else vaultClosed[0].url
                 val gamePrice = game.price.totalPrice.fmtPrice.originalPrice
-                val image = game.keyImages.filter {
-                    "Thumbnail" == it.type || "VaultClosed" == it.type
+                try {
+                    val gamePromotions = game.promotions.promotionalOffers
+                    val upcomingPromotions = game.promotions.upcomingPromotionalOffers
+                    if (gamePromotions.isEmpty() && upcomingPromotions.isNotEmpty()) {
+                        // Promotion is not active yet, but will be active soon.
+                        val promotionData = upcomingPromotions[0].promotionalOffers[0]
+                        val startDate = formatDate(promotionData.startDate)
+                        val endDate = formatDate(promotionData.endDate)
+                        val msg = MsgUtils.builder()
+                            .img(gameThumbnail)
+                            .text("$gameName ($gamePrice) 即将在 $startDate 推出免费游玩，预计截止时间为 $endDate，该游戏由 $gameCorp 发行。")
+                            .build()
+                        msgList.add(msg)
+                    } else {
+                        val gameDesc = game.description
+                        val publisherName = game.customAttributes.filter { it.key == "publisherName" }
+                        val publisher = if (publisherName.isNotEmpty()) publisherName[0].value else gameCorp
+                        val developerName = game.customAttributes.filter { it.key == "developerName" }
+                        val developer = if (developerName.isNotEmpty()) developerName[0].value else gameCorp
+                        val endDate = formatDate(game.promotions.promotionalOffers[0].promotionalOffers[0].endDate)
+                        val gamePage = "https://www.epicgames.com/store/zh-CN/p/${game.urlSlug}"
+
+                        val msg = MsgUtils.builder()
+                            .img(gameThumbnail)
+                            .text("\n$gameName ($gamePrice) 当前免费，${endDate}截止。")
+                            .text("\n\n${gameDesc}")
+                            .text("\n\n该游戏由 $developer 制作，并由 $publisher 发行。")
+                            .text("\n\n感兴趣的小伙伴可以点击下方链接免费领取啦～")
+                            .text("\n${gamePage}")
+                            .build()
+                        msgList.add(msg)
+                    }
+                } catch (e: Exception) {
+                    // No discounts for this game
                 }
-                var imageUrl: String? = null
-                if (image.isNotEmpty()) imageUrl = image[0].url
-                var publisherName = "未知发行商"
-                val publisherNameFilter = game.customAttributes.filter { it.key == "publisherName" }
-                if (publisherNameFilter.size == 1) publisherName = publisherNameFilter[0].value
-                var developerName = "未知开发者"
-                val developerNameFilter = game.customAttributes.filter { it.key == "developerName" }
-                if (developerNameFilter.size == 1) developerName = developerNameFilter[0].value
-                val gamePage = "https://www.epicgames.com/store/zh-CN/p/${game.urlSlug}"
-
-                val msg = MsgUtils.builder()
-
-                if (upon.isNotEmpty() && pons.isEmpty()) {
-                    val startDate = formatDate(upon[0].promotionalOffers[0].startDate)
-                    val endDate = formatDate(upon[0].promotionalOffers[0].endDate)
-                    if (imageUrl != null) msg.img(imageUrl)
-                    msg.text("\n即将解锁：$gameName")
-                    msg.text("\n限免时间为 $startDate 到 $endDate")
-                } else {
-                    val startDate = formatDate(pons[0].promotionalOffers[0].startDate)
-                    val endDate = formatDate(pons[0].promotionalOffers[0].endDate)
-                    if (imageUrl != null) msg.img(imageUrl)
-                    msg.text("\n${gameName}（${gamePrice}）")
-                    msg.text("\n\n${gameDesc}")
-                    msg.text("\n\n该游戏由 $developerName 制作，并由 $publisherName 发行。")
-                    msg.text("\n\n限免时间为 $startDate 到 $endDate")
-                    msg.text("\n\n感兴趣的小伙伴可以点击下方链接免费领取啦～")
-                    msg.text("\n${gamePage}")
-                }
-
-                msgList.add(msg.build())
-                i++
             }
             val msg = ShiroUtils.generateForwardMsg(selfId, ReadConfig.config.base.botName, msgList)
                 ?: throw RuntimeException("合并转发消息生成失败")
             bot.sendGroupForwardMsg(groupId, msg)
         } catch (e: Exception) {
-            MsgSendUtils.errorSend(userId, groupId, bot, "Epic服务器可能爆炸啦～（才不是我的问题呢", e.message)
+            MsgSendUtils.errorSend(msgId, userId, groupId, bot, "EPIC 免费游戏获取失败", e.message)
             LogUtils.error(e.stackTraceToString())
         }
     }
 
     private fun handler(bot: Bot, event: GroupMessageEvent) {
-        if (event.message.matches(RegexEnum.EPIC.value)) buildMsg(event.userId, event.groupId, event.selfId, bot)
+        if (event.message.matches(RegexEnum.EPIC.value)) buildMsg(
+            event.messageId,
+            event.userId,
+            event.groupId,
+            event.selfId,
+            bot
+        )
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {

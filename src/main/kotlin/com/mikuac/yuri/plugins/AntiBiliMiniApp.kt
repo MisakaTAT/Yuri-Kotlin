@@ -22,7 +22,7 @@ class AntiBiliMiniApp : BotPlugin() {
         return Gson().fromJson(result, BiliVideoApiDto::class.java).data
     }
 
-    private fun buildMsg(json: String, userId: Long, groupId: Long, bot: Bot) {
+    private fun buildMsg(msgId: Int, json: String, userId: Long, groupId: Long, bot: Bot) {
         try {
             val jsonObject = JsonParser.parseString(json)
             val url = jsonObject.asJsonObject["meta"].asJsonObject["detail_1"].asJsonObject["qqdocurl"].asString
@@ -41,7 +41,7 @@ class AntiBiliMiniApp : BotPlugin() {
                 .build()
             bot.sendGroupMsg(groupId, sendMsg, false)
         } catch (e: Exception) {
-            MsgSendUtils.errorSend(userId, groupId, bot, "哔哩哔哩小程序解析失败啦，一定是叔叔的错！", e.message)
+            MsgSendUtils.errorSend(msgId, userId, groupId, bot, "哔哩哔哩小程序解析失败", e.message)
             LogUtils.error(e.stackTraceToString())
         }
     }
@@ -53,7 +53,7 @@ class AntiBiliMiniApp : BotPlugin() {
         val json = event.arrayMsg.filter {
             it.type == "json"
         }[0].data["data"] ?: return
-        buildMsg(json, event.userId, event.groupId, bot)
+        buildMsg(event.messageId, json, event.userId, event.groupId, bot)
     }
 
 }

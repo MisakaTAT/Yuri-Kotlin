@@ -59,7 +59,7 @@ class AnimePic : BotPlugin() {
         return MsgUtils.builder().img(url).build()
     }
 
-    private fun handler(msg: String, userId: Long, groupId: Long, bot: Bot) {
+    private fun handler(msgId: Int, msg: String, userId: Long, groupId: Long, bot: Bot) {
         if (!msg.matches(RegexEnum.EROTIC_PIC.value)) return
         // 检查是否处于冷却时间
         if (expiringMap[groupId + userId] != null && expiringMap[groupId + userId] == userId) {
@@ -67,7 +67,7 @@ class AnimePic : BotPlugin() {
             MsgSendUtils.atSend(userId, groupId, bot, "整天色图色图，信不信把你变成色图？冷却：[${expectedExpiration}秒]")
             return
         }
-        buildMsg(msg, userId, groupId, bot)
+        buildMsg(msgId, msg, userId, groupId, bot)
     }
 
     private fun recallMsgPic(msgId: Int, bot: Bot) = runBlocking {
@@ -78,7 +78,7 @@ class AnimePic : BotPlugin() {
         }
     }
 
-    private fun buildMsg(msg: String, userId: Long, groupId: Long, bot: Bot) {
+    private fun buildMsg(msgId: Int, msg: String, userId: Long, groupId: Long, bot: Bot) {
         val r18 = msg.contains(Regex("(?i)r18"))
         if (!ReadConfig.config.plugin.animePic.r18 && r18) {
             MsgSendUtils.atSend(userId, groupId, bot, "NSFW禁止！")
@@ -89,21 +89,21 @@ class AnimePic : BotPlugin() {
             MsgSendUtils.send(userId, groupId, bot, buildTextMsg.first)
             val cdTime = ReadConfig.config.plugin.animePic.cdTime.times(1000L)
             expiringMap.put(groupId + userId, userId, cdTime, TimeUnit.MILLISECONDS)
-            val msgId = MsgSendUtils.send(userId, groupId, bot, buildPicMsg(buildTextMsg.second))
-            recallMsgPic(msgId, bot)
+            val picMsgId = MsgSendUtils.send(userId, groupId, bot, buildPicMsg(buildTextMsg.second))
+            recallMsgPic(picMsgId, bot)
         } catch (e: Exception) {
-            MsgSendUtils.errorSend(userId, groupId, bot, "色图请求失败惹 QAQ", e.message)
+            MsgSendUtils.errorSend(msgId, userId, groupId, bot, "色图请求失败惹 QAQ", e.message)
             LogUtils.error(e.stackTraceToString())
         }
     }
 
     override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        handler(event.message, event.userId, event.groupId, bot)
+        handler(event.messageId, event.message, event.userId, event.groupId, bot)
         return MESSAGE_IGNORE
     }
 
     override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        handler(event.message, event.userId, 0L, bot)
+        handler(event.messageId, event.message, event.userId, 0L, bot)
         return MESSAGE_IGNORE
     }
 
