@@ -1,10 +1,11 @@
-package com.mikuac.yuri.plugins.aop
+package com.mikuac.yuri.plugins.passive
 
 import cn.hutool.core.date.DateField
 import cn.hutool.core.date.DateUtil
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.mikuac.shiro.annotation.GroupMessageHandler
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
@@ -12,9 +13,8 @@ import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.dto.EpicDto
-import com.mikuac.yuri.enums.RegexEnum
-import com.mikuac.yuri.utils.LogUtils
-import com.mikuac.yuri.utils.MsgSendUtils
+import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.RequestUtils
 import net.jodah.expiringmap.ExpirationPolicy
 import net.jodah.expiringmap.ExpiringMap
@@ -69,7 +69,7 @@ class EpicFreeGame : BotPlugin() {
             expiringMap["cache"] = data
             return data
         } catch (e: Exception) {
-            throw RuntimeException("响应数据解析失败")
+            throw YuriException("响应数据解析失败")
         }
     }
 
@@ -79,9 +79,9 @@ class EpicFreeGame : BotPlugin() {
         return DateUtil.format(date, "yyy年MM月dd日 HH时mm分")
     }
 
-    private fun buildMsg(msgId: Int, userId: Long, groupId: Long, selfId: Long, bot: Bot) {
+    private fun buildMsg(): ArrayList<String> {
         try {
-            val games = doRequest() ?: throw RuntimeException("免费游戏列表获取失败")
+            val games = doRequest() ?: throw YuriException("免费游戏列表获取失败")
             val msgList = ArrayList<String>()
             for (game in games) {
                 val gameName = game.title
@@ -126,28 +126,24 @@ class EpicFreeGame : BotPlugin() {
                     // No discounts for this game
                 }
             }
-            val msg = ShiroUtils.generateForwardMsg(selfId, ReadConfig.config.base.botName, msgList)
-                ?: throw RuntimeException("合并转发消息生成失败")
-            bot.sendGroupForwardMsg(groupId, msg)
+            return msgList
         } catch (e: Exception) {
-            MsgSendUtils.errorSend(msgId, userId, groupId, bot, "EPIC 免费游戏获取失败", e.message)
-            LogUtils.error(e.stackTraceToString())
+            throw YuriException("EPIC 免费游戏获取失败")
         }
     }
 
-    private fun handler(bot: Bot, event: GroupMessageEvent) {
-        if (event.message.matches(RegexEnum.EPIC.value)) buildMsg(
-            event.messageId,
-            event.userId,
-            event.groupId,
-            event.selfId,
-            bot
-        )
-    }
-
-    override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        handler(bot, event)
-        return MESSAGE_IGNORE
+    @GroupMessageHandler(cmd = RegexCMD.EPIC_FREE_GAME)
+    fun handler(bot: Bot, event: GroupMessageEvent) {
+        try {
+            val msgList = buildMsg()
+            val msg = ShiroUtils.generateForwardMsg(event.selfId, ReadConfig.config.base.botName, msgList)
+                ?: throw YuriException("合并转发消息生成失败")
+            bot.sendGroupForwardMsg(event.groupId, msg)
+        } catch (e: YuriException) {
+            bot.sendGroupMsg(event.groupId, e.message, false)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
 }

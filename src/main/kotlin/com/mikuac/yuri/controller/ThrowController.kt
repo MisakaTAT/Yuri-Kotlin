@@ -1,7 +1,8 @@
 package com.mikuac.yuri.controller
 
 import com.mikuac.shiro.common.utils.ShiroUtils
-import com.mikuac.yuri.plugins.aop.ThrowUser
+import com.mikuac.yuri.exception.YuriException
+import com.mikuac.yuri.plugins.passive.ThrowUser
 import net.coobird.thumbnailator.Thumbnails
 import net.coobird.thumbnailator.geometry.Positions
 import org.springframework.context.annotation.Bean
@@ -21,7 +22,7 @@ import javax.imageio.ImageIO
 @RestController
 class ThrowController {
 
-    // http://localhost:8081/throwUser?qq=1140667337
+    // http://localhost:5000/throwUser?qq=1140667337
     @RequestMapping(value = ["/throwUser"], produces = [MediaType.IMAGE_PNG_VALUE])
     fun throwUser(@RequestParam qq: Long): BufferedImage? {
         return buildImg(qq)
@@ -67,12 +68,11 @@ class ThrowController {
             bgImgGraphics.drawImage(proceedAva, 19, 181, 137, 137, null)
             // 结束绘制图片
             bgImgGraphics.dispose()
-            // 将内存中图片写入data中
             return Thumbnails.of(tempImg)
                 .size(512, 512)
                 .asBufferedImage()
         } catch (e: IOException) {
-            throw RuntimeException("图片绘制失败")
+            throw YuriException("图片绘制失败")
         }
     }
 

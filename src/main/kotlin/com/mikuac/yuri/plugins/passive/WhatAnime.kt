@@ -1,17 +1,21 @@
-package com.mikuac.yuri.plugins.aop
+package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.mikuac.shiro.annotation.MessageHandler
+import com.mikuac.shiro.bean.MsgChainBean
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
-import com.mikuac.shiro.dto.event.message.GroupMessageEvent
-import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
+import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.dto.WhatAnimeBasicDto
 import com.mikuac.yuri.dto.WhatAnimeDto
-import com.mikuac.yuri.enums.RegexEnum
-import com.mikuac.yuri.utils.*
+import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.YuriException
+import com.mikuac.yuri.utils.DateUtils
+import com.mikuac.yuri.utils.RequestUtils
+import com.mikuac.yuri.utils.SearchModeUtils
 import org.springframework.stereotype.Component
 
 @Component
@@ -67,31 +71,22 @@ class WhatAnime : BotPlugin() {
         return Gson().fromJson(result, WhatAnimeDto::class.java)
     }
 
-    private fun handler(msgId: Int, mode: String, msg: String, userId: Long, groupId: Long, bot: Bot) {
-        if (!SearchModeUtils.check(
-                RegexEnum.WHAT_ANIME_SET.value,
-                RegexEnum.WHAT_ANIME_UNSET.value,
-                msg,
-                mode,
-                userId,
-                groupId,
-                bot
-            )
-        ) return
-        buildMsg(msgId, msg, userId, groupId, bot)
-    }
+    private fun buildMsg(userId: Long, groupId: Long, arrMsg: List<MsgChainBean>): Pair<String, String>? {
+        // 重新设置过期时间
+        SearchModeUtils.resetExpiration(userId, groupId)
 
-    private fun buildMsg(msgId: Int, msg: String, userId: Long, groupId: Long, bot: Bot) {
-        try {
-            // 重新设置过期时间
-            SearchModeUtils.resetExpiration(userId, groupId)
-            val imgUrl = RegexUtils.group(Regex("^\\[CQ:image(.*)url=(.*)]"), 2, msg)
-            val basic = getBasicInfo(imgUrl).result[0]
-            val detailed = doSearch(basic.aniList).data.media
-            val animeName = detailed.title.chinese.ifEmpty { detailed.title.native }
-            val startTime = "${detailed.startDate.year}年${detailed.startDate.month}月${detailed.startDate.day}日"
-            val endTime = "${detailed.endDate.year}年${detailed.endDate.month}月${detailed.endDate.day}日"
-            val msgUtils = MsgUtils.builder()
+        val images = arrMsg.filter { "image" == it.type }
+        if (images.isEmpty()) return null
+        val imgUrl = images[0].data["url"] ?: return null
+
+        val basic = getBasicInfo(imgUrl).result[0]
+        val detailed = doSearch(basic.aniList).data.media
+        val animeName = detailed.title.chinese.ifEmpty { detailed.title.native }
+        val startTime = "${detailed.startDate.year}年${detailed.startDate.month}月${detailed.startDate.day}日"
+        val endTime = "${detailed.endDate.year}年${detailed.endDate.month}月${detailed.endDate.day}日"
+
+        return Pair(
+            MsgUtils.builder()
                 .img(detailed.coverImage.large)
                 .text("\n该截图出自番剧${animeName}第${basic.episode}集")
                 .text("\n截图位于 ${DateUtils.sToMS(basic.from)} 至 ${DateUtils.sToMS(basic.to)} 附近")
@@ -102,30 +97,33 @@ class WhatAnime : BotPlugin() {
                 .text("\n开播时间：$startTime")
                 .text("\n完结时间：$endTime")
                 .text("\n数据来源：WhatAnime")
-                .build()
-            MsgSendUtils.send(userId, groupId, bot, msgUtils)
-            // 发送预览视频
-            val sendVideo = ReadConfig.config.plugin.whatAnime.sendPreviewVideo
-            if (sendVideo) MsgSendUtils.send(
-                userId,
-                groupId,
-                bot,
-                MsgUtils.builder().video(basic.video, imgUrl).build()
+                .build(), MsgUtils.builder().video(basic.video, imgUrl).build()
+        )
+    }
+
+    @MessageHandler
+    fun handler(bot: Bot, event: WholeMessageEvent) {
+        if (!SearchModeUtils.check(
+                RegexCMD.WHAT_ANIME_SEARCH.toRegex(),
+                RegexCMD.UNSET_SEARCH_MODE.toRegex(),
+                event.message,
+                this.javaClass.simpleName,
+                event.userId,
+                event.groupId,
+                bot
             )
+        ) return
+        // 发送检索结果
+        try {
+            val msg = buildMsg(event.userId, event.groupId, event.arrayMsg) ?: return
+            bot.sendMsg(event, msg.first, false)
+            // 发送预览视频
+            if (ReadConfig.config.plugin.whatAnime.sendPreviewVideo) bot.sendMsg(event, msg.second, false)
+        } catch (e: YuriException) {
+            bot.sendMsg(event, e.message, false)
         } catch (e: Exception) {
-            MsgSendUtils.errorSend(msgId, userId, groupId, bot, "WhatAnime 检索失败", e.message)
-            LogUtils.error(e.stackTraceToString())
+            e.printStackTrace()
         }
-    }
-
-    override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        handler(event.messageId, this.javaClass.simpleName, event.message, event.userId, 0L, bot)
-        return MESSAGE_IGNORE
-    }
-
-    override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        handler(event.messageId, this.javaClass.simpleName, event.message, event.userId, event.groupId, bot)
-        return MESSAGE_IGNORE
     }
 
 }

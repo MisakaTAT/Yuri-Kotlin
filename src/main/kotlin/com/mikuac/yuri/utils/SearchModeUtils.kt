@@ -13,7 +13,7 @@ class SearchModeUtils {
 
         private val hashMap = hashMapOf("WhatAnime" to "番", "SauceNao" to "图")
 
-        val expiringMap: ExpiringMap<Long, SearchModeBean> = ExpiringMap.builder()
+        private val expiringMap: ExpiringMap<Long, SearchModeBean> = ExpiringMap.builder()
             .variableExpiration()
             .expirationPolicy(ExpirationPolicy.CREATED)
             .asyncExpirationListener { _: Long, value: SearchModeBean -> expCallBack(value) }
@@ -78,8 +78,6 @@ class SearchModeUtils {
             }
             // 判断是否处于搜索模式
             if (!isSearchMode(key)) return false
-            // 不是图片消息就拦截（否则处于搜图模式会从文本消息内提取图片链接）
-            if (!msg.contains("[CQ:image")) return false
             return true
         }
 

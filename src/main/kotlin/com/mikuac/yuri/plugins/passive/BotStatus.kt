@@ -1,29 +1,22 @@
-package com.mikuac.yuri.plugins.aop
+package com.mikuac.yuri.plugins.passive
 
 import cn.hutool.core.io.FileUtil
 import cn.hutool.system.SystemUtil
 import cn.hutool.system.oshi.OshiUtil
+import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
-import com.mikuac.shiro.dto.event.message.GroupMessageEvent
-import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
-import com.mikuac.yuri.enums.RegexEnum
-import com.mikuac.yuri.utils.MsgSendUtils
+import com.mikuac.shiro.dto.event.message.WholeMessageEvent
+import com.mikuac.yuri.enums.RegexCMD
 import org.springframework.stereotype.Component
 import java.lang.management.ManagementFactory
 import java.util.concurrent.TimeUnit
 
-
 @Component
 class BotStatus : BotPlugin() {
 
-    private fun handler(msg: String, userId: Long, groupId: Long, bot: Bot) {
-        if (!msg.matches(RegexEnum.BOT_STATUS.value)) return
-        buildMsg(userId, groupId, bot)
-    }
-
-    private fun buildMsg(userId: Long, groupId: Long, bot: Bot) {
+    private fun buildMsg(): String {
         val upTime = TimeUnit.MILLISECONDS.toMinutes(ManagementFactory.getRuntimeMXBean().uptime)
         val jvmInfo = SystemUtil.getJvmInfo()
         val osInfo = SystemUtil.getOsInfo()
@@ -31,8 +24,7 @@ class BotStatus : BotPlugin() {
         val computerSys = OshiUtil.getHardware().computerSystem
         val runtimeInfo = SystemUtil.getRuntimeInfo()
         val cpuInfo = OshiUtil.getCpuInfo()
-        val buildMsg = MsgUtils.builder()
-            .text(if (groupId != 0L) "\n" else "")
+        return MsgUtils.builder()
             .text("[基本信息]")
             .text("\nBot UpTime: $upTime min")
             .text("\nKotlin Version: ${KotlinVersion.CURRENT}")
@@ -60,17 +52,16 @@ class BotStatus : BotPlugin() {
             .text("\nMotherBoard Version: ${computerSys.baseboard.version}")
             .text("\nMotherBoard Manufacturer: ${computerSys.baseboard.manufacturer}")
             .build()
-        MsgSendUtils.atSend(userId, groupId, bot, buildMsg)
     }
 
-    override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        handler(event.message, event.userId, 0L, bot)
-        return MESSAGE_IGNORE
-    }
-
-    override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        handler(event.message, event.userId, event.groupId, bot)
-        return MESSAGE_IGNORE
+    @MessageHandler(cmd = RegexCMD.BOT_STATUS)
+    fun handler(bot: Bot, event: WholeMessageEvent) {
+        try {
+            val msg = buildMsg()
+            bot.sendMsg(event, msg, false)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
 }

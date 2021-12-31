@@ -1,21 +1,19 @@
-package com.mikuac.yuri.plugins.aop
+package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
+import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
-import com.mikuac.shiro.dto.event.message.GroupMessageEvent
-import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
+import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.dto.AnimePicDto
-import com.mikuac.yuri.enums.RegexEnum
-import com.mikuac.yuri.utils.LogUtils
-import com.mikuac.yuri.utils.MsgSendUtils
+import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.RequestUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import mu.KotlinLogging
 import net.jodah.expiringmap.ExpirationPolicy
 import net.jodah.expiringmap.ExpiringMap
 import org.springframework.stereotype.Component
@@ -23,8 +21,6 @@ import java.util.concurrent.TimeUnit
 
 @Component
 class AnimePic : BotPlugin() {
-
-    private val log = KotlinLogging.logger {}
 
     private val expiringMap: ExpiringMap<Long, Long> = ExpiringMap.builder()
         .variableExpiration()
@@ -59,52 +55,39 @@ class AnimePic : BotPlugin() {
         return MsgUtils.builder().img(url).build()
     }
 
-    private fun handler(msgId: Int, msg: String, userId: Long, groupId: Long, bot: Bot) {
-        if (!msg.matches(RegexEnum.EROTIC_PIC.value)) return
-        // 检查是否处于冷却时间
-        if (expiringMap[groupId + userId] != null && expiringMap[groupId + userId] == userId) {
-            val expectedExpiration = expiringMap.getExpectedExpiration(groupId + userId) / 1000
-            MsgSendUtils.atSend(userId, groupId, bot, "整天色图色图，信不信把你变成色图？冷却：[${expectedExpiration}秒]")
-            return
-        }
-        buildMsg(msgId, msg, userId, groupId, bot)
-    }
-
     private fun recallMsgPic(msgId: Int, bot: Bot) = runBlocking {
         launch {
             delay(ReadConfig.config.plugin.animePic.recallMsgPicTime.times(1000L))
             bot.deleteMsg(msgId)
-            log.info { "Recall erotic pic msg img - MsgID: $msgId" }
         }
     }
 
-    private fun buildMsg(msgId: Int, msg: String, userId: Long, groupId: Long, bot: Bot) {
+    private fun buildMsg(msg: String, userId: Long, groupId: Long): Pair<String, String?> {
+        // 检查是否处于冷却时间
+        if (expiringMap[groupId + userId] != null && expiringMap[groupId + userId] == userId) {
+            val expectedExpiration = expiringMap.getExpectedExpiration(groupId + userId) / 1000
+            throw YuriException("整天色图色图，信不信把你变成色图？冷却：[${expectedExpiration}秒]")
+        }
         val r18 = msg.contains(Regex("(?i)r18"))
-        if (!ReadConfig.config.plugin.animePic.r18 && r18) {
-            MsgSendUtils.atSend(userId, groupId, bot, "NSFW禁止！")
-            return
-        }
+        if (!ReadConfig.config.plugin.animePic.r18 && r18) throw YuriException("NSFW禁止！")
+        val buildTextMsg = buildTextMsg(r18)
+        return Pair(buildTextMsg.first, buildTextMsg.second)
+    }
+
+    @MessageHandler(cmd = RegexCMD.ANIME_PIC)
+    fun handler(bot: Bot, event: WholeMessageEvent) {
         try {
-            val buildTextMsg = buildTextMsg(r18)
-            MsgSendUtils.send(userId, groupId, bot, buildTextMsg.first)
+            val msg = buildMsg(event.message, event.userId, event.groupId)
+            bot.sendMsg(event, msg.first, false)
             val cdTime = ReadConfig.config.plugin.animePic.cdTime.times(1000L)
-            expiringMap.put(groupId + userId, userId, cdTime, TimeUnit.MILLISECONDS)
-            val picMsgId = MsgSendUtils.send(userId, groupId, bot, buildPicMsg(buildTextMsg.second))
+            expiringMap.put(event.groupId + event.userId, event.userId, cdTime, TimeUnit.MILLISECONDS)
+            val picMsgId = bot.sendMsg(event, buildPicMsg(msg.second), false).data.messageId
             recallMsgPic(picMsgId, bot)
+        } catch (e: YuriException) {
+            bot.sendMsg(event, e.message, false)
         } catch (e: Exception) {
-            MsgSendUtils.errorSend(msgId, userId, groupId, bot, "色图请求失败惹 QAQ", e.message)
-            LogUtils.error(e.stackTraceToString())
+            e.printStackTrace()
         }
-    }
-
-    override fun onGroupMessage(bot: Bot, event: GroupMessageEvent): Int {
-        handler(event.messageId, event.message, event.userId, event.groupId, bot)
-        return MESSAGE_IGNORE
-    }
-
-    override fun onPrivateMessage(bot: Bot, event: PrivateMessageEvent): Int {
-        handler(event.messageId, event.message, event.userId, 0L, bot)
-        return MESSAGE_IGNORE
     }
 
 }
