@@ -1,6 +1,5 @@
 package com.mikuac.yuri.enums
 
-
 class RegexCMD {
 
     companion object {
@@ -17,5 +16,6 @@ class RegexCMD {
         const val HELP = "(i?)help|帮助"
         const val ANIME_PIC = "^[来來发發给給]([1一])?[张張个個幅点點份]([Rr]18的?)?[色瑟][图圖]|^setu(\\s[Rr]18)?|^[色瑟][图圖](\\s[Rr]18)?"
     }
+
 }
 

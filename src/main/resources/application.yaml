@@ -13,20 +13,7 @@ spring:
 
 shiro:
   plugin-list:
-#    - com.mikuac.yuri.plugins.aop.EventLog
-#    - com.mikuac.yuri.plugins.initiative.TencentBotFilter
-#    - com.mikuac.yuri.plugins.BlackListCheck
-#    - com.mikuac.yuri.plugins.passive.AnimePic
-#    - com.mikuac.yuri.plugins.passive.Help
-#    - com.mikuac.yuri.plugins.initiative.Poke
-#    - com.mikuac.yuri.plugins.initiative.Repeat
-#    - com.mikuac.yuri.plugins.initiative.GroupJoinAndQuit
-#    - com.mikuac.yuri.plugins.passive.HttpCat
-#    - com.mikuac.yuri.plugins.passive.BvToAv
-#    - com.mikuac.yuri.plugins.passive.BotStatus
-#    - com.mikuac.yuri.plugins.passive.GithubRepo
-#    - com.mikuac.yuri.plugins.passive.WhatAnime
-#    - com.mikuac.yuri.plugins.passive.SauceNao
-#    - com.mikuac.yuri.plugins.passive.EpicFreeGame
-#    - com.mikuac.yuri.plugins.passive.PhoenixWright
-#    - com.mikuac.yuri.plugins.passive.ThrowUser
+    - com.mikuac.yuri.plugins.initiative.Poke
+    - com.mikuac.yuri.plugins.initiative.Repeat
+    - com.mikuac.yuri.plugins.initiative.AntiBiliMiniApp
+    - com.mikuac.yuri.plugins.initiative.GroupJoinAndQuit
