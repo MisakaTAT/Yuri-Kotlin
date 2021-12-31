@@ -4,7 +4,6 @@ import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.plugins.passive.ThrowUser
 import net.coobird.thumbnailator.Thumbnails
-import net.coobird.thumbnailator.geometry.Positions
 import org.springframework.context.annotation.Bean
 import org.springframework.http.MediaType
 import org.springframework.http.converter.BufferedImageHttpMessageConverter
@@ -53,15 +52,9 @@ class ThrowController {
             avaImgGraphics.dispose()
             // 绘制结束
             // 旋转图片
-            var proceedAva = Thumbnails.of(avaImg)
+            val proceedAva = Thumbnails.of(avaImg)
                 .size(136, 136)
                 .rotate(-160.0)
-                .asBufferedImage()
-            // 二次裁切旋转后图片
-            proceedAva = Thumbnails.of(proceedAva)
-                .sourceRegion(Positions.CENTER, 136, 136)
-                .size(136, 136)
-                .keepAspectRatio(false)
                 .asBufferedImage()
             val bgImgGraphics = tempImg.createGraphics()
             bgImgGraphics.composite = AlphaComposite.getInstance(AlphaComposite.SRC_ATOP)

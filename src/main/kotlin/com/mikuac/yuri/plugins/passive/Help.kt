@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 @Component
 class Help : BotPlugin() {
 
-    private fun buildMsg(): MutableList<Any>? {
+    private fun buildMsg(): MutableList<MutableMap<String, Any>>? {
         val msgList = ArrayList<String>()
 
         val info = """
