@@ -33,7 +33,7 @@
         <dependency>
             <groupId>com.mikuac</groupId>
             <artifactId>shiro</artifactId>
-            <version>1.2.5</version>
+            <version>1.2.5-test</version>
             <optional>true</optional>
         </dependency>
         <dependency>

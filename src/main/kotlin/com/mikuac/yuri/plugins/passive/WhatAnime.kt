@@ -101,18 +101,14 @@ class WhatAnime : BotPlugin() {
         )
     }
 
-    @MessageHandler
+    @MessageHandler(cmd = RegexCMD.WHAT_ANIME_SEARCH)
     fun handler(bot: Bot, event: WholeMessageEvent) {
-        if (!SearchModeUtils.check(
-                RegexCMD.WHAT_ANIME_SEARCH.toRegex(),
-                RegexCMD.UNSET_SEARCH_MODE.toRegex(),
-                event.message,
-                this.javaClass.simpleName,
-                event.userId,
-                event.groupId,
-                bot
-            )
-        ) return
+        SearchModeUtils.setSearchMode(this.javaClass.simpleName, event.userId, event.groupId, bot)
+    }
+
+    @MessageHandler
+    fun search(bot: Bot, event: WholeMessageEvent) {
+        if (!SearchModeUtils.check(this.javaClass.simpleName, event.userId, event.groupId)) return
         // 发送检索结果
         try {
             val msg = buildMsg(event.userId, event.groupId, event.arrayMsg) ?: return

@@ -10,7 +10,7 @@ data class WhatAnimeBasicDto(
     data class Result(
         @SerializedName("anilist")
         val aniList: Long,
-        val episode: Int,
+        val episode: Any,
         val filename: String,
         val from: Double,
         val image: String,

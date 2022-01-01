@@ -1,13 +1,24 @@
 package com.mikuac.yuri.utils
 
+import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.core.Bot
+import com.mikuac.shiro.core.BotPlugin
+import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.bean.SearchModeBean
 import com.mikuac.yuri.config.ReadConfig
+import com.mikuac.yuri.enums.RegexCMD
 import net.jodah.expiringmap.ExpirationPolicy
 import net.jodah.expiringmap.ExpiringMap
+import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 
-class SearchModeUtils {
+@Component
+class SearchModeUtils : BotPlugin() {
+
+    @MessageHandler(cmd = RegexCMD.UNSET_SEARCH_MODE)
+    fun unsetSearchMode(bot: Bot, event: WholeMessageEvent) {
+        remove(event.userId, event.groupId, bot)
+    }
 
     companion object {
 
@@ -28,7 +39,7 @@ class SearchModeUtils {
             return expiringMap[key] != null
         }
 
-        private fun setSearchMode(mode: String, userId: Long, groupId: Long, bot: Bot) {
+        fun setSearchMode(mode: String, userId: Long, groupId: Long, bot: Bot) {
             val key = userId + groupId
             val info = SearchModeBean(userId = userId, groupId = groupId, mode = mode, bot)
             val nativeMode: String
@@ -40,7 +51,7 @@ class SearchModeUtils {
             val timeout = ReadConfig.config.base.searchMode.timeout.times(1000L)
             expiringMap.put(key, info, timeout, TimeUnit.MILLISECONDS)
             nativeMode = hashMap[mode].toString()
-            MsgSendUtils.atSend(userId, groupId, bot, "您已进入搜${nativeMode}模式，请发送您想查找的图片试试吧～")
+            MsgSendUtils.atSend(userId, groupId, bot, "您已进入搜${nativeMode}模式，请发送想要查找的图片。")
         }
 
         fun resetExpiration(userId: Long, groupId: Long) {
@@ -50,32 +61,19 @@ class SearchModeUtils {
 
         private fun remove(userId: Long, groupId: Long, bot: Bot) {
             val key = userId + groupId
+            if (expiringMap[key] == null) return
             expiringMap.remove(key)
-            MsgSendUtils.atSend(userId, groupId, bot, "帮您退出检索模式啦～")
+            MsgSendUtils.atSend(userId, groupId, bot, "不客气哟！")
         }
 
         fun check(
-            setRegex: Regex,
-            unsetRegex: Regex,
-            msg: String,
             mode: String,
             userId: Long,
             groupId: Long,
-            bot: Bot
         ): Boolean {
             val key = userId + groupId
-            // 进入检索模式
-            if (msg.matches(setRegex)) {
-                setSearchMode(mode, userId, groupId, bot)
-                return false
-            }
             // 判断当前检索模式与 SearchModeBean 中是否一致，否则会执行所有检索插件
             if (expiringMap[key]?.mode != mode) return false
-            // 退出检索模式
-            if (msg.matches(unsetRegex)) {
-                remove(userId, groupId, bot)
-                return false
-            }
             // 判断是否处于搜索模式
             if (!isSearchMode(key)) return false
             return true
