@@ -10,12 +10,10 @@ import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 
 @Aspect
 @Component
-@Order(2)
 class BlackListCheckAspect {
 
     @Autowired
@@ -26,7 +24,7 @@ class BlackListCheckAspect {
         return userId in 2854196300L..2854216399L
     }
 
-    @Around("execution(* com.mikuac.yuri.plugins.passive.*.handler(..))")
+    @Around("execution(* com.mikuac.yuri.plugins.passive.*.*Handler(..))")
     fun handler(pjp: ProceedingJoinPoint) {
         val args = pjp.args
         val event = args[1]
@@ -50,7 +48,7 @@ class BlackListCheckAspect {
         if (filterTencentBot(userId)) return false
         if (checkUtils.checkGroupInBlackList(groupId)) return false
         if (checkUtils.checkUserInBlackList(userId)) {
-            MsgSendUtils.atSend(userId, groupId, bot, "你被关小黑屋啦，联系管理员试试吧～")
+            MsgSendUtils.atSend(userId, groupId, bot, "好好在小黑屋反省吧~")
             return false
         }
         return true

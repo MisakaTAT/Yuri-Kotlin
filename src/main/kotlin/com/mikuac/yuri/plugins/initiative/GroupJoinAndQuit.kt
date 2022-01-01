@@ -26,7 +26,6 @@ class GroupJoinAndQuit : BotPlugin() {
         val groupId = event.groupId
         val userId = event.userId
         val botName = ReadConfig.config.base.botName
-        val prefix = ReadConfig.config.command.prefix
         // 排除BOT自身入群通知
         if (userId == ReadConfig.config.base.botSelfId) return MESSAGE_IGNORE
         val msg = MsgUtils.builder()

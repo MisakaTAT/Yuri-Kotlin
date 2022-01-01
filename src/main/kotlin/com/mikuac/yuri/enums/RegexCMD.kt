@@ -3,7 +3,7 @@ package com.mikuac.yuri.enums
 class RegexCMD {
 
     companion object {
-        const val BOT_STATUS = "status|状态"
+        const val BOT_STATUS = "(?i)status|状态"
         const val THROW_USER = "(?i)throw(.*)|[丢抛](.*)"
         const val BV_AV_CONVERT = "(?i)bv[2转]av\\s(.*)|^(?i)av[2转]bv\\s(.*)"
         const val HTTP_CAT = "(?i)httpcat\\s([0-9]+)"
@@ -15,6 +15,8 @@ class RegexCMD {
         const val UNSET_SEARCH_MODE = "结束检索|谢谢"
         const val HELP = "(i?)help|帮助"
         const val ANIME_PIC = "^[来來发發给給]([1一])?[张張个個幅点點份]([Rr]18的?)?[色瑟][图圖]|^setu(\\s[Rr]18)?|^[色瑟][图圖](\\s[Rr]18)?"
+        const val BLOCK_USER = "(i?)ban(.*)"
+        const val UNBLOCK_USER = "(i?)unban(.*)"
     }
 
 }

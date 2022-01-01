@@ -75,7 +75,7 @@ class AnimePic : BotPlugin() {
     }
 
     @MessageHandler(cmd = RegexCMD.ANIME_PIC)
-    fun handler(bot: Bot, event: WholeMessageEvent) {
+    fun animePicHandler(bot: Bot, event: WholeMessageEvent) {
         try {
             val msg = buildMsg(event.message, event.userId, event.groupId)
             bot.sendMsg(event, msg.first, false)

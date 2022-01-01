@@ -27,7 +27,7 @@ class ThrowUser : BotPlugin() {
     }
 
     @GroupMessageHandler(cmd = RegexCMD.THROW_USER)
-    fun handler(bot: Bot, event: GroupMessageEvent) {
+    fun throwUserHandler(bot: Bot, event: GroupMessageEvent) {
         try {
             val msg = buildMsg(event)
             bot.sendGroupMsg(event.groupId, msg, false)

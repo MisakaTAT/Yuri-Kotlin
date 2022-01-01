@@ -19,7 +19,7 @@ class HttpCat : BotPlugin() {
     }
 
     @MessageHandler(cmd = RegexCMD.HTTP_CAT)
-    fun handler(bot: Bot, event: WholeMessageEvent) {
+    fun httpCatHandler(bot: Bot, event: WholeMessageEvent) {
         try {
             val msg = buildMsg(event.message)
             bot.sendMsg(event, msg, false)

@@ -9,7 +9,7 @@ import java.util.*
 @Component
 interface GroupBlackListRepository : JpaRepository<GroupBlackListEntity, Int> {
 
-    @Cacheable(cacheNames = ["groupBlacklistCache"], key = "#groupId")
+    @Cacheable(cacheNames = ["GroupBlacklistCache"], key = "#groupId")
     fun findByGroupId(groupId: Long): Optional<GroupBlackListEntity>
 
 }

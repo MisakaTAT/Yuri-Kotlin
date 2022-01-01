@@ -4,6 +4,7 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 
 class MsgSendUtils {
+
     companion object {
 
         fun send(userId: Long, groupId: Long, bot: Bot, text: String): Int {
@@ -36,22 +37,6 @@ class MsgSendUtils {
             return 0
         }
 
-        fun errorSend(msgId: Int, userId: Long, groupId: Long, bot: Bot, tips: String, error: String?): Int {
-            if (groupId != 0L) return bot.sendGroupMsg(
-                groupId,
-                MsgUtils.builder().reply(msgId)
-                    .text(tips)
-                    .text(if (error != null) "\n$error" else "")
-                    .build(),
-                false
-            ).data.messageId
-            if (groupId == 0L) return bot.sendPrivateMsg(
-                userId,
-                tips + if (error != null) "\n$error" else "",
-                false
-            ).data.messageId
-            return 0
-        }
-
     }
+
 }

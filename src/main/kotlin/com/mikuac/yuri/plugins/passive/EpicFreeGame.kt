@@ -133,7 +133,7 @@ class EpicFreeGame : BotPlugin() {
     }
 
     @GroupMessageHandler(cmd = RegexCMD.EPIC_FREE_GAME)
-    fun handler(bot: Bot, event: GroupMessageEvent) {
+    fun epicFreeGameHandler(bot: Bot, event: GroupMessageEvent) {
         try {
             val msgList = buildMsg()
             val msg = ShiroUtils.generateForwardMsg(event.selfId, ReadConfig.config.base.botName, msgList)

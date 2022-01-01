@@ -70,12 +70,12 @@ class SauceNao : BotPlugin() {
     }
 
     @MessageHandler(cmd = RegexCMD.SAUCE_NAO_SEARCH)
-    fun handler(bot: Bot, event: WholeMessageEvent) {
+    fun sauceNaoHandler(bot: Bot, event: WholeMessageEvent) {
         SearchModeUtils.setSearchMode(this.javaClass.simpleName, event.userId, event.groupId, bot)
     }
 
     @MessageHandler
-    fun search(bot: Bot, event: WholeMessageEvent) {
+    fun sauceNaoSearch(bot: Bot, event: WholeMessageEvent) {
         if (!SearchModeUtils.check(this.javaClass.simpleName, event.userId, event.groupId)) return
         // 发送检索结果
         try {

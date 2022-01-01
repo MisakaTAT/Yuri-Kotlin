@@ -55,7 +55,7 @@ class BotStatus : BotPlugin() {
     }
 
     @MessageHandler(cmd = RegexCMD.BOT_STATUS)
-    fun handler(bot: Bot, event: WholeMessageEvent) {
+    fun botStatusHandler(bot: Bot, event: WholeMessageEvent) {
         try {
             val msg = buildMsg()
             bot.sendMsg(event, msg, false)

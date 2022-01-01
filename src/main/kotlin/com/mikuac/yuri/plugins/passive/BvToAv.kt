@@ -61,7 +61,7 @@ class BvToAv : BotPlugin() {
     }
 
     @MessageHandler(cmd = RegexCMD.BV_AV_CONVERT)
-    fun handler(bot: Bot, event: WholeMessageEvent) {
+    fun bvToAvHandler(bot: Bot, event: WholeMessageEvent) {
         try {
             val msg = buildMsg(event.message) ?: return
             bot.sendMsg(event, msg, false)

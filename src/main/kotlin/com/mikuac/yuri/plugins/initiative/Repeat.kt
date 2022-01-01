@@ -36,9 +36,6 @@ class Repeat : BotPlugin() {
         val msg = event.message
         val groupId = event.groupId
 
-        // 过滤指令
-        if (msg.startsWith(ReadConfig.config.command.prefix)) return MESSAGE_IGNORE
-
         // 如果缓存中存在内容则不进行复读
         val cache = expiringMap[groupId]
         if (cache != null && cache == msg) return MESSAGE_IGNORE

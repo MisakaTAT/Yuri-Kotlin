@@ -1,5 +1,4 @@
 base: # 基础设置
-  debug: false # 开启 debug
   botName: "悠里" # 设置机器人昵称
   botSelfId: 123456789 # 设置机器人账号
   adminList: # 管理员列表
@@ -7,8 +6,6 @@ base: # 基础设置
     - 987654321
   searchMode:
     timeout: 30
-command: # 指令设置
-  prefix: "." # 指令前缀
 plugin: # 插件设置
   animePic: # 色图插件
     r18: true  # 是否允许请求 r18 色图

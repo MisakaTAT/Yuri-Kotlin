@@ -22,7 +22,7 @@ class PhoenixWright : BotPlugin() {
     }
 
     @MessageHandler(cmd = RegexCMD.PHOENIX_WRIGHT)
-    fun handler(bot: Bot, event: WholeMessageEvent) {
+    fun phoenixWrightHandler(bot: Bot, event: WholeMessageEvent) {
         try {
             val msg = buildMsg(event.message)
             bot.sendMsg(event, msg, false)

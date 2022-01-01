@@ -40,7 +40,7 @@ class GithubRepo : BotPlugin() {
     }
 
     @MessageHandler(cmd = RegexCMD.GITHUB_REPO)
-    fun handler(bot: Bot, event: WholeMessageEvent) {
+    fun githubRepoHandler(bot: Bot, event: WholeMessageEvent) {
         try {
             val msg = buildMsg(event.message)
             bot.sendMsg(event, msg, false)
