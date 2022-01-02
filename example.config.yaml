@@ -21,3 +21,5 @@ plugin: # 插件设置
     key: ""
   epic:
     cacheTime: 600 # 缓存时间 （这里为10分钟）
+  tarot:
+    cdTime: 60 # 冷却时间（单位秒）

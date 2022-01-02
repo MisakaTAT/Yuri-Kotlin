@@ -17,6 +17,7 @@ class RegexCMD {
         const val ANIME_PIC = "(?i)setu(\\sr18)?|(?i)色图(\\sr18)?"
         const val BLOCK_USER = "(i?)ban(.*)"
         const val UNBLOCK_USER = "(i?)unban(.*)"
+        const val TAROT = "(i?)tarot|塔罗牌"
     }
 
 }

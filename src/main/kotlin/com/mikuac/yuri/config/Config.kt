@@ -21,6 +21,7 @@ data class Config(
         val whatAnime: WhatAnime,
         val sauceNao: SauceNao,
         val epic: Epic,
+        val tarot: Tarot
     ) {
         data class AnimePic(
             val r18: Boolean,
@@ -44,6 +45,10 @@ data class Config(
 
         data class Epic(
             val cacheTime: Int
+        )
+
+        data class Tarot(
+            val cdTime: Int
         )
     }
 }
