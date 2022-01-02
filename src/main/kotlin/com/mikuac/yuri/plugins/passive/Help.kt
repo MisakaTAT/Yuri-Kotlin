@@ -114,6 +114,14 @@ class Help : BotPlugin() {
         """.trimIndent()
         msgList.add(throwUser)
 
+        val tarot = """
+            Tarot 塔罗牌抽取
+            
+            权限：所有人
+            指令：tarot / 塔罗牌
+        """.trimIndent()
+        msgList.add(tarot)
+
         return ShiroUtils.generateForwardMsg(ReadConfig.config.base.botSelfId, ReadConfig.config.base.botName, msgList)
     }
 
