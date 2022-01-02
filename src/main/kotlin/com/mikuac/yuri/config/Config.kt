@@ -25,6 +25,7 @@ data class Config(
         data class AnimePic(
             val r18: Boolean,
             val cdTime: Int,
+            val proxy: String,
             val recallMsgPicTime: Int
         )
 

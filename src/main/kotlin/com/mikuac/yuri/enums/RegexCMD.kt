@@ -14,7 +14,7 @@ class RegexCMD {
         const val WHAT_ANIME_SEARCH = "[搜找]番"
         const val UNSET_SEARCH_MODE = "结束检索|谢谢"
         const val HELP = "(i?)help|帮助"
-        const val ANIME_PIC = "^[来來发發给給]([1一])?[张張个個幅点點份]([Rr]18的?)?[色瑟][图圖]|^setu(\\s[Rr]18)?|^[色瑟][图圖](\\s[Rr]18)?"
+        const val ANIME_PIC = "(?i)setu(\\sr18)?|(?i)色图(\\sr18)?"
         const val BLOCK_USER = "(i?)ban(.*)"
         const val UNBLOCK_USER = "(i?)unban(.*)"
     }

@@ -38,15 +38,16 @@ class AnimePic : BotPlugin() {
 
     private fun buildTextMsg(r18: Boolean): Pair<String, String?> {
         val data = request(r18)
+        val imgUrl = data.urls.original.replace("i.pixiv.cat", ReadConfig.config.plugin.animePic.proxy)
         return Pair(
             MsgUtils.builder()
                 .text("标题：${data.title}")
                 .text("\nPID：${data.pid}")
                 .text("\n作者：${data.author}")
                 .text("\n链接：https://www.pixiv.net/artworks/${data.pid}")
-                .text("\n反代链接：${data.urls.original}")
+                .text("\n反代链接：${imgUrl}")
                 .build(),
-            data.urls.original
+            imgUrl
         )
     }
 
@@ -81,8 +82,8 @@ class AnimePic : BotPlugin() {
             bot.sendMsg(event, msg.first, false)
             val cdTime = ReadConfig.config.plugin.animePic.cdTime.times(1000L)
             expiringMap.put(event.groupId + event.userId, event.userId, cdTime, TimeUnit.MILLISECONDS)
-            val picMsgId = bot.sendMsg(event, buildPicMsg(msg.second), false).data.messageId
-            recallMsgPic(picMsgId, bot)
+            val picMsgId = bot.sendMsg(event, buildPicMsg(msg.second), false).data?.messageId
+            if (picMsgId != null) recallMsgPic(picMsgId, bot)
         } catch (e: YuriException) {
             bot.sendMsg(event, e.message, false)
         } catch (e: Exception) {

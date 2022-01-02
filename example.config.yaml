@@ -11,6 +11,7 @@ plugin: # 插件设置
     r18: true  # 是否允许请求 r18 色图
     cdTime: 60 # 冷却时间（单位秒）
     recallMsgPicTime: 30 # 图片撤回时间（单位秒）
+    proxy: "i.pixiv.re"
   repeat: # 复读姬插件
     waitTime: 60 # 多长时间内不复读重复内容（单位秒）
     thresholdValue: 5 # 复读阈值
