@@ -122,6 +122,14 @@ class Help : BotPlugin() {
         """.trimIndent()
         msgList.add(tarot)
 
+        val hitokoto = """
+            Hitokoto 一言
+            
+            权限：所有人
+            指令：hitokoto / 一言
+        """.trimIndent()
+        msgList.add(hitokoto)
+
         return ShiroUtils.generateForwardMsg(ReadConfig.config.base.botSelfId, ReadConfig.config.base.botName, msgList)
     }
 

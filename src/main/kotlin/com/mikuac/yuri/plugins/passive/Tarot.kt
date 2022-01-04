@@ -32,7 +32,6 @@ class Tarot : BotPlugin(), ApplicationRunner {
         .expiration(ReadConfig.config.plugin.tarot.cdTime.times(1000L), TimeUnit.MILLISECONDS)
         .build()
 
-
     companion object {
         lateinit var data: TarotDataBean
     }

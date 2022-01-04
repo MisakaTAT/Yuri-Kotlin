@@ -20,7 +20,7 @@ interface UserBlackListRepository : JpaRepository<UserBlackListEntity, Int> {
 
     @Transactional
     @CacheEvict(value = ["UserBlacklistCache"], key = "#entity.userId")
-    override fun <S : UserBlackListEntity?> save(entity: S): S {
+    override fun <S : UserBlackListEntity> save(entity: S): S {
         TODO("Not yet implemented")
     }
 
