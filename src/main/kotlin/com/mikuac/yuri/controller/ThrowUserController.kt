@@ -5,9 +5,7 @@ import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.plugins.passive.ThrowUser
 import net.coobird.thumbnailator.Thumbnails
 import net.coobird.thumbnailator.geometry.Positions
-import org.springframework.context.annotation.Bean
 import org.springframework.http.MediaType
-import org.springframework.http.converter.BufferedImageHttpMessageConverter
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -20,7 +18,7 @@ import java.net.URL
 import javax.imageio.ImageIO
 
 @RestController
-class ThrowController {
+class ThrowUserController {
 
     // http://localhost:5000/throwUser?qq=1140667337
     @RequestMapping(value = ["/throwUser"], produces = [MediaType.IMAGE_PNG_VALUE])
@@ -29,11 +27,6 @@ class ThrowController {
     }
 
     private val tempImg = ImageIO.read(ThrowUser::class.java.classLoader.getResource("images/throw.png"))
-
-    @Bean
-    fun bufferedImageHttpMessageConverter(): BufferedImageHttpMessageConverter? {
-        return BufferedImageHttpMessageConverter()
-    }
 
     private fun buildImg(userId: Long): BufferedImage {
         try {

@@ -19,6 +19,7 @@ class RegexCMD {
         const val UNBLOCK_USER = "(i?)unban\\s(.*)"
         const val TAROT = "(i?)tarot|塔罗牌"
         const val HITOKOTO = "(?i)hitokoto|一言"
+        const val BANGUMI = "今日放送|(?i)bangumi"
     }
 
 }
