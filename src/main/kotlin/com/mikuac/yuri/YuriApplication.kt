@@ -6,9 +6,11 @@ import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.DependsOn
 import org.springframework.context.annotation.EnableAspectJAutoProxy
 import org.springframework.scheduling.annotation.EnableAsync
+import org.springframework.scheduling.annotation.EnableScheduling
 
 @EnableAsync
 @EnableCaching
+@EnableScheduling
 @EnableAspectJAutoProxy
 @DependsOn("readConfig")
 @SpringBootApplication

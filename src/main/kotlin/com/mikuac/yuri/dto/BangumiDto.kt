@@ -10,7 +10,7 @@ class BangumiDto : ArrayList<BangumiDto.BangumiDtoItem>() {
             val air_date: String,
             val air_weekday: Int,
             val id: Int,
-            val images: Images,
+            val images: Images?,
             val name: String,
             val name_cn: String,
             val summary: String,

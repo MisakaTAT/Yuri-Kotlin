@@ -7,42 +7,53 @@ import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
+import com.mikuac.yuri.annotation.Slf4j
+import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.dto.BangumiDto
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.RequestUtils
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.text.SimpleDateFormat
 import java.util.*
 
+@Slf4j
 @Component
 class Bangumi : BotPlugin() {
 
-    val cache = HashMap<String, ArrayList<String>>()
+    @Scheduled(cron = "0 1 1 * * ?")
+    fun cleanCache() {
+        cache = arrayListOf()
+        log.info("[${this.javaClass.simpleName}] 缓存已清除")
+    }
+
+    var cache: ArrayList<String> = arrayListOf()
 
     private fun request(): BangumiDto? {
         val result = RequestUtils.get("https://api.bgm.tv/calendar")
         return Gson().fromJson(result, BangumiDto::class.java)
     }
 
-    private fun buildMsg(): ArrayList<String>? {
+    private fun buildMsg(): ArrayList<String> {
         val weekday = SimpleDateFormat("EEEE").format(Date())
-        if (cache.contains(weekday)) return cache[weekday]
+        if (cache.isNotEmpty()) return cache
         val data = request() ?: throw YuriException("番剧数据获取失败")
         val todayAnime = data.filter { weekday == it.weekday.cn }
         val msgList = ArrayList<String>()
         todayAnime.forEach { i ->
             i.items.forEach { j ->
-                val animeName = j.name_cn.ifEmpty { j.name }
                 val msg = MsgUtils.builder()
-                    .text("${animeName}\n")
-                    .img(j.images.large)
-                    .build()
-                msgList.add(msg)
+                msg.text(j.name_cn.ifEmpty { j.name })
+                if (j.images != null) {
+                    msg.text("\n")
+                    msg.img(j.images.large)
+                }
+                msgList.add(msg.build())
             }
         }
-        cache[weekday] = msgList
+        cache = msgList
         return msgList
     }
 
