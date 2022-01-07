@@ -23,13 +23,13 @@ import java.util.*
 @Component
 class Bangumi : BotPlugin() {
 
+    val cache = HashMap<String, ArrayList<String>>()
+
     @Scheduled(cron = "0 1 1 * * ?")
     fun cleanCache() {
-        cache = arrayListOf()
+        cache.clear()
         log.info("[${this.javaClass.simpleName}] 缓存已清除")
     }
-
-    var cache: ArrayList<String> = arrayListOf()
 
     private fun request(): BangumiDto? {
         val result = RequestUtils.get("https://api.bgm.tv/calendar")
@@ -38,7 +38,8 @@ class Bangumi : BotPlugin() {
 
     private fun buildMsg(): ArrayList<String> {
         val weekday = SimpleDateFormat("EEEE").format(Date())
-        if (cache.isNotEmpty()) return cache
+        val todayCache: ArrayList<String> = cache[weekday] ?: arrayListOf()
+        if (todayCache.isNotEmpty()) return todayCache
         val data = request() ?: throw YuriException("番剧数据获取失败")
         val todayAnime = data.filter { weekday == it.weekday.cn }
         val msgList = ArrayList<String>()
@@ -53,7 +54,7 @@ class Bangumi : BotPlugin() {
                 msgList.add(msg.build())
             }
         }
-        cache = msgList
+        cache[weekday] = msgList
         return msgList
     }
 
