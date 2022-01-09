@@ -52,9 +52,10 @@ class BvToAv : BotPlugin() {
         try {
             val bvId = matcher.group(1)
             val avId = matcher.group(2)
-            if (bvId.isNotEmpty()) return bv2av(bvId)
-            if (avId.isNotEmpty()) return av2bv(avId)
+            if (bvId != null && bvId.isNotEmpty()) return bv2av(bvId)
+            if (avId != null && avId.isNotEmpty()) return av2bv(avId)
         } catch (e: Exception) {
+            e.printStackTrace()
             throw YuriException("转换失败")
         }
         return null
