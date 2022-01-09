@@ -9,9 +9,9 @@ import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.dto.GithubRepoDto
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
-import com.mikuac.yuri.utils.RegexUtils
 import com.mikuac.yuri.utils.RequestUtils
 import org.springframework.stereotype.Component
+import java.util.regex.Matcher
 
 @Component
 class GithubRepo : BotPlugin() {
@@ -24,8 +24,8 @@ class GithubRepo : BotPlugin() {
         return json
     }
 
-    private fun buildMsg(msg: String): String {
-        val searchName = RegexUtils.group(RegexCMD.GITHUB_REPO.toRegex(), 1, msg)
+    private fun buildMsg(matcher: Matcher): String {
+        val searchName = matcher.group(1) ?: throw YuriException("请按格式输入正确的仓库名")
         val data = getRepoInfo(searchName).items[0]
         return MsgUtils.builder()
             .text("RepoName: ${data.fullName}")
@@ -40,9 +40,9 @@ class GithubRepo : BotPlugin() {
     }
 
     @MessageHandler(cmd = RegexCMD.GITHUB_REPO)
-    fun githubRepoHandler(bot: Bot, event: WholeMessageEvent) {
+    fun githubRepoHandler(bot: Bot, event: WholeMessageEvent, matcher: Matcher) {
         try {
-            val msg = buildMsg(event.message)
+            val msg = buildMsg(matcher)
             bot.sendMsg(event, msg, false)
         } catch (e: YuriException) {
             bot.sendMsg(event, e.message, false)

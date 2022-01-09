@@ -6,8 +6,8 @@ import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
-import com.mikuac.yuri.utils.RegexUtils
 import org.springframework.stereotype.Component
+import java.util.regex.Matcher
 import kotlin.math.pow
 
 
@@ -48,10 +48,10 @@ class BvToAv : BotPlugin() {
         return stringBuilder.toString()
     }
 
-    private fun buildMsg(msg: String): String? {
+    private fun buildMsg(matcher: Matcher): String? {
         try {
-            val bvId = RegexUtils.group(RegexCMD.BV_AV_CONVERT.toRegex(), 1, msg)
-            val avId = RegexUtils.group(RegexCMD.BV_AV_CONVERT.toRegex(), 2, msg)
+            val bvId = matcher.group(1)
+            val avId = matcher.group(2)
             if (bvId.isNotEmpty()) return bv2av(bvId)
             if (avId.isNotEmpty()) return av2bv(avId)
         } catch (e: Exception) {
@@ -61,9 +61,9 @@ class BvToAv : BotPlugin() {
     }
 
     @MessageHandler(cmd = RegexCMD.BV_AV_CONVERT)
-    fun bvToAvHandler(bot: Bot, event: WholeMessageEvent) {
+    fun bvToAvHandler(bot: Bot, event: WholeMessageEvent, matcher: Matcher) {
         try {
-            val msg = buildMsg(event.message) ?: return
+            val msg = buildMsg(matcher) ?: return
             bot.sendMsg(event, msg, false)
         } catch (e: YuriException) {
             bot.sendMsg(event, e.message, false)
