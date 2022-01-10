@@ -8,6 +8,7 @@ import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.dto.HitokotoDto
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.RequestUtils
 import org.springframework.stereotype.Component
 import java.util.*
@@ -37,8 +38,8 @@ class Hitokoto : BotPlugin() {
     private fun request(): HitokotoDto {
         val type = types[Random().nextInt(types.size)]
         val api = "https://v1.hitokoto.cn?c=${type}"
-        val result = RequestUtils.get(api)
-        return Gson().fromJson(result, HitokotoDto::class.java)
+        val result = RequestUtils.get(api) ?: throw YuriException("一言API请求失败")
+        return Gson().fromJson(result.string(), HitokotoDto::class.java)
     }
 
     @MessageHandler(cmd = RegexCMD.HITOKOTO)

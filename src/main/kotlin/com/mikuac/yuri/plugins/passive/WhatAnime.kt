@@ -54,10 +54,11 @@ class WhatAnime : BotPlugin() {
     """
 
     private fun getBasicInfo(imgUrl: String): WhatAnimeBasicDto {
-        val result = RequestUtils.get("https://api.trace.moe/search?cutBorders&url=${imgUrl}")
-        val json = Gson().fromJson(result, WhatAnimeBasicDto::class.java)
-        if (json.error != "") throw Exception(json.error)
-        if (json.result.isEmpty()) throw Exception("未找到匹配结果")
+        val api = "https://api.trace.moe/search?cutBorders&url=${imgUrl}"
+        val result = RequestUtils.get(api) ?: throw YuriException("WhatAnime API请求失败")
+        val json = Gson().fromJson(result.string(), WhatAnimeBasicDto::class.java)
+        if (json.error != "") throw YuriException(json.error)
+        if (json.result.isEmpty()) throw YuriException("未找到匹配结果")
         return json
     }
 
@@ -67,8 +68,9 @@ class WhatAnime : BotPlugin() {
         val json = JsonObject()
         json.addProperty("query", graphqlQuery)
         json.add("variables", variables)
-        val result = RequestUtils.post("https://trace.moe/anilist/", json.toString())
-        return Gson().fromJson(result, WhatAnimeDto::class.java)
+        val result =
+            RequestUtils.post("https://trace.moe/anilist/", json.toString()) ?: throw YuriException("WhatAnime API请求失败")
+        return Gson().fromJson(result.string(), WhatAnimeDto::class.java)
     }
 
     private fun buildMsg(userId: Long, groupId: Long, arrMsg: List<MsgChainBean>): Pair<String, String>? {

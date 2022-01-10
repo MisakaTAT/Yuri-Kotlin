@@ -20,6 +20,7 @@ class RegexCMD {
         const val TAROT = "(i?)tarot|塔罗牌"
         const val HITOKOTO = "(?i)hitokoto|一言"
         const val BANGUMI = "今日放送|(?i)bangumi"
+        const val BLOCK_CHAIN = "(?i)bc\\s([a-z]+)"
     }
 
 }

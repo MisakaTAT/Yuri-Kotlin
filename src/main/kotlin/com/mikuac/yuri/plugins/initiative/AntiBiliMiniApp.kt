@@ -17,8 +17,9 @@ import org.springframework.stereotype.Component
 class AntiBiliMiniApp : BotPlugin() {
 
     private fun request(bid: String): BiliVideoApiDto.Data {
-        val result = RequestUtils.get("https://api.bilibili.com/x/web-interface/view?bvid=${bid}")
-        return Gson().fromJson(result, BiliVideoApiDto::class.java).data
+        val api = "https://api.bilibili.com/x/web-interface/view?bvid=${bid}"
+        val result = RequestUtils.get(api) ?: throw YuriException("哔哩哔哩API请求失败")
+        return Gson().fromJson(result.string(), BiliVideoApiDto::class.java).data
     }
 
     private fun buildMsg(json: String): String {

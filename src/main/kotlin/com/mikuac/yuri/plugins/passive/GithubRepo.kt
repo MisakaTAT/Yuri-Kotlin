@@ -18,8 +18,8 @@ class GithubRepo : BotPlugin() {
 
     private fun getRepoInfo(repoName: String): GithubRepoDto {
         val api = "https://api.github.com/search/repositories?q=${repoName}"
-        val result = RequestUtils.get(api)
-        val json = Gson().fromJson(result, GithubRepoDto::class.java)
+        val result = RequestUtils.get(api) ?: throw YuriException("Github API请求失败")
+        val json = Gson().fromJson(result.string(), GithubRepoDto::class.java)
         if (json.totalCount <= 0) throw YuriException("未找到名为 $repoName 的仓库")
         return json
     }

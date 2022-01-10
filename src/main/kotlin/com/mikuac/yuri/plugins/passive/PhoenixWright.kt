@@ -28,6 +28,8 @@ class PhoenixWright : BotPlugin() {
         try {
             val msg = buildMsg(matcher)
             bot.sendMsg(event, msg, false)
+        } catch (e: YuriException) {
+            bot.sendMsg(event, e.message, false)
         } catch (e: Exception) {
             e.printStackTrace()
         }

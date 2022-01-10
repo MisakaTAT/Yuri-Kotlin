@@ -21,8 +21,8 @@ class SauceNao : BotPlugin() {
     private fun request(imgUrl: String): SauceNaoDto {
         val key = ReadConfig.config.plugin.sauceNao.key
         val api = "https://saucenao.com/search.php?api_key=${key}&output_type=2&numres=3&db=999&url=${imgUrl}"
-        val result = RequestUtils.get(api)
-        val json = Gson().fromJson(result, SauceNaoDto::class.java)
+        val result = RequestUtils.get(api) ?: throw YuriException("SauceNao API请求失败")
+        val json = Gson().fromJson(result.string(), SauceNaoDto::class.java)
         if (json.header.longRemaining <= 0) throw YuriException("今日的搜索配额已耗尽啦")
         if (json.header.shortRemaining <= 0) throw YuriException("短时间内搜索配额已耗尽")
         if (json.results.isEmpty()) throw YuriException("未能找到相似的内容")
