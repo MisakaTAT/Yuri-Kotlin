@@ -22,7 +22,7 @@ class SauceNao : BotPlugin() {
     private fun request(imgUrl: String): SauceNaoDto {
         val key = ReadConfig.config.plugin.sauceNao.key
         val api = "https://saucenao.com/search.php?api_key=${key}&output_type=2&numres=3&db=999&url=${imgUrl}"
-        val result = RequestUtils.get(api) ?: throw YuriException("SauceNao API请求失败")
+        val result = RequestUtils.get(api) ?: throw YuriException("SauceNao API 请求失败")
         val json = Gson().fromJson(result.string(), SauceNaoDto::class.java)
         if (json.header.longRemaining <= 0) throw YuriException("今日的搜索配额已耗尽啦")
         if (json.header.shortRemaining <= 0) throw YuriException("短时间内搜索配额已耗尽")

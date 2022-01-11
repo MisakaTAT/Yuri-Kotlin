@@ -27,19 +27,20 @@ class BlackListCheckAspect {
     @Around("execution(* com.mikuac.yuri.plugins.passive.*.*Handler(..))")
     fun handler(pjp: ProceedingJoinPoint) {
         val args = pjp.args
-        val event = args[1]
-        val bot = args[0] as Bot
-        if (event is WholeMessageEvent) {
-            if (check(event.userId, event.groupId, bot)) pjp.proceed()
-            return
-        }
-        if (event is GroupMessageEvent) {
-            if (check(event.userId, event.groupId, bot)) pjp.proceed()
-            return
-        }
-        if (event is PrivateMessageEvent) {
-            if (check(event.userId, 0L, bot)) pjp.proceed()
-            return
+        val bot = args.filterIsInstance<Bot>()[0]
+        args.forEach { arg ->
+            if (arg is WholeMessageEvent) {
+                if (check(arg.userId, arg.groupId, bot)) pjp.proceed()
+                return
+            }
+            if (arg is GroupMessageEvent) {
+                if (check(arg.userId, arg.groupId, bot)) pjp.proceed()
+                return
+            }
+            if (arg is PrivateMessageEvent) {
+                if (check(arg.userId, 0L, bot)) pjp.proceed()
+                return
+            }
         }
         pjp.proceed()
     }

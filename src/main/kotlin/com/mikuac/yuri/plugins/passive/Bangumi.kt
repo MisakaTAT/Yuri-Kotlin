@@ -32,7 +32,7 @@ class Bangumi : BotPlugin() {
     }
 
     private fun request(): BangumiDto? {
-        val result = RequestUtils.get("https://api.bgm.tv/calendar") ?: throw YuriException("番组计划API请求失败")
+        val result = RequestUtils.get("https://api.bgm.tv/calendar") ?: throw YuriException("Bangumi API 请求失败")
         return Gson().fromJson(result.string(), BangumiDto::class.java)
     }
 

@@ -60,7 +60,7 @@ class EpicFreeGame : BotPlugin() {
 
         try {
             val api = "https://www.epicgames.com/store/backend/graphql-proxy"
-            val result = RequestUtils.post(api, json.toString(), headers) ?: throw YuriException("WhatAnime API请求失败")
+            val result = RequestUtils.post(api, json.toString(), headers) ?: throw YuriException("EPIC API 请求失败")
 
             val jsonObject = JsonParser.parseString(result.string())
             val elements = jsonObject.asJsonObject["data"].asJsonObject["Catalog"].asJsonObject["searchStore"]

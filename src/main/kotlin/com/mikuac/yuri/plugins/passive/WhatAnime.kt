@@ -54,25 +54,24 @@ class WhatAnime : BotPlugin() {
     """
 
     @Synchronized
-    private fun getBasicInfo(imgUrl: String): WhatAnimeBasicDto {
-        val api = "https://api.trace.moe/search?cutBorders&url=${imgUrl}"
-        val result = RequestUtils.get(api) ?: throw YuriException("WhatAnime API请求失败")
-        val json = Gson().fromJson(result.string(), WhatAnimeBasicDto::class.java)
-        if (json.error != "") throw YuriException(json.error)
-        if (json.result.isEmpty()) throw YuriException("未找到匹配结果")
-        return json
-    }
-
-    @Synchronized
-    private fun doSearch(animeId: Long): WhatAnimeDto {
+    private fun doSearch(imgUrl: String): Pair<WhatAnimeBasicDto, WhatAnimeDto> {
+        // 获取基本信息
+        val basicResultJson = RequestUtils.get("https://api.trace.moe/search?cutBorders&url=${imgUrl}")
+            ?: throw YuriException("WhatAnime Basic API 请求失败")
+        val basicResult = Gson().fromJson(basicResultJson.string(), WhatAnimeBasicDto::class.java)
+        if (basicResult.error != "") throw YuriException(basicResult.error)
+        if (basicResult.result.isEmpty()) throw YuriException("未找到匹配结果")
+        val animeId = basicResult.result[0].aniList
+        // 获取详细信息
         val variables = JsonObject()
         variables.addProperty("id", animeId)
-        val json = JsonObject()
-        json.addProperty("query", graphqlQuery)
-        json.add("variables", variables)
-        val result =
-            RequestUtils.post("https://trace.moe/anilist/", json.toString()) ?: throw YuriException("WhatAnime API请求失败")
-        return Gson().fromJson(result.string(), WhatAnimeDto::class.java)
+        val reqBody = JsonObject()
+        reqBody.addProperty("query", graphqlQuery)
+        reqBody.add("variables", variables)
+        val result = RequestUtils.post("https://trace.moe/anilist/", reqBody.toString())
+            ?: throw YuriException("WhatAnime AniList API 请求失败")
+        val aniListResult = Gson().fromJson(result.string(), WhatAnimeDto::class.java)
+        return Pair(basicResult, aniListResult)
     }
 
     private fun buildMsg(userId: Long, groupId: Long, arrMsg: List<MsgChainBean>): Pair<String, String>? {
@@ -83,8 +82,10 @@ class WhatAnime : BotPlugin() {
         if (images.isEmpty()) return null
         val imgUrl = images[0].data["url"] ?: return null
 
-        val basic = getBasicInfo(imgUrl).result[0]
-        val detailed = doSearch(basic.aniList).data.media
+        val result = doSearch(imgUrl)
+        val basic = result.first.result[0]
+        val detailed = result.second.data.media
+
         val animeName = detailed.title.chinese.ifEmpty { detailed.title.native }
         val startTime = "${detailed.startDate.year}年${detailed.startDate.month}月${detailed.startDate.day}日"
         val endTime = "${detailed.endDate.year}年${detailed.endDate.month}月${detailed.endDate.day}日"

@@ -31,7 +31,7 @@ class AnimePic : BotPlugin() {
     private fun request(r18: Boolean): AnimePicDto.Data {
         var api = "https://api.lolicon.app/setu/v2"
         if (r18) api = "$api?r18=1"
-        val result = RequestUtils.get(api) ?: throw YuriException("色图API请求失败")
+        val result = RequestUtils.get(api) ?: throw YuriException("Lolicon API 请求失败")
         val json = Gson().fromJson(result.string(), AnimePicDto::class.java)
         return json.data[0]
     }

@@ -18,7 +18,7 @@ class AntiBiliMiniApp : BotPlugin() {
 
     private fun request(bid: String): BiliVideoApiDto.Data {
         val api = "https://api.bilibili.com/x/web-interface/view?bvid=${bid}"
-        val result = RequestUtils.get(api) ?: throw YuriException("哔哩哔哩API请求失败")
+        val result = RequestUtils.get(api) ?: throw YuriException("Bilibili API 请求失败")
         return Gson().fromJson(result.string(), BiliVideoApiDto::class.java).data
     }
 

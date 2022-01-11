@@ -38,7 +38,7 @@ class Hitokoto : BotPlugin() {
     private fun request(): HitokotoDto {
         val type = types[Random().nextInt(types.size)]
         val api = "https://v1.hitokoto.cn?c=${type}"
-        val result = RequestUtils.get(api) ?: throw YuriException("一言API请求失败")
+        val result = RequestUtils.get(api) ?: throw YuriException("Hitokoto API 请求失败")
         return Gson().fromJson(result.string(), HitokotoDto::class.java)
     }
 

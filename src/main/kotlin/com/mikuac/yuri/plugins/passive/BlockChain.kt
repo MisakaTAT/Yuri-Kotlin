@@ -18,7 +18,7 @@ class BlockChain : BotPlugin() {
 
     private fun request(symbol: String): BlockChainDto {
         val api = "https://api.huobi.pro/market/history/kline?period=1day&size=1&symbol=${symbol}usdt"
-        val data = RequestUtils.get(api) ?: throw YuriException("火币API请求失败")
+        val data = RequestUtils.get(api) ?: throw YuriException("Huobi API 请求失败")
         return Gson().fromJson(data.string(), BlockChainDto::class.java)
     }
 
