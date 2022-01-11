@@ -9,14 +9,20 @@ import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.dto.SauceNaoDto
+import com.mikuac.yuri.entity.SauceNaoCacheEntity
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
+import com.mikuac.yuri.repository.SauceNaoCacheRepository
 import com.mikuac.yuri.utils.RequestUtils
 import com.mikuac.yuri.utils.SearchModeUtils
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
 class SauceNao : BotPlugin() {
+
+    @Autowired
+    private lateinit var repository: SauceNaoCacheRepository
 
     @Synchronized
     private fun request(imgUrl: String): SauceNaoDto {
@@ -31,11 +37,14 @@ class SauceNao : BotPlugin() {
     }
 
     private fun buildMsg(userId: Long, groupId: Long, arrMsg: List<MsgChainBean>): String? {
-        // 重新设置过期时间
-        SearchModeUtils.resetExpiration(userId, groupId)
-        val images = arrMsg.filter { "image" == it.type }
-        if (images.isEmpty()) return null
-        val imgUrl = images[0].data["url"] ?: return null
+        val imgUrl = SearchModeUtils.getImgUrl(userId, groupId, arrMsg) ?: return null
+        // 查缓存
+        val imgMd5 = imgUrl.split("-").last()
+        val cache = repository.findByMd5(imgMd5)
+        if (cache.isPresent) {
+            return "${cache.get().infoResult}\n[Tips] 该结果为数据库缓存"
+        }
+
         // 返回的结果按相识度排序，第一个相似度最高，默认取第一个
         val result = request(imgUrl).results.filter {
             it.header.indexId in listOf(5, 18, 38, 41)
@@ -43,31 +52,33 @@ class SauceNao : BotPlugin() {
         val header = result.header
         val data = result.data
         // 构建消息
-        val msg = MsgUtils.builder()
+        val msgUtils = MsgUtils.builder()
             .img(header.thumbnail)
             .text("\n相似度：${header.similarity}%")
         when (header.indexId) {
             5 -> {
-                msg.text("\n标题：${data.title}")
-                msg.text("\n画师：${data.authorName}")
-                msg.text("\n作品主页：https://pixiv.net/i/${data.pixivId}")
-                msg.text("\n画师主页：https://pixiv.net/u/${data.authorId}")
-                msg.text("\n反代地址：https://i.loli.best/${data.pixivId}")
-                msg.text("\n数据来源：SauceNao (Pixiv)")
+                msgUtils.text("\n标题：${data.title}")
+                msgUtils.text("\n画师：${data.authorName}")
+                msgUtils.text("\n作品主页：https://pixiv.net/i/${data.pixivId}")
+                msgUtils.text("\n画师主页：https://pixiv.net/u/${data.authorId}")
+                msgUtils.text("\n反代地址：https://i.loli.best/${data.pixivId}")
+                msgUtils.text("\n数据来源：SauceNao (Pixiv)")
             }
             41 -> {
-                msg.text("\n链接：${data.extUrls[0]}")
-                msg.text("\n用户：" + "https://twitter.com/${data.twitterUserHandle}")
-                msg.text("\n数据来源：SauceNao (Twitter)")
+                msgUtils.text("\n链接：${data.extUrls[0]}")
+                msgUtils.text("\n用户：" + "https://twitter.com/${data.twitterUserHandle}")
+                msgUtils.text("\n数据来源：SauceNao (Twitter)")
             }
             in listOf(18, 38) -> {
-                msg.text("\n来源：${data.source}")
-                msg.text("\n日文名：${data.jpName}")
-                msg.text("\n英文名：${data.engName}")
-                msg.text("\n数据来源：SauceNao (H-Misc)")
+                msgUtils.text("\n来源：${data.source}")
+                msgUtils.text("\n日文名：${data.jpName}")
+                msgUtils.text("\n英文名：${data.engName}")
+                msgUtils.text("\n数据来源：SauceNao (H-Misc)")
             }
         }
-        return msg.build()
+        val msg = msgUtils.build()
+        repository.save(SauceNaoCacheEntity(0, imgMd5, msg))
+        return msg
     }
 
     @MessageHandler(cmd = RegexCMD.SAUCE_NAO_SEARCH)

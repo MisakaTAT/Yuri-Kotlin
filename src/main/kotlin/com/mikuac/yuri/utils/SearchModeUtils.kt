@@ -1,6 +1,7 @@
 package com.mikuac.yuri.utils
 
 import com.mikuac.shiro.annotation.MessageHandler
+import com.mikuac.shiro.bean.MsgChainBean
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
@@ -54,7 +55,7 @@ class SearchModeUtils : BotPlugin() {
             MsgSendUtils.atSend(userId, groupId, bot, "您已进入搜${nativeMode}模式，请发送想要查找的图片。")
         }
 
-        fun resetExpiration(userId: Long, groupId: Long) {
+        private fun resetExpiration(userId: Long, groupId: Long) {
             val key = userId + groupId
             expiringMap.resetExpiration(key)
         }
@@ -77,6 +78,15 @@ class SearchModeUtils : BotPlugin() {
             // 判断是否处于搜索模式
             if (!isSearchMode(key)) return false
             return true
+        }
+
+        fun getImgUrl(userId: Long, groupId: Long, arrMsg: List<MsgChainBean>): String? {
+            val images = arrMsg.filter { "image" == it.type }
+            if (images.isEmpty()) return null
+            val imgUrl = images[0].data["url"] ?: return null
+            // 重新设置过期时间
+            resetExpiration(userId, groupId)
+            return imgUrl
         }
 
     }

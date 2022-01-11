@@ -11,15 +11,21 @@ import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.dto.WhatAnimeBasicDto
 import com.mikuac.yuri.dto.WhatAnimeDto
+import com.mikuac.yuri.entity.WhatAnimeCacheEntity
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
+import com.mikuac.yuri.repository.WhatAnimeCacheRepository
 import com.mikuac.yuri.utils.DateUtils
 import com.mikuac.yuri.utils.RequestUtils
 import com.mikuac.yuri.utils.SearchModeUtils
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
 class WhatAnime : BotPlugin() {
+
+    @Autowired
+    private lateinit var repository: WhatAnimeCacheRepository
 
     private val graphqlQuery = """
            query (${'$'}id: Int) {
@@ -68,19 +74,20 @@ class WhatAnime : BotPlugin() {
         val reqBody = JsonObject()
         reqBody.addProperty("query", graphqlQuery)
         reqBody.add("variables", variables)
-        val result = RequestUtils.post("https://trace.moe/anilist/", reqBody.toString())
+        val aniListResultJson = RequestUtils.post("https://trace.moe/anilist/", reqBody.toString())
             ?: throw YuriException("WhatAnime AniList API 请求失败")
-        val aniListResult = Gson().fromJson(result.string(), WhatAnimeDto::class.java)
+        val aniListResult = Gson().fromJson(aniListResultJson.string(), WhatAnimeDto::class.java)
         return Pair(basicResult, aniListResult)
     }
 
     private fun buildMsg(userId: Long, groupId: Long, arrMsg: List<MsgChainBean>): Pair<String, String>? {
-        // 重新设置过期时间
-        SearchModeUtils.resetExpiration(userId, groupId)
-
-        val images = arrMsg.filter { "image" == it.type }
-        if (images.isEmpty()) return null
-        val imgUrl = images[0].data["url"] ?: return null
+        val imgUrl = SearchModeUtils.getImgUrl(userId, groupId, arrMsg) ?: return null
+        // 查缓存
+        val imgMd5 = imgUrl.split("-").last()
+        val cache = repository.findByMd5(imgMd5)
+        if (cache.isPresent) {
+            return Pair("${cache.get().infoResult}\n[Tips] 该结果为数据库缓存", cache.get().videoResult)
+        }
 
         val result = doSearch(imgUrl)
         val basic = result.first.result[0]
@@ -90,20 +97,21 @@ class WhatAnime : BotPlugin() {
         val startTime = "${detailed.startDate.year}年${detailed.startDate.month}月${detailed.startDate.day}日"
         val endTime = "${detailed.endDate.year}年${detailed.endDate.month}月${detailed.endDate.day}日"
 
-        return Pair(
-            MsgUtils.builder()
-                .img(detailed.coverImage.large)
-                .text("\n该截图出自番剧${animeName}第${basic.episode}集")
-                .text("\n截图位于 ${DateUtils.sToMS(basic.from)} 至 ${DateUtils.sToMS(basic.to)} 附近")
-                .text("\n番剧类型：${detailed.type}-${detailed.format}")
-                .text("\n状态：${detailed.status}")
-                .text("\n总集数：${detailed.episodes}")
-                .text("\n开播季节：${detailed.season}")
-                .text("\n开播时间：$startTime")
-                .text("\n完结时间：$endTime")
-                .text("\n数据来源：WhatAnime")
-                .build(), MsgUtils.builder().video(basic.video, imgUrl).build()
-        )
+        val infoMsg = MsgUtils.builder()
+            .img(detailed.coverImage.large)
+            .text("\n该截图出自番剧${animeName}第${basic.episode}集")
+            .text("\n截图位于 ${DateUtils.sToMS(basic.from)} 至 ${DateUtils.sToMS(basic.to)} 附近")
+            .text("\n番剧类型：${detailed.type}-${detailed.format}")
+            .text("\n状态：${detailed.status}")
+            .text("\n总集数：${detailed.episodes}")
+            .text("\n开播季节：${detailed.season}")
+            .text("\n开播时间：$startTime")
+            .text("\n完结时间：$endTime")
+            .text("\n数据来源：WhatAnime")
+            .build()
+        val videoMsg = MsgUtils.builder().video(basic.video, imgUrl).build()
+        repository.save(WhatAnimeCacheEntity(0, imgMd5, infoMsg, videoMsg))
+        return Pair(infoMsg, videoMsg)
     }
 
     @MessageHandler(cmd = RegexCMD.WHAT_ANIME_SEARCH)

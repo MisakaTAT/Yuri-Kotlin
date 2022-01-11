@@ -1,5 +1,6 @@
 package com.mikuac.yuri.utils
 
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -28,7 +29,8 @@ object RequestUtils {
     }
 
     fun post(url: String, json: String): ResponseBody? {
-        val request = Request.Builder().url(url).post(json.toRequestBody())
+        val mediaType = "application/json; charset=utf-8".toMediaType()
+        val request = Request.Builder().url(url).post(json.toRequestBody(mediaType))
         val call = client.newCall(request.build())
         return call.execute().body
     }
