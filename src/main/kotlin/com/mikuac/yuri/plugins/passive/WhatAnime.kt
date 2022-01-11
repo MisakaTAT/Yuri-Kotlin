@@ -53,6 +53,7 @@ class WhatAnime : BotPlugin() {
                 }
     """
 
+    @Synchronized
     private fun getBasicInfo(imgUrl: String): WhatAnimeBasicDto {
         val api = "https://api.trace.moe/search?cutBorders&url=${imgUrl}"
         val result = RequestUtils.get(api) ?: throw YuriException("WhatAnime API请求失败")
@@ -62,6 +63,7 @@ class WhatAnime : BotPlugin() {
         return json
     }
 
+    @Synchronized
     private fun doSearch(animeId: Long): WhatAnimeDto {
         val variables = JsonObject()
         variables.addProperty("id", animeId)

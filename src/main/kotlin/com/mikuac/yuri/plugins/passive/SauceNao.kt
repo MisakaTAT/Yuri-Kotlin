@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component
 @Component
 class SauceNao : BotPlugin() {
 
+    @Synchronized
     private fun request(imgUrl: String): SauceNaoDto {
         val key = ReadConfig.config.plugin.sauceNao.key
         val api = "https://saucenao.com/search.php?api_key=${key}&output_type=2&numres=3&db=999&url=${imgUrl}"
