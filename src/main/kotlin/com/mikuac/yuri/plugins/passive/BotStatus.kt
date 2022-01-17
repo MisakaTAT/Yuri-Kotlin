@@ -9,6 +9,7 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.utils.MsgSendUtils
 import org.springframework.stereotype.Component
 import java.lang.management.ManagementFactory
 import java.util.concurrent.TimeUnit
@@ -58,10 +59,9 @@ class BotStatus {
     @MessageHandler(cmd = RegexCMD.BOT_STATUS)
     fun botStatusHandler(bot: Bot, event: WholeMessageEvent) {
         try {
-            val msg = buildMsg()
-            bot.sendMsg(event, msg, false)
+            bot.sendMsg(event, buildMsg(), false)
         } catch (e: Exception) {
-            e.printStackTrace()
+            e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
         }
     }
 

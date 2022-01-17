@@ -3,39 +3,81 @@ package com.mikuac.yuri.plugins.passive
 import com.mikuac.shiro.annotation.GroupMessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
+import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.enums.RegexCMD
-import com.mikuac.yuri.exception.YuriException
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.core.env.Environment
+import com.mikuac.yuri.utils.MsgSendUtils
+import net.coobird.thumbnailator.Thumbnails
+import net.coobird.thumbnailator.geometry.Positions
 import org.springframework.stereotype.Component
+import java.awt.AlphaComposite
+import java.awt.RenderingHints
+import java.awt.geom.Ellipse2D
+import java.awt.image.BufferedImage
+import java.io.ByteArrayOutputStream
+import java.net.URL
+import java.util.*
+import javax.imageio.ImageIO
 
 @Shiro
 @Component
 class ThrowUser {
 
-    @Autowired
-    private lateinit var env: Environment
+    private val tempImg = ImageIO.read(ThrowUser::class.java.classLoader.getResource("images/throw.png"))
+
+    private fun drawImage(userId: Long): String {
+        // 从 AvatarURL 读入头像图片
+        val image = ImageIO.read(URL(ShiroUtils.getUserAvatar(userId, 640)))
+        // 设置图层参数
+        val avaImg = BufferedImage(image.width, image.height, BufferedImage.TYPE_4BYTE_ABGR)
+        // 开启抗锯齿
+        val renderingHints = RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+        // 绘制蒙版
+        val shape = Ellipse2D.Double(.0, .0, image.width.toDouble(), image.height.toDouble())
+        val avaImgGraphics = avaImg.createGraphics()
+        // 绘制开始
+        avaImgGraphics.setRenderingHints(renderingHints)
+        avaImgGraphics.clip = shape
+        avaImgGraphics.drawImage(image, 0, 0, null)
+        avaImgGraphics.dispose()
+        // 绘制结束
+        // 旋转图片
+        var proceedAva = Thumbnails.of(avaImg)
+            .size(136, 136)
+            .rotate(-160.0)
+            .asBufferedImage()
+        // 二次裁切旋转后图片
+        proceedAva = Thumbnails.of(proceedAva)
+            .sourceRegion(Positions.CENTER, 136, 136)
+            .size(136, 136)
+            .keepAspectRatio(false)
+            .asBufferedImage()
+        val bgImgGraphics = tempImg.createGraphics()
+        bgImgGraphics.composite = AlphaComposite.getInstance(AlphaComposite.SRC_ATOP)
+        bgImgGraphics.drawImage(proceedAva, 19, 181, 137, 137, null)
+        // 结束绘制图片
+        bgImgGraphics.dispose()
+
+        val stream = ByteArrayOutputStream()
+        ImageIO.write(Thumbnails.of(tempImg).size(512, 512).asBufferedImage(), "PNG", stream)
+        return Base64.getEncoder().encodeToString(stream.toByteArray())
+    }
 
     private fun buildMsg(event: GroupMessageEvent): String {
         val atList = event.arrayMsg.filter { "at" == it.type }
-        if (atList.isEmpty()) throw YuriException("请 @ 一名群成员")
-        val atUserId = atList[0].data["qq"]
-        if ("all" == atUserId) throw YuriException("哼哼～ 没想到你个笨蛋还想把所有人都丢出去")
-        val port = env.getProperty("local.server.port")
-        return MsgUtils.builder().img("http://localhost:${port}/throwUser?qq=${atUserId}").build()
+        if (atList.isEmpty()) throw RuntimeException("请 @ 一名群成员")
+        val atUserId = atList[0].data["qq"]!!
+        if ("all" == atUserId) throw RuntimeException("哼哼～ 没想到你个笨蛋还想把所有人都丢出去")
+        return "base64://${drawImage(atUserId.toLong())}"
     }
 
     @GroupMessageHandler(cmd = RegexCMD.THROW_USER)
     fun throwUserHandler(bot: Bot, event: GroupMessageEvent) {
         try {
-            val msg = buildMsg(event)
-            bot.sendGroupMsg(event.groupId, msg, false)
-        } catch (e: YuriException) {
-            bot.sendGroupMsg(event.groupId, e.message, false)
+            bot.sendGroupMsg(event.groupId, MsgUtils.builder().img(buildMsg(event)).build(), false)
         } catch (e: Exception) {
-            e.printStackTrace()
+            e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
         }
     }
 

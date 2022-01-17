@@ -12,6 +12,7 @@ import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.dto.BangumiDto
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.RequestUtils
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
@@ -52,12 +53,11 @@ class Bangumi : ApplicationRunner {
         val data: BangumiDto
         try {
             val api = "https://bangumi.bilibili.com/web_api/timeline_global"
-            val result = RequestUtils.get(api) ?: throw RuntimeException("数据获取失败")
+            val result = RequestUtils.get(api)
             data = Gson().fromJson(result.string(), BangumiDto::class.java)
             if (data.code != 0) throw RuntimeException(data.message)
         } catch (e: Exception) {
-            e.printStackTrace()
-            throw RuntimeException("哔哩哔哩接口请求异常：${e.message}")
+            throw RuntimeException("哔哩哔哩数据获取异常：${e.message}")
         }
         return data
     }
@@ -189,7 +189,7 @@ class Bangumi : ApplicationRunner {
             }
             bot.sendMsg(event, msg, false)
         } catch (e: Exception) {
-            bot.sendMsg(event, e.message, false)
+            e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
         }
     }
 

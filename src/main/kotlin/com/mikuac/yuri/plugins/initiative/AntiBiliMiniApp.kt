@@ -8,7 +8,7 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.dto.BiliVideoApiDto
-import com.mikuac.yuri.exception.YuriException
+import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.RegexUtils
 import com.mikuac.yuri.utils.RequestUtils
 import org.springframework.stereotype.Component
@@ -17,10 +17,17 @@ import org.springframework.stereotype.Component
 @Component
 class AntiBiliMiniApp {
 
-    private fun request(bid: String): BiliVideoApiDto.Data {
-        val api = "https://api.bilibili.com/x/web-interface/view?bvid=${bid}"
-        val result = RequestUtils.get(api) ?: throw YuriException("Bilibili API 请求失败")
-        return Gson().fromJson(result.string(), BiliVideoApiDto::class.java).data
+    private fun request(bid: String): BiliVideoApiDto {
+        val data: BiliVideoApiDto
+        try {
+            val api = "https://api.bilibili.com/x/web-interface/view?bvid=${bid}"
+            val result = RequestUtils.get(api)
+            data = Gson().fromJson(result.string(), BiliVideoApiDto::class.java)
+            if (data.code != 0) throw RuntimeException(data.message)
+        } catch (e: Exception) {
+            throw RuntimeException("哔哩哔哩数据获取异常：${e.message}")
+        }
+        return data
     }
 
     private fun buildMsg(json: String): String {
@@ -28,7 +35,7 @@ class AntiBiliMiniApp {
         val url = jsonObject.asJsonObject["meta"].asJsonObject["detail_1"].asJsonObject["qqdocurl"].asString
         val realUrl = RequestUtils.findLink(url)
         val bid = RegexUtils.group(Regex("(?<=video/)(.*)(?=\\?)"), 1, realUrl)
-        val data = request(bid)
+        val data = request(bid).data
         return MsgUtils.builder()
             .img(data.pic)
             .text("\n${data.title}")
@@ -50,10 +57,8 @@ class AntiBiliMiniApp {
                 it.type == "json"
             }[0].data["data"] ?: return
             bot.sendMsg(event, buildMsg(json), false)
-        } catch (e: YuriException) {
-            bot.sendMsg(event, e.message, false)
         } catch (e: Exception) {
-            e.printStackTrace()
+            e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
         }
     }
 

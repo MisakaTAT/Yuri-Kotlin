@@ -5,11 +5,10 @@ import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.enums.RegexCMD
-import com.mikuac.yuri.exception.YuriException
+import com.mikuac.yuri.utils.MsgSendUtils
 import org.springframework.stereotype.Component
 import java.util.regex.Matcher
 import kotlin.math.pow
-
 
 @Shiro
 @Component
@@ -49,28 +48,20 @@ class BvToAv {
         return stringBuilder.toString()
     }
 
-    private fun buildMsg(matcher: Matcher): String? {
-        try {
-            val bvId = matcher.group(1)
-            val avId = matcher.group(2)
-            if (bvId != null && bvId.isNotEmpty()) return bv2av(bvId)
-            if (avId != null && avId.isNotEmpty()) return av2bv(avId)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            throw YuriException("转换失败")
-        }
-        return null
+    private fun buildMsg(matcher: Matcher): String {
+        val bvId = matcher.group(1)
+        val avId = matcher.group(2)
+        if (bvId != null && bvId.isNotEmpty()) return bv2av(bvId)
+        if (avId != null && avId.isNotEmpty()) return av2bv(avId)
+        return "转换失败"
     }
 
     @MessageHandler(cmd = RegexCMD.BV_AV_CONVERT)
     fun bvToAvHandler(bot: Bot, event: WholeMessageEvent, matcher: Matcher) {
         try {
-            val msg = buildMsg(matcher) ?: return
-            bot.sendMsg(event, msg, false)
-        } catch (e: YuriException) {
-            bot.sendMsg(event, e.message, false)
+            bot.sendMsg(event, buildMsg(matcher), false)
         } catch (e: Exception) {
-            e.printStackTrace()
+            e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
         }
     }
 

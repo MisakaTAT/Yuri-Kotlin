@@ -13,9 +13,9 @@ import com.mikuac.yuri.dto.WhatAnimeBasicDto
 import com.mikuac.yuri.dto.WhatAnimeDto
 import com.mikuac.yuri.entity.WhatAnimeCacheEntity
 import com.mikuac.yuri.enums.RegexCMD
-import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.repository.WhatAnimeCacheRepository
 import com.mikuac.yuri.utils.DateUtils
+import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.RequestUtils
 import com.mikuac.yuri.utils.SearchModeUtils
 import org.springframework.beans.factory.annotation.Autowired
@@ -61,24 +61,28 @@ class WhatAnime {
     """
 
     @Synchronized
-    private fun doSearch(imgUrl: String): Pair<WhatAnimeBasicDto, WhatAnimeDto> {
-        // 获取基本信息
-        val basicResultJson = RequestUtils.get("https://api.trace.moe/search?cutBorders&url=${imgUrl}")
-            ?: throw YuriException("WhatAnime Basic API 请求失败")
-        val basicResult = Gson().fromJson(basicResultJson.string(), WhatAnimeBasicDto::class.java)
-        if (basicResult.error != "") throw YuriException(basicResult.error)
-        if (basicResult.result.isEmpty()) throw YuriException("未找到匹配结果")
-        val animeId = basicResult.result[0].aniList
-        // 获取详细信息
-        val variables = JsonObject()
-        variables.addProperty("id", animeId)
-        val reqBody = JsonObject()
-        reqBody.addProperty("query", graphqlQuery)
-        reqBody.add("variables", variables)
-        val aniListResultJson = RequestUtils.post("https://trace.moe/anilist/", reqBody.toString())
-            ?: throw YuriException("WhatAnime AniList API 请求失败")
-        val aniListResult = Gson().fromJson(aniListResultJson.string(), WhatAnimeDto::class.java)
-        return Pair(basicResult, aniListResult)
+    private fun request(imgUrl: String): Pair<WhatAnimeBasicDto, WhatAnimeDto> {
+        val data: Pair<WhatAnimeBasicDto, WhatAnimeDto>
+        try {
+            // 获取基本信息
+            val basicResult = RequestUtils.get("https://api.trace.moe/search?cutBorders&url=${imgUrl}")
+            val basicData = Gson().fromJson(basicResult.string(), WhatAnimeBasicDto::class.java)
+            if (basicData.error != "") throw RuntimeException(basicData.error)
+            if (basicData.result.isEmpty()) throw RuntimeException("未找到匹配结果")
+            val animeId = basicData.result[0].aniList
+            // 获取详细信息
+            val variables = JsonObject()
+            variables.addProperty("id", animeId)
+            val reqBody = JsonObject()
+            reqBody.addProperty("query", graphqlQuery)
+            reqBody.add("variables", variables)
+            val aniListResult = RequestUtils.post("https://trace.moe/anilist/", reqBody.toString())
+            val aniListData = Gson().fromJson(aniListResult.string(), WhatAnimeDto::class.java)
+            data = Pair(basicData, aniListData)
+        } catch (e: Exception) {
+            throw RuntimeException("WhatAnime数据获取异常：${e.message}")
+        }
+        return data
     }
 
     private fun buildMsg(userId: Long, groupId: Long, arrMsg: List<MsgChainBean>): Pair<String, String>? {
@@ -90,7 +94,7 @@ class WhatAnime {
             return Pair("${cache.get().infoResult}\n[Tips] 该结果为数据库缓存", cache.get().videoResult)
         }
 
-        val result = doSearch(imgUrl)
+        val result = request(imgUrl)
         val basic = result.first.result[0]
         val detailed = result.second.data.media
 
@@ -129,10 +133,8 @@ class WhatAnime {
             bot.sendMsg(event, msg.first, false)
             // 发送预览视频
             if (ReadConfig.config.plugin.whatAnime.sendPreviewVideo) bot.sendMsg(event, msg.second, false)
-        } catch (e: YuriException) {
-            bot.sendMsg(event, e.message, false)
         } catch (e: Exception) {
-            e.printStackTrace()
+            e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
         }
     }
 

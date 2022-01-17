@@ -13,35 +13,39 @@ object RequestUtils {
 
     private val client = OkHttpClient()
 
-    fun get(url: String): ResponseBody? {
+    @Throws(Exception::class)
+    fun get(url: String): ResponseBody {
         val request = Request.Builder().url(url).get().build()
         val call = client.newCall(request)
-        return call.execute().body
+        return call.execute().body ?: throw RuntimeException("API响应异常")
     }
 
-    fun get(url: String, noReferer: Boolean): ResponseBody? {
+    @Throws(Exception::class)
+    fun get(url: String, noReferer: Boolean): ResponseBody {
         val request = Request.Builder().url(url).get()
         if (noReferer) {
             request.header("referer", "no-referer")
         }
         val call = client.newCall(request.build())
-        return call.execute().body
+        return call.execute().body ?: throw RuntimeException("API响应异常")
     }
 
-    fun post(url: String, json: String): ResponseBody? {
+    @Throws(Exception::class)
+    fun post(url: String, json: String): ResponseBody {
         val mediaType = "application/json; charset=utf-8".toMediaType()
         val request = Request.Builder().url(url).post(json.toRequestBody(mediaType))
         val call = client.newCall(request.build())
-        return call.execute().body
+        return call.execute().body ?: throw RuntimeException("API响应异常")
     }
 
-    fun post(url: String, json: String, headers: Map<String, String>): ResponseBody? {
+    @Throws(Exception::class)
+    fun post(url: String, json: String, headers: Map<String, String>): ResponseBody {
         val request = Request.Builder().url(url).post(json.toRequestBody())
         headers.forEach {
             request.header(it.key, it.value)
         }
         val call = client.newCall(request.build())
-        return call.execute().body
+        return call.execute().body ?: throw RuntimeException("API响应异常")
     }
 
     fun findLink(url: String): String {

@@ -14,7 +14,7 @@ import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.dto.EpicDto
 import com.mikuac.yuri.enums.RegexCMD
-import com.mikuac.yuri.exception.YuriException
+import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.RequestUtils
 import net.jodah.expiringmap.ExpirationPolicy
 import net.jodah.expiringmap.ExpiringMap
@@ -34,7 +34,11 @@ class EpicFreeGame {
     private val graphqlQuery =
         "query searchStoreQuery(${'$'}allowCountries: String, ${'$'}category: String, ${'$'}count: Int, ${'$'}country: String!, ${'$'}keywords: String, ${'$'}locale: String, ${'$'}namespace: String, ${'$'}sortBy: String, ${'$'}sortDir: String, ${'$'}start: Int, ${'$'}tag: String, ${'$'}withPrice: Boolean = false, ${'$'}withPromotions: Boolean = false) {\n Catalog {\n searchStore(allowCountries: ${'$'}allowCountries, category: ${'$'}category, count: ${'$'}count, country: ${'$'}country, keywords: ${'$'}keywords, locale: ${'$'}locale, namespace: ${'$'}namespace, sortBy: ${'$'}sortBy, sortDir: ${'$'}sortDir, start: ${'$'}start, tag: ${'$'}tag) {\n elements {\n title\n id\n namespace\n description\n effectiveDate\n keyImages {\n type\n url\n }\n seller {\n id\n name\n }\n productSlug\n urlSlug\n url\n items {\n id\n namespace\n }\n customAttributes {\n key\n value\n }\n price(country: ${'$'}country) @include(if: ${'$'}withPrice) {\n totalPrice {\n discountPrice\n originalPrice\n voucherDiscount\n discount\n currencyCode\n currencyInfo {\n decimals\n }\n fmtPrice(locale: ${'$'}locale) {\n originalPrice\n discountPrice\n intermediatePrice\n }\n }\n lineOffers {\n appliedRules {\n id\n endDate\n discountSetting {\n discountType\n }\n }\n }\n }\n promotions(category: ${'$'}category) @include(if: ${'$'}withPromotions) {\n promotionalOffers {\n promotionalOffers {\n startDate\n endDate\n discountSetting {\n discountType\n discountPercentage\n }\n }\n }\n upcomingPromotionalOffers {\n promotionalOffers {\n startDate\n endDate\n discountSetting { discountType\n discountPercentage\n }\n }\n }\n }\n }\n  }\n }\n}\n"
 
-    private fun doRequest(): EpicDto? {
+    private fun request(): EpicDto {
+        // 检查缓存
+        val cache = expiringMap["cache"]
+        if (cache != null) return cache
+
         val variables = JsonObject()
         variables.addProperty("allowCountries", "CN")
         variables.addProperty("category", "freegames")
@@ -54,24 +58,20 @@ class EpicFreeGame {
         headers["Referer"] = "https://www.epicgames.com/store/zh-CN/"
         headers["Content-Type"] = "application/json; charset=utf-8"
 
-        // 检查缓存
-        if (expiringMap["cache"] != null) {
-            return expiringMap["cache"]
-        }
-
+        val data: EpicDto
         try {
             val api = "https://www.epicgames.com/store/backend/graphql-proxy"
-            val result = RequestUtils.post(api, json.toString(), headers) ?: throw YuriException("EPIC API 请求失败")
-
+            val result = RequestUtils.post(api, json.toString(), headers)
             val jsonObject = JsonParser.parseString(result.string())
             val elements = jsonObject.asJsonObject["data"].asJsonObject["Catalog"].asJsonObject["searchStore"]
                 .asJsonObject["elements"].asJsonArray
-            val data = Gson().fromJson(elements, EpicDto::class.java)
+            data = Gson().fromJson(elements, EpicDto::class.java)
+            if (data.isEmpty()) throw RuntimeException("游戏列表为空")
             expiringMap["cache"] = data
-            return data
         } catch (e: Exception) {
-            throw YuriException("响应数据解析失败")
+            throw RuntimeException("EPIC数据获取异常：${e.message}")
         }
+        return data
     }
 
     private fun formatDate(rawDate: String): String {
@@ -82,7 +82,7 @@ class EpicFreeGame {
 
     private fun buildMsg(): ArrayList<String> {
         try {
-            val games = doRequest() ?: throw YuriException("免费游戏列表获取失败")
+            val games = request()
             val msgList = ArrayList<String>()
             for (game in games) {
                 val gameName = game.title
@@ -129,21 +129,17 @@ class EpicFreeGame {
             }
             return msgList
         } catch (e: Exception) {
-            throw YuriException("EPIC 免费游戏获取失败")
+            throw RuntimeException("数据解析失败")
         }
     }
 
     @GroupMessageHandler(cmd = RegexCMD.EPIC_FREE_GAME)
     fun epicFreeGameHandler(bot: Bot, event: GroupMessageEvent) {
         try {
-            val msgList = buildMsg()
-            val msg = ShiroUtils.generateForwardMsg(event.selfId, ReadConfig.config.base.botName, msgList)
-                ?: throw YuriException("合并转发消息生成失败")
+            val msg = ShiroUtils.generateForwardMsg(event.selfId, ReadConfig.config.base.botName, buildMsg())
             bot.sendGroupForwardMsg(event.groupId, msg)
-        } catch (e: YuriException) {
-            bot.sendGroupMsg(event.groupId, e.message, false)
         } catch (e: Exception) {
-            e.printStackTrace()
+            e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
         }
     }
 

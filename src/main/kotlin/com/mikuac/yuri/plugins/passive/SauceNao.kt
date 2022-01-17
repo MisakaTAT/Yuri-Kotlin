@@ -11,8 +11,8 @@ import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.dto.SauceNaoDto
 import com.mikuac.yuri.entity.SauceNaoCacheEntity
 import com.mikuac.yuri.enums.RegexCMD
-import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.repository.SauceNaoCacheRepository
+import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.RequestUtils
 import com.mikuac.yuri.utils.SearchModeUtils
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,14 +27,19 @@ class SauceNao {
 
     @Synchronized
     private fun request(imgUrl: String): SauceNaoDto {
-        val key = ReadConfig.config.plugin.sauceNao.key
-        val api = "https://saucenao.com/search.php?api_key=${key}&output_type=2&numres=3&db=999&url=${imgUrl}"
-        val result = RequestUtils.get(api) ?: throw YuriException("SauceNao API 请求失败")
-        val json = Gson().fromJson(result.string(), SauceNaoDto::class.java)
-        if (json.header.longRemaining <= 0) throw YuriException("今日的搜索配额已耗尽啦")
-        if (json.header.shortRemaining <= 0) throw YuriException("短时间内搜索配额已耗尽")
-        if (json.results.isEmpty()) throw YuriException("未能找到相似的内容")
-        return json
+        val data: SauceNaoDto
+        try {
+            val key = ReadConfig.config.plugin.sauceNao.key
+            val api = "https://saucenao.com/search.php?api_key=${key}&output_type=2&numres=3&db=999&url=${imgUrl}"
+            val result = RequestUtils.get(api)
+            data = Gson().fromJson(result.string(), SauceNaoDto::class.java)
+            if (data.header.longRemaining <= 0) throw RuntimeException("今日的搜索配额已耗尽啦")
+            if (data.header.shortRemaining <= 0) throw RuntimeException("短时间内搜索配额已耗尽")
+            if (data.results.isEmpty()) throw RuntimeException("未能找到相似的内容")
+        } catch (e: Exception) {
+            throw RuntimeException("SauceNao数据获取异常：${e.message}")
+        }
+        return data
     }
 
     private fun buildMsg(userId: Long, groupId: Long, arrMsg: List<MsgChainBean>): String? {
@@ -94,10 +99,8 @@ class SauceNao {
         try {
             val msg = buildMsg(event.userId, event.groupId, event.arrayMsg) ?: return
             bot.sendMsg(event, msg, false)
-        } catch (e: YuriException) {
-            bot.sendMsg(event, e.message, false)
         } catch (e: Exception) {
-            e.printStackTrace()
+            e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
         }
     }
 

@@ -1,28 +1,43 @@
 base:
-  botName: "悠里" # 设置机器人昵称
-  botSelfId: 123456789 # 设置机器人账号
-  adminList: # 管理员列表
+  # 设置机器人昵称
+  botName: "悠里"
+  # 设置机器人账号
+  botSelfId: 123456789
+  # 管理员列表
+  adminList:
     - 123456789
     - 987654321
   searchMode:
+    # 搜图模式超时时间
     timeout: 30
 plugin:
-  animePic: # 色图插件
-    r18: true  # 是否允许请求 r18 色图
-    cdTime: 60 # 冷却时间（单位秒）
-    recallMsgPicTime: 30 # 图片撤回时间（单位秒）
+  animePic:
+    # 是否允许请求 r18 色图
+    r18: true
+    # 冷却时间（单位秒）
+    cdTime: 60
+    # 图片撤回时间（单位秒）
+    recallMsgPicTime: 30
+    # 代理地址
     proxy: "i.pixiv.re"
   repeat:
-    waitTime: 60 # 多长时间内不复读重复内容（单位秒）
-    thresholdValue: 5 # 复读阈值
+    # 多长时间内不复读重复内容（单位秒）
+    waitTime: 60
+    # 复读阈值
+    thresholdValue: 5
   whatAnime:
-    sendPreviewVideo: true # 是否发送预览视频
+    # 是否发送预览视频
+    sendPreviewVideo: true
   sauceNao:
     key: ""
   epic:
-    cacheTime: 600 # 缓存时间（单位秒）
+    # 缓存时间（单位秒）
+    cacheTime: 600
   tarot:
-    cdTime: 60 # 冷却时间（单位秒）
+    # 冷却时间（单位秒）
+    cdTime: 60
   bangumi:
-    enableLimiter: true # 开启调用限速
-    permitsPerMinute: 6 # 每分钟可调用的次数（例如设置为6则是10秒允许调用一次）
+    # 开启调用限速
+    enableLimiter: true
+    # 每分钟可调用的次数（例如设置为6则是10秒允许调用一次）
+    permitsPerMinute: 6

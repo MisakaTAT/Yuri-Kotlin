@@ -9,7 +9,7 @@ import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.dto.AnimePicDto
 import com.mikuac.yuri.enums.RegexCMD
-import com.mikuac.yuri.exception.YuriException
+import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.RequestUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -30,11 +30,18 @@ class AnimePic {
         .build()
 
     private fun request(r18: Boolean): AnimePicDto.Data {
-        var api = "https://api.lolicon.app/setu/v2"
-        if (r18) api = "$api?r18=1"
-        val result = RequestUtils.get(api) ?: throw YuriException("Lolicon API 请求失败")
-        val json = Gson().fromJson(result.string(), AnimePicDto::class.java)
-        return json.data[0]
+        val data: AnimePicDto
+        try {
+            var api = "https://api.lolicon.app/setu/v2"
+            if (r18) api = "$api?r18=1"
+            val result = RequestUtils.get(api)
+            data = Gson().fromJson(result.string(), AnimePicDto::class.java)
+            if (data.error.isNotEmpty()) throw RuntimeException(data.error)
+            if (data.data.isEmpty()) throw RuntimeException("列表为空")
+        } catch (e: Exception) {
+            throw RuntimeException("色图数据获取异常：${e.message}")
+        }
+        return data.data[0]
     }
 
     private fun buildTextMsg(r18: Boolean): Pair<String, String?> {
@@ -68,10 +75,10 @@ class AnimePic {
         // 检查是否处于冷却时间
         if (expiringMap[groupId + userId] != null && expiringMap[groupId + userId] == userId) {
             val expectedExpiration = expiringMap.getExpectedExpiration(groupId + userId) / 1000
-            throw YuriException("整天色图色图，信不信把你变成色图？冷却：[${expectedExpiration}秒]")
+            throw RuntimeException("整天色图色图，信不信把你变成色图？冷却：[${expectedExpiration}秒]")
         }
         val r18 = msg.contains(Regex("(?i)r18"))
-        if (!ReadConfig.config.plugin.animePic.r18 && r18) throw YuriException("NSFW禁止！")
+        if (!ReadConfig.config.plugin.animePic.r18 && r18) throw RuntimeException("NSFW禁止！")
         val buildTextMsg = buildTextMsg(r18)
         return Pair(buildTextMsg.first, buildTextMsg.second)
     }
@@ -83,12 +90,10 @@ class AnimePic {
             bot.sendMsg(event, msg.first, false)
             val cdTime = ReadConfig.config.plugin.animePic.cdTime.times(1000L)
             expiringMap.put(event.groupId + event.userId, event.userId, cdTime, TimeUnit.MILLISECONDS)
-            val picMsgId = bot.sendMsg(event, buildPicMsg(msg.second), false).data?.messageId
-            if (picMsgId != null) recallMsgPic(picMsgId, bot)
-        } catch (e: YuriException) {
-            bot.sendMsg(event, e.message, false)
+            val picMsgId = bot.sendMsg(event, buildPicMsg(msg.second), false).data.messageId
+            recallMsgPic(picMsgId, bot)
         } catch (e: Exception) {
-            e.printStackTrace()
+            e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
         }
     }
 
