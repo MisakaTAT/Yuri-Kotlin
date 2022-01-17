@@ -43,7 +43,7 @@ class BlockChain {
     }
 
     // @MessageHandler(cmd = RegexCMD.BLOCK_CHAIN)
-    fun handlerBlockChain(bot: Bot, event: WholeMessageEvent, matcher: Matcher) {
+    fun blockChainHandler(bot: Bot, event: WholeMessageEvent, matcher: Matcher) {
         try {
             bot.sendMsg(event, buildMsg(matcher), false)
         } catch (e: YuriException) {

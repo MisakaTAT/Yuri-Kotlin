@@ -1,4 +1,4 @@
-base: # 基础设置
+base:
   botName: "悠里" # 设置机器人昵称
   botSelfId: 123456789 # 设置机器人账号
   adminList: # 管理员列表
@@ -6,20 +6,23 @@ base: # 基础设置
     - 987654321
   searchMode:
     timeout: 30
-plugin: # 插件设置
+plugin:
   animePic: # 色图插件
     r18: true  # 是否允许请求 r18 色图
     cdTime: 60 # 冷却时间（单位秒）
     recallMsgPicTime: 30 # 图片撤回时间（单位秒）
     proxy: "i.pixiv.re"
-  repeat: # 复读姬插件
+  repeat:
     waitTime: 60 # 多长时间内不复读重复内容（单位秒）
     thresholdValue: 5 # 复读阈值
-  whatAnime: # 番剧检索
+  whatAnime:
     sendPreviewVideo: true # 是否发送预览视频
   sauceNao:
     key: ""
   epic:
-    cacheTime: 600 # 缓存时间 （这里为10分钟）
+    cacheTime: 600 # 缓存时间（单位秒）
   tarot:
     cdTime: 60 # 冷却时间（单位秒）
+  bangumi:
+    enableLimiter: true # 开启调用限速
+    permitsPerMinute: 6 # 每分钟可调用的次数（例如设置为6则是10秒允许调用一次）

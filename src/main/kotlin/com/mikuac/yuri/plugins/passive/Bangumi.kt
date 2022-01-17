@@ -1,73 +1,195 @@
 package com.mikuac.yuri.plugins.passive
 
+import com.google.common.util.concurrent.RateLimiter
 import com.google.gson.Gson
-import com.mikuac.shiro.annotation.GroupMessageHandler
+import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
-import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.dto.event.message.GroupMessageEvent
+import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.annotation.Slf4j
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.dto.BangumiDto
 import com.mikuac.yuri.enums.RegexCMD
-import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.RequestUtils
-import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.boot.ApplicationArguments
+import org.springframework.boot.ApplicationRunner
 import org.springframework.stereotype.Component
-import java.text.SimpleDateFormat
+import java.awt.Color
+import java.awt.Font
+import java.awt.Image
+import java.awt.RenderingHints
+import java.awt.image.BufferedImage
+import java.io.ByteArrayOutputStream
+import java.net.URL
 import java.util.*
+import java.util.regex.Matcher
+import javax.imageio.ImageIO
 
 @Slf4j
 @Shiro
 @Component
-class Bangumi {
+@Suppress("UnstableApiUsage")
+class Bangumi : ApplicationRunner {
 
-    val cache = HashMap<String, ArrayList<String>>()
+    private lateinit var rateLimiter: RateLimiter
 
-    @Scheduled(cron = "0 1 1 * * ?")
-    fun cleanCache() {
-        cache.clear()
-        log.info("[${this.javaClass.simpleName}] 缓存已清除")
-    }
+    val enableLimiter = ReadConfig.config.plugin.bangumi.enableLimiter
 
-    private fun request(): BangumiDto? {
-        val result = RequestUtils.get("https://api.bgm.tv/calendar") ?: throw YuriException("Bangumi API 请求失败")
-        return Gson().fromJson(result.string(), BangumiDto::class.java)
-    }
+    val permitsPerMinute = ReadConfig.config.plugin.bangumi.permitsPerMinute.toDouble()
 
-    private fun buildMsg(): ArrayList<String> {
-        val weekday = SimpleDateFormat("EEEE").format(Date())
-        val todayCache: ArrayList<String> = cache[weekday] ?: arrayListOf()
-        if (todayCache.isNotEmpty()) return todayCache
-        val data = request() ?: throw YuriException("番剧数据获取失败")
-        val todayAnime = data.filter { weekday == it.weekday.cn }
-        val msgList = ArrayList<String>()
-        todayAnime.forEach { i ->
-            i.items.forEach { j ->
-                val msg = MsgUtils.builder()
-                msg.text(j.name_cn.ifEmpty { j.name })
-                if (j.images != null) {
-                    msg.text("\n")
-                    msg.img(j.images.large)
-                }
-                msgList.add(msg.build())
-            }
+    override fun run(args: ApplicationArguments?) {
+        if (enableLimiter) {
+            rateLimiter = RateLimiter.create(permitsPerMinute / 60)
+            log.info("${this.javaClass.simpleName} 已开启调用限速")
         }
-        cache[weekday] = msgList
-        return msgList
     }
 
-    @GroupMessageHandler(cmd = RegexCMD.BANGUMI)
-    fun handlerBangumi(bot: Bot, event: GroupMessageEvent) {
+    private val font = Font.createFont(Font.TRUETYPE_FONT, this.javaClass.getResourceAsStream("/font/chinese_font.ttf"))
+
+    private fun request(): BangumiDto {
+        val data: BangumiDto
         try {
-            val messages = ShiroUtils.generateForwardMsg(event.selfId, ReadConfig.config.base.botName, buildMsg())
-            bot.sendGroupForwardMsg(event.groupId, messages)
-        } catch (e: YuriException) {
-            bot.sendGroupMsg(event.groupId, e.message, false)
+            val api = "https://bangumi.bilibili.com/web_api/timeline_global"
+            val result = RequestUtils.get(api) ?: throw RuntimeException("数据获取失败")
+            data = Gson().fromJson(result.string(), BangumiDto::class.java)
+            if (data.code != 0) throw RuntimeException(data.message)
         } catch (e: Exception) {
             e.printStackTrace()
+            throw RuntimeException("哔哩哔哩接口请求异常：${e.message}")
+        }
+        return data
+    }
+
+    private fun getAnimeForDate(dayOfWeek: Int): String {
+        request().result.forEach { result ->
+            if (result.dayOfWeek != dayOfWeek) {
+                return@forEach
+            }
+            return "base64://${drawImage(result.seasons)}"
+        }
+        return "今日暂无番剧放送"
+    }
+
+    private fun getTodayAnime(): String {
+        request().result.forEach { result ->
+            if (result.isToday != 1) {
+                return@forEach
+            }
+            return "base64://${drawImage(result.seasons)}"
+        }
+        return "今日暂无番剧放送"
+    }
+
+    private fun drawImage(seasons: List<BangumiDto.Result.Season>): String {
+        val hBorderWidth = 18
+        val previewHeight = 600
+        val oneAnimeHeight = previewHeight + 2 * hBorderWidth
+        val totalImgHeight = seasons.size * oneAnimeHeight
+        val totalImageWidth = 1200
+
+        val bufferedImage = BufferedImage(totalImageWidth, totalImgHeight, BufferedImage.TYPE_INT_RGB)
+        var graphics = bufferedImage.createGraphics()
+        graphics.color = Color.decode("#F8EDE3")
+        graphics.fillRect(0, 0, bufferedImage.width, bufferedImage.height)
+        graphics.dispose()
+        val titleFont = font.deriveFont(40f).deriveFont(Font.BOLD)
+
+        seasons.forEachIndexed { index, season ->
+            // Skip delayed episodes
+            if (season.delay != 0) {
+                return@forEachIndexed
+            }
+            val curHeight = index * oneAnimeHeight
+            val imgY = curHeight + hBorderWidth
+            val oneAnimeImg = ImageIO.read(URL(season.cover))
+            val previewWidth = oneAnimeImg.width * previewHeight / oneAnimeImg.height
+            val oneAnimeImgScaled =
+                oneAnimeImg.getScaledInstance(previewWidth, previewHeight, Image.SCALE_SMOOTH)
+            val imgX = if (index % 2 == 0) {
+                20
+            } else {
+                totalImageWidth - 20 - previewWidth
+            }
+            val vBorderWidth = if (index % 2 == 0) {
+                imgX
+            } else {
+                totalImageWidth - imgX - previewWidth
+            }
+            // borders
+            graphics = bufferedImage.createGraphics()
+            graphics.color = Color.decode("#BDD2B6")
+            graphics.fillRect(0, curHeight, totalImageWidth, hBorderWidth)
+            graphics.fillRect(0, curHeight, vBorderWidth, oneAnimeHeight)
+            graphics.fillRect(0, imgY + previewHeight, totalImageWidth, hBorderWidth)
+            graphics.fillRect(totalImageWidth - vBorderWidth, curHeight, vBorderWidth, oneAnimeHeight)
+            graphics.dispose()
+            // preview image
+            graphics = bufferedImage.createGraphics()
+            graphics.drawImage(oneAnimeImgScaled, imgX, imgY, null)
+            graphics.dispose()
+            var titleSize = 65f
+            val titleTextWidth = 750f
+            while (titleSize * season.title.length > titleTextWidth) {
+                titleSize -= 1
+            }
+            // title text
+            val titleY = imgY - 30 + (previewHeight / 2).toInt()
+            val titleX = if (index % 2 == 0) {
+                870 - (season.title.length / 2 * titleSize).toInt()
+            } else {
+                420 - (season.title.length / 2 * titleSize).toInt()
+            }
+            graphics = bufferedImage.createGraphics()
+            graphics.font = titleFont.deriveFont(titleSize)
+            graphics.color = Color.decode("#4e574c")
+            graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+            graphics.drawString(season.title.trim(), titleX, titleY)
+            graphics.dispose()
+            // detailed info
+            val timeY = titleY + 60
+            val timeX = titleX + 5 + (season.title.length / 2 * titleSize).toInt()
+            graphics = bufferedImage.createGraphics()
+            graphics.font = font.deriveFont(35f)
+            graphics.color = Color.decode("#798777")
+            graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+            graphics.drawString(season.pubTime.trim(), timeX, timeY)
+            graphics.dispose()
+        }
+
+        val stream = ByteArrayOutputStream()
+        ImageIO.write(bufferedImage, "PNG", stream)
+        return Base64.getEncoder().encodeToString(stream.toByteArray())
+    }
+
+    private fun buildMsg(matcher: Matcher): String {
+        if (matcher.group(1) != null) {
+            return getTodayAnime()
+        }
+        return when (matcher.group(3)) {
+            in listOf("1", "一") -> getAnimeForDate(1)
+            in listOf("2", "二") -> getAnimeForDate(2)
+            in listOf("3", "三") -> getAnimeForDate(3)
+            in listOf("4", "四") -> getAnimeForDate(4)
+            in listOf("5", "五") -> getAnimeForDate(5)
+            in listOf("6", "六") -> getAnimeForDate(6)
+            in listOf("7", "七", "日", "天") -> getAnimeForDate(7)
+            else -> "请输入正确的星期"
+        }
+    }
+
+    @MessageHandler(cmd = RegexCMD.BANGUMI)
+    fun bangumiHandler(bot: Bot, event: WholeMessageEvent, matcher: Matcher) {
+        try {
+            if (enableLimiter && !rateLimiter.tryAcquire()) throw RuntimeException("主人开启了调用限速QAQ，稍后再试试吧～")
+            var msg: String = buildMsg(matcher)
+            if (msg.startsWith("base64://")) {
+                msg = MsgUtils.builder().img(msg).build()
+            }
+            bot.sendMsg(event, msg, false)
+        } catch (e: Exception) {
+            bot.sendMsg(event, e.message, false)
         }
     }
 

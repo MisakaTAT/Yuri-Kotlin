@@ -21,7 +21,8 @@ data class Config(
         val whatAnime: WhatAnime,
         val sauceNao: SauceNao,
         val epic: Epic,
-        val tarot: Tarot
+        val tarot: Tarot,
+        val bangumi: Bangumi
     ) {
         data class AnimePic(
             val r18: Boolean,
@@ -49,6 +50,11 @@ data class Config(
 
         data class Tarot(
             val cdTime: Int
+        )
+
+        data class Bangumi(
+            val enableLimiter: Boolean,
+            val permitsPerMinute: Int
         )
     }
 }

@@ -1,37 +1,48 @@
 package com.mikuac.yuri.dto
 
-class BangumiDto : ArrayList<BangumiDto.BangumiDtoItem>() {
+import com.google.gson.annotations.SerializedName
 
-    data class BangumiDtoItem(
-        val items: List<Item>,
-        val weekday: Weekday
+data class BangumiDto(
+    val code: Int,
+    val message: String,
+    val result: List<Result>
+) {
+    data class Result(
+        val date: String,
+        @SerializedName("date_ts")
+        val dateTs: Int,
+        @SerializedName("day_of_week")
+        val dayOfWeek: Int,
+        @SerializedName("is_today")
+        val isToday: Int,
+        val seasons: List<Season>
     ) {
-        data class Item(
-            val air_date: String,
-            val air_weekday: Int,
-            val id: Int,
-            val images: Images?,
-            val name: String,
-            val name_cn: String,
-            val summary: String,
-            val type: Int,
+        data class Season(
+            val cover: String,
+            val delay: Int,
+            @SerializedName("ep_id")
+            val epId: Int,
+            val favorites: Int,
+            val follow: Int,
+            @SerializedName("is_published")
+            val isPublished: Int,
+            @SerializedName("pub_index")
+            val pubIndex: String,
+            @SerializedName("pub_time")
+            val pubTime: String,
+            @SerializedName("pub_ts")
+            val pubTs: Int,
+            @SerializedName("season_id")
+            val seasonId: Int,
+            @SerializedName("season_status")
+            val seasonStatus: Int,
+            @SerializedName("square_cover")
+            val squareCover: String,
+            val title: String,
             val url: String
-        ) {
-            data class Images(
-                val common: String,
-                val grid: String,
-                val large: String,
-                val medium: String,
-                val small: String
-            )
-        }
-
-        data class Weekday(
-            val cn: String,
-            val en: String,
-            val id: Int,
-            val ja: String
         )
     }
-
 }
+
+
+
