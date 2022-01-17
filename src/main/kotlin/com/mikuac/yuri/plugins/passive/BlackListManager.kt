@@ -1,8 +1,8 @@
 package com.mikuac.yuri.plugins.passive
 
 import com.mikuac.shiro.annotation.GroupMessageHandler
+import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.entity.UserBlackListEntity
@@ -13,8 +13,9 @@ import com.mikuac.yuri.utils.CheckUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+@Shiro
 @Component
-class BlackListManager : BotPlugin() {
+class BlackListManager {
 
     @Autowired
     private lateinit var repository: UserBlackListRepository

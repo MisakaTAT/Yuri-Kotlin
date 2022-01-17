@@ -3,9 +3,9 @@ package com.mikuac.yuri.plugins.initiative
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.mikuac.shiro.annotation.MessageHandler
+import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.dto.BiliVideoApiDto
 import com.mikuac.yuri.exception.YuriException
@@ -13,8 +13,9 @@ import com.mikuac.yuri.utils.RegexUtils
 import com.mikuac.yuri.utils.RequestUtils
 import org.springframework.stereotype.Component
 
+@Shiro
 @Component
-class AntiBiliMiniApp : BotPlugin() {
+class AntiBiliMiniApp {
 
     private fun request(bid: String): BiliVideoApiDto.Data {
         val api = "https://api.bilibili.com/x/web-interface/view?bvid=${bid}"

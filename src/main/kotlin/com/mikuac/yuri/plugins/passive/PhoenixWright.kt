@@ -1,9 +1,9 @@
 package com.mikuac.yuri.plugins.passive
 
 import com.mikuac.shiro.annotation.MessageHandler
+import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
@@ -12,8 +12,9 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.util.regex.Matcher
 
+@Shiro
 @Component
-class PhoenixWright : BotPlugin() {
+class PhoenixWright {
 
     private fun buildMsg(matcher: Matcher): String {
         var topText = matcher.group(1) ?: throw YuriException("请输入顶部内容")

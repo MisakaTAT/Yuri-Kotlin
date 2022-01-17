@@ -4,17 +4,18 @@ import cn.hutool.core.io.FileUtil
 import cn.hutool.system.SystemUtil
 import cn.hutool.system.oshi.OshiUtil
 import com.mikuac.shiro.annotation.MessageHandler
+import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.enums.RegexCMD
 import org.springframework.stereotype.Component
 import java.lang.management.ManagementFactory
 import java.util.concurrent.TimeUnit
 
+@Shiro
 @Component
-class BotStatus : BotPlugin() {
+class BotStatus {
 
     private fun buildMsg(): String {
         val upTime = TimeUnit.MILLISECONDS.toMinutes(ManagementFactory.getRuntimeMXBean().uptime)

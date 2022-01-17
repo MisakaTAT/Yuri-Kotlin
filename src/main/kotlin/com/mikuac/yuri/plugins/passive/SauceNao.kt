@@ -2,10 +2,10 @@ package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
 import com.mikuac.shiro.annotation.MessageHandler
+import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.bean.MsgChainBean
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.dto.SauceNaoDto
@@ -18,8 +18,9 @@ import com.mikuac.yuri.utils.SearchModeUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+@Shiro
 @Component
-class SauceNao : BotPlugin() {
+class SauceNao {
 
     @Autowired
     private lateinit var repository: SauceNaoCacheRepository

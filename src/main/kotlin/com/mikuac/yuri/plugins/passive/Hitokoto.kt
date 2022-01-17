@@ -2,9 +2,9 @@ package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
 import com.mikuac.shiro.annotation.MessageHandler
+import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.dto.HitokotoDto
 import com.mikuac.yuri.enums.RegexCMD
@@ -13,8 +13,9 @@ import com.mikuac.yuri.utils.RequestUtils
 import org.springframework.stereotype.Component
 import java.util.*
 
+@Shiro
 @Component
-class Hitokoto : BotPlugin() {
+class Hitokoto {
 
     val typesMap = object : HashMap<String, String>() {
         init {

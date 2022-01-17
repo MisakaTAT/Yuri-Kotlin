@@ -1,8 +1,8 @@
 package com.mikuac.yuri.plugins.passive
 
 import com.mikuac.shiro.annotation.MessageHandler
+import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
@@ -11,8 +11,9 @@ import java.util.regex.Matcher
 import kotlin.math.pow
 
 
+@Shiro
 @Component
-class BvToAv : BotPlugin() {
+class BvToAv {
 
     // 算法来源 https://www.zhihu.com/question/381784377/answer/1099438784
     private val table = "fZodR9XQDSUm21yCkr6zBqiveYah8bt4xsWpHnJE7jL5VG3guMTKNPAwcF"

@@ -1,8 +1,8 @@
 package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
+import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.dto.BlockChainDto
 import com.mikuac.yuri.exception.YuriException
@@ -13,8 +13,9 @@ import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.regex.Matcher
 
+@Shiro
 @Component
-class BlockChain : BotPlugin() {
+class BlockChain {
 
     private fun request(symbol: String): BlockChainDto {
         val api = "https://api.huobi.pro/market/history/kline?period=1day&size=1&symbol=${symbol}usdt"

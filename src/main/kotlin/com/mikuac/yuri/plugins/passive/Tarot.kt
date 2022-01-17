@@ -2,9 +2,9 @@ package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
 import com.mikuac.shiro.annotation.MessageHandler
+import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.bean.TarotDataBean
 import com.mikuac.yuri.config.ReadConfig
@@ -22,9 +22,9 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
-
+@Shiro
 @Component
-class Tarot : BotPlugin(), ApplicationRunner {
+class Tarot : ApplicationRunner {
 
     private val expiringMap: ExpiringMap<Long, Boolean> = ExpiringMap.builder()
         .variableExpiration()

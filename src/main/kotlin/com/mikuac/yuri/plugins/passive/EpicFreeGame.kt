@@ -6,10 +6,10 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.mikuac.shiro.annotation.GroupMessageHandler
+import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.dto.EpicDto
@@ -21,8 +21,9 @@ import net.jodah.expiringmap.ExpiringMap
 import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 
+@Shiro
 @Component
-class EpicFreeGame : BotPlugin() {
+class EpicFreeGame {
 
     private val expiringMap: ExpiringMap<String, EpicDto> = ExpiringMap.builder()
         .variableExpiration()

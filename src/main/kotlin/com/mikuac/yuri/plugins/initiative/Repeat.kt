@@ -2,8 +2,8 @@ package com.mikuac.yuri.plugins.initiative
 
 import cn.hutool.core.util.RandomUtil
 import com.mikuac.shiro.annotation.GroupMessageHandler
+import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.config.ReadConfig
 import net.jodah.expiringmap.ExpirationPolicy
@@ -11,8 +11,9 @@ import net.jodah.expiringmap.ExpiringMap
 import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 
+@Shiro
 @Component
-class Repeat : BotPlugin() {
+class Repeat {
 
     private val expiringMap: ExpiringMap<Long, String> = ExpiringMap.builder()
         .variableExpiration()

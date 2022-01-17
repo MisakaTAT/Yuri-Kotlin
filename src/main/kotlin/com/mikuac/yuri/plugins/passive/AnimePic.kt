@@ -2,9 +2,9 @@ package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
 import com.mikuac.shiro.annotation.MessageHandler
+import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.dto.AnimePicDto
@@ -19,8 +19,9 @@ import net.jodah.expiringmap.ExpiringMap
 import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 
+@Shiro
 @Component
-class AnimePic : BotPlugin() {
+class AnimePic {
 
     private val expiringMap: ExpiringMap<Long, Long> = ExpiringMap.builder()
         .variableExpiration()
