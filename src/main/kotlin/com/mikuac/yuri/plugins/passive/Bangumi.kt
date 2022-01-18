@@ -91,7 +91,7 @@ class Bangumi : ApplicationRunner {
 
         val bufferedImage = BufferedImage(totalImageWidth, totalImgHeight, BufferedImage.TYPE_INT_RGB)
         var graphics = bufferedImage.createGraphics()
-        graphics.color = Color.decode("#F8EDE3")
+        graphics.color = Color.decode("#FFFFFF")
         graphics.fillRect(0, 0, bufferedImage.width, bufferedImage.height)
         graphics.dispose()
         val titleFont = font.deriveFont(40f).deriveFont(Font.BOLD)
@@ -119,7 +119,7 @@ class Bangumi : ApplicationRunner {
             }
             // borders
             graphics = bufferedImage.createGraphics()
-            graphics.color = Color.decode("#BDD2B6")
+            graphics.color = Color.decode("#FFC0CB")
             graphics.fillRect(0, curHeight, totalImageWidth, hBorderWidth)
             graphics.fillRect(0, curHeight, vBorderWidth, oneAnimeHeight)
             graphics.fillRect(0, imgY + previewHeight, totalImageWidth, hBorderWidth)
@@ -135,7 +135,7 @@ class Bangumi : ApplicationRunner {
                 titleSize -= 1
             }
             // title text
-            val titleY = imgY - 30 + (previewHeight / 2).toInt()
+            val titleY = imgY - 30 + (previewHeight / 2)
             val titleX = if (index % 2 == 0) {
                 870 - (season.title.length / 2 * titleSize).toInt()
             } else {
@@ -143,13 +143,13 @@ class Bangumi : ApplicationRunner {
             }
             graphics = bufferedImage.createGraphics()
             graphics.font = titleFont.deriveFont(titleSize)
-            graphics.color = Color.decode("#4e574c")
+            graphics.color = Color.decode("#4E574C")
             graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
             graphics.drawString(season.title.trim(), titleX, titleY)
             graphics.dispose()
             // detailed info
             val timeY = titleY + 60
-            val timeX = titleX + 5 + (season.title.length / 2 * titleSize).toInt()
+            val timeX = titleX + (season.title.length / 2 * titleSize).toInt() - 80
             graphics = bufferedImage.createGraphics()
             graphics.font = font.deriveFont(35f)
             graphics.color = Color.decode("#798777")
