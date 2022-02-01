@@ -1,6 +1,7 @@
 package com.mikuac.yuri.plugins.initiative
 
 import com.mikuac.shiro.common.utils.MsgUtils
+import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.notice.GroupDecreaseNoticeEvent
@@ -12,12 +13,19 @@ import org.springframework.stereotype.Component
 class GroupJoinAndQuit : BotPlugin() {
 
     override fun onGroupDecreaseNotice(bot: Bot, event: GroupDecreaseNoticeEvent): Int {
-        if ("kick" == event.subType) {
-            val nickname = bot.getGroupMemberInfo(event.groupId, event.operatorId, false).data.nickname
-            bot.sendGroupMsg(event.groupId, "${event.userId} 被 $nickname 移出群聊", false)
+        val userId = event.userId
+        val subType = event.subType
+        val groupId = event.groupId
+        var target = ShiroUtils.getNickname(userId)
+        target = if (target != null && target.isNotEmpty()) "[ $target ]( $userId )" else userId.toString()
+        if ("kick" == subType) {
+            val optNickname = bot.getGroupMemberInfo(groupId, event.operatorId, false).data.nickname
+            val msg = MsgUtils.builder()
+            msg.text("$target 被 $optNickname 移出群聊")
+            bot.sendGroupMsg(groupId, msg.build(), false)
         }
-        if ("leave" == event.subType) {
-            bot.sendGroupMsg(event.groupId, "${event.userId} 退出群聊", false)
+        if ("leave" == subType) {
+            bot.sendGroupMsg(groupId, "$target 退出群聊", false)
         }
         return MESSAGE_IGNORE
     }
