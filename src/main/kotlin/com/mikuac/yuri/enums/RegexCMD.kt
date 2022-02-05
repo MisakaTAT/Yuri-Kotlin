@@ -21,6 +21,7 @@ class RegexCMD {
         const val HITOKOTO = "(?i)hitokoto|一言"
         const val BANGUMI = "^(今日放送)\$|^(星期|周)([1-7]|[一二三四五六七日天])番剧\$"
         const val BLOCK_CHAIN = "(?i)bc\\s([a-z]+)"
+        const val R6S = "^(?i)r6s\\s(.*)\$"
     }
 
 }
