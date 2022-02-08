@@ -19,6 +19,7 @@
 - 塔罗牌
 - 丢出一名群友
 - WhatAnime搜番
+- R6S战绩查询
 
 # Credits
 
