@@ -65,7 +65,6 @@ class EpicFreeGame {
             if (data.isEmpty()) throw RuntimeException("游戏列表为空")
             expiringMap["cache"] = data
         } catch (e: Exception) {
-            e.printStackTrace()
             throw RuntimeException("EPIC数据获取异常：${e.message}")
         }
         return data
@@ -80,7 +79,6 @@ class EpicFreeGame {
     private fun buildMsg(): ArrayList<String> {
         try {
             val games = request()
-            println(games)
             val msgList = ArrayList<String>()
             for (game in games) {
                 val gameName = game.title
