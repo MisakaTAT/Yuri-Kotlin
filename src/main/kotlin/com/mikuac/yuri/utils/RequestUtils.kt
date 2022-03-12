@@ -31,6 +31,16 @@ object RequestUtils {
     }
 
     @Throws(Exception::class)
+    fun get(url: String, headers: Map<String, String>): ResponseBody {
+        val request = Request.Builder().url(url).get()
+        headers.forEach {
+            request.header(it.key, it.value)
+        }
+        val call = client.newCall(request.build())
+        return call.execute().body ?: throw RuntimeException("API响应异常")
+    }
+
+    @Throws(Exception::class)
     fun post(url: String, json: String): ResponseBody {
         val mediaType = "application/json; charset=utf-8".toMediaType()
         val request = Request.Builder().url(url).post(json.toRequestBody(mediaType))

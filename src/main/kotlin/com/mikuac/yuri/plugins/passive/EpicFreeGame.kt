@@ -31,9 +31,6 @@ class EpicFreeGame {
         .expiration(ReadConfig.config.plugin.epic.cacheTime.times(1000L), TimeUnit.MILLISECONDS)
         .build()
 
-    private val graphqlQuery =
-        "query searchStoreQuery(${'$'}allowCountries: String, ${'$'}category: String, ${'$'}count: Int, ${'$'}country: String!, ${'$'}keywords: String, ${'$'}locale: String, ${'$'}namespace: String, ${'$'}sortBy: String, ${'$'}sortDir: String, ${'$'}start: Int, ${'$'}tag: String, ${'$'}withPrice: Boolean = false, ${'$'}withPromotions: Boolean = false) {\n Catalog {\n searchStore(allowCountries: ${'$'}allowCountries, category: ${'$'}category, count: ${'$'}count, country: ${'$'}country, keywords: ${'$'}keywords, locale: ${'$'}locale, namespace: ${'$'}namespace, sortBy: ${'$'}sortBy, sortDir: ${'$'}sortDir, start: ${'$'}start, tag: ${'$'}tag) {\n elements {\n title\n id\n namespace\n description\n effectiveDate\n keyImages {\n type\n url\n }\n seller {\n id\n name\n }\n productSlug\n urlSlug\n url\n items {\n id\n namespace\n }\n customAttributes {\n key\n value\n }\n price(country: ${'$'}country) @include(if: ${'$'}withPrice) {\n totalPrice {\n discountPrice\n originalPrice\n voucherDiscount\n discount\n currencyCode\n currencyInfo {\n decimals\n }\n fmtPrice(locale: ${'$'}locale) {\n originalPrice\n discountPrice\n intermediatePrice\n }\n }\n lineOffers {\n appliedRules {\n id\n endDate\n discountSetting {\n discountType\n }\n }\n }\n }\n promotions(category: ${'$'}category) @include(if: ${'$'}withPromotions) {\n promotionalOffers {\n promotionalOffers {\n startDate\n endDate\n discountSetting {\n discountType\n discountPercentage\n }\n }\n }\n upcomingPromotionalOffers {\n promotionalOffers {\n startDate\n endDate\n discountSetting { discountType\n discountPercentage\n }\n }\n }\n }\n }\n  }\n }\n}\n"
-
     private fun request(): EpicDto {
         // 检查缓存
         val cache = expiringMap["cache"]
@@ -50,18 +47,17 @@ class EpicFreeGame {
         variables.addProperty("withPrice", true)
         variables.addProperty("withPromotions", true)
 
-        val json = JsonObject()
-        json.addProperty("query", graphqlQuery)
-        json.add("variables", variables)
-
         val headers: HashMap<String, String> = HashMap()
         headers["Referer"] = "https://www.epicgames.com/store/zh-CN/"
         headers["Content-Type"] = "application/json; charset=utf-8"
+        headers["User-Agent"] =
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36"
 
         val data: EpicDto
         try {
-            val api = "https://www.epicgames.com/store/backend/graphql-proxy"
-            val result = RequestUtils.post(api, json.toString(), headers)
+            val api =
+                "https://store-site-backend-static-ipv4.ak.epicgames.com/freeGamesPromotions?locale=zh-CN&country=CN&allowCountries=CN"
+            val result = RequestUtils.get(api, headers)
             val jsonObject = JsonParser.parseString(result.string())
             val elements = jsonObject.asJsonObject["data"].asJsonObject["Catalog"].asJsonObject["searchStore"]
                 .asJsonObject["elements"].asJsonArray
@@ -69,6 +65,7 @@ class EpicFreeGame {
             if (data.isEmpty()) throw RuntimeException("游戏列表为空")
             expiringMap["cache"] = data
         } catch (e: Exception) {
+            e.printStackTrace()
             throw RuntimeException("EPIC数据获取异常：${e.message}")
         }
         return data
@@ -83,6 +80,7 @@ class EpicFreeGame {
     private fun buildMsg(): ArrayList<String> {
         try {
             val games = request()
+            println(games)
             val msgList = ArrayList<String>()
             for (game in games) {
                 val gameName = game.title
