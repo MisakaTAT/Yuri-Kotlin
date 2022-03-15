@@ -41,7 +41,7 @@ class GithubRepo {
             .text("\nLicense: ${data.license?.spdxId}")
             .text("\n${data.description}")
             .text("\n${data.htmlUrl}")
-            .img("https://opengraph.githubassets.com/0/${data.fullName}")
+            .img("https://opengraph.githubassets.com/0/${data.fullName}?rand=${System.currentTimeMillis()}")
             .build()
     }
 
