@@ -19,8 +19,8 @@ class PhoenixWright {
     private fun buildMsg(matcher: Matcher): String {
         var topText = matcher.group(1) ?: throw RuntimeException("请输入顶部内容")
         var bottomText = matcher.group(2) ?: throw RuntimeException("请输入底部内容")
-        topText = URLEncoder.encode(topText, StandardCharsets.UTF_8)
-        bottomText = URLEncoder.encode(bottomText, StandardCharsets.UTF_8)
+        topText = URLEncoder.encode(topText, StandardCharsets.UTF_8.toString())
+        bottomText = URLEncoder.encode(bottomText, StandardCharsets.UTF_8.toString())
         return MsgUtils.builder().img("https://5000choyen.mikuac.com/image?top=${topText}&bottom=${bottomText}").build()
     }
 
