@@ -15,7 +15,7 @@
     <description>一只可爱的人工智障少女</description>
     <properties>
         <java.version>17</java.version>
-        <kotlin.version>1.6.10</kotlin.version>
+        <kotlin.version>1.6.20</kotlin.version>
     </properties>
     <dependencies>
         <dependency>
@@ -105,7 +105,7 @@
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>5.0.0-alpha.6</version>
+            <version>4.9.3</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
