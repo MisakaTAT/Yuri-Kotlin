@@ -11,8 +11,7 @@ object MsgSendUtils {
             MsgUtils.builder().at(userId).text(text).build(),
             false
         ).data.messageId
-        if (groupId == 0L) return bot.sendPrivateMsg(userId, text, false).data.messageId
-        return 0
+        return bot.sendPrivateMsg(userId, text, false).data.messageId
     }
 
     fun replySend(msgId: Int, userId: Long, groupId: Long, bot: Bot, text: String): Int {
@@ -21,8 +20,7 @@ object MsgSendUtils {
             MsgUtils.builder().reply(msgId).text(text).build(),
             false
         ).data.messageId
-        if (groupId == 0L) return bot.sendPrivateMsg(userId, text, false).data.messageId
-        return 0
+        return bot.sendPrivateMsg(userId, text, false).data.messageId
     }
 
 }
