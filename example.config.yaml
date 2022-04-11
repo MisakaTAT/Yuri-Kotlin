@@ -36,8 +36,8 @@ plugin:
   tarot:
     # 冷却时间（单位秒）
     cdTime: 60
-  bangumi:
+  animeCrawler:
     # 开启调用限速
-    enableLimiter: true
+    enable: true
     # 每分钟可调用的次数（例如设置为6则是10秒允许调用一次）
     permitsPerMinute: 6

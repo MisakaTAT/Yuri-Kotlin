@@ -1,5 +1,7 @@
 package com.mikuac.yuri.config
 
+import com.mikuac.yuri.plugins.passive.AnimeCrawler
+
 data class Config(
     val base: Base,
     val plugin: Plugin
@@ -22,7 +24,7 @@ data class Config(
         val sauceNao: SauceNao,
         val epic: Epic,
         val tarot: Tarot,
-        val bangumi: Bangumi
+        val animeCrawler: AnimeCrawler
     ) {
         data class AnimePic(
             val r18: Boolean,
@@ -52,8 +54,8 @@ data class Config(
             val cdTime: Int
         )
 
-        data class Bangumi(
-            val enableLimiter: Boolean,
+        data class AnimeCrawler(
+            val enable: Boolean,
             val permitsPerMinute: Int
         )
     }

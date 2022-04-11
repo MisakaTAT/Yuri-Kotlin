@@ -10,7 +10,7 @@ import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.annotation.Slf4j
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import com.mikuac.yuri.config.ReadConfig
-import com.mikuac.yuri.dto.BangumiDto
+import com.mikuac.yuri.dto.AnimeCrawlerDto
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.RequestUtils
@@ -32,13 +32,13 @@ import javax.imageio.ImageIO
 @Shiro
 @Component
 @Suppress("UnstableApiUsage")
-class Bangumi : ApplicationRunner {
+class AnimeCrawler : ApplicationRunner {
 
     private lateinit var rateLimiter: RateLimiter
 
-    val enableLimiter = ReadConfig.config.plugin.bangumi.enableLimiter
+    val enableLimiter = ReadConfig.config.plugin.animeCrawler.enable
 
-    val permitsPerMinute = ReadConfig.config.plugin.bangumi.permitsPerMinute.toDouble()
+    val permitsPerMinute = ReadConfig.config.plugin.animeCrawler.permitsPerMinute.toDouble()
 
     override fun run(args: ApplicationArguments?) {
         if (enableLimiter) {
@@ -49,12 +49,12 @@ class Bangumi : ApplicationRunner {
 
     private val font = Font.createFont(Font.TRUETYPE_FONT, this.javaClass.getResourceAsStream("/font/chinese_font.ttf"))
 
-    private fun request(): BangumiDto {
-        val data: BangumiDto
+    private fun request(): AnimeCrawlerDto {
+        val data: AnimeCrawlerDto
         try {
             val api = "https://bangumi.bilibili.com/web_api/timeline_global"
             val result = RequestUtils.get(api)
-            data = Gson().fromJson(result.string(), BangumiDto::class.java)
+            data = Gson().fromJson(result.string(), AnimeCrawlerDto::class.java)
             if (data.code != 0) throw RuntimeException(data.message)
         } catch (e: Exception) {
             throw RuntimeException("哔哩哔哩数据获取异常：${e.message}")
@@ -82,7 +82,7 @@ class Bangumi : ApplicationRunner {
         return "今日暂无番剧放送"
     }
 
-    private fun drawImage(seasons: List<BangumiDto.Result.Season>): String {
+    private fun drawImage(seasons: List<AnimeCrawlerDto.Result.Season>): String {
         val hBorderWidth = 18
         val previewHeight = 600
         val oneAnimeHeight = previewHeight + 2 * hBorderWidth
@@ -180,7 +180,7 @@ class Bangumi : ApplicationRunner {
     }
 
     @MessageHandler(cmd = RegexCMD.BANGUMI)
-    fun bangumiHandler(bot: Bot, event: WholeMessageEvent, matcher: Matcher) {
+    fun animeCrawlerHandler(bot: Bot, event: WholeMessageEvent, matcher: Matcher) {
         try {
             if (enableLimiter && !rateLimiter.tryAcquire()) throw RuntimeException("主人开启了调用限速QAQ，稍后再试试吧～")
             var msg: String = buildMsg(matcher)

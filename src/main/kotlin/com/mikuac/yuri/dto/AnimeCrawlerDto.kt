@@ -2,7 +2,7 @@ package com.mikuac.yuri.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class BangumiDto(
+data class AnimeCrawlerDto(
     val code: Int,
     val message: String,
     val result: List<Result>
