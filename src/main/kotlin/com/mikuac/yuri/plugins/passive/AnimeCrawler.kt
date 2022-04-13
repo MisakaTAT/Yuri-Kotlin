@@ -179,7 +179,7 @@ class AnimeCrawler : ApplicationRunner {
         }
     }
 
-    @MessageHandler(cmd = RegexCMD.BANGUMI)
+    @MessageHandler(cmd = RegexCMD.ANIME_CRAWLER)
     fun animeCrawlerHandler(bot: Bot, event: WholeMessageEvent, matcher: Matcher) {
         try {
             if (enableLimiter && !rateLimiter.tryAcquire()) throw RuntimeException("主人开启了调用限速QAQ，稍后再试试吧～")
