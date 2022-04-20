@@ -15,7 +15,7 @@
     <description>一只可爱的人工智障少女</description>
     <properties>
         <java.version>17</java.version>
-        <kotlin.version>1.6.20</kotlin.version>
+        <kotlin.version>1.6.21</kotlin.version>
     </properties>
     <dependencies>
         <dependency>
