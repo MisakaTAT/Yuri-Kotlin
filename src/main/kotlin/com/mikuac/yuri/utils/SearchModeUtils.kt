@@ -23,7 +23,7 @@ class SearchModeUtils : BotPlugin() {
 
     companion object {
 
-        private val hashMap = hashMapOf("WhatAnime" to "番", "SauceNao" to "图")
+        private val hashMap = hashMapOf("WhatAnime" to "番", "PicSearch" to "图")
 
         private val expiringMap: ExpiringMap<Long, SearchModeBean> = ExpiringMap.builder()
             .variableExpiration()

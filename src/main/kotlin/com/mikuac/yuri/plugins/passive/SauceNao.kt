@@ -1,24 +1,15 @@
 package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
-import com.mikuac.shiro.annotation.MessageHandler
-import com.mikuac.shiro.annotation.Shiro
-import com.mikuac.shiro.bean.MsgChainBean
 import com.mikuac.shiro.common.utils.MsgUtils
-import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.dto.SauceNaoDto
 import com.mikuac.yuri.entity.SauceNaoCacheEntity
-import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.repository.SauceNaoCacheRepository
-import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.RequestUtils
-import com.mikuac.yuri.utils.SearchModeUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-@Shiro
 @Component
 class SauceNao {
 
@@ -42,10 +33,8 @@ class SauceNao {
         return data
     }
 
-    private fun buildMsg(userId: Long, groupId: Long, arrMsg: List<MsgChainBean>): String? {
-        val imgUrl = SearchModeUtils.getImgUrl(userId, groupId, arrMsg) ?: return null
+    fun buildMsgForSauceNao(imgUrl: String, imgMd5: String): String {
         // 查缓存
-        val imgMd5 = imgUrl.split("-").last()
         val cache = repository.findByMd5(imgMd5)
         if (cache.isPresent) {
             return "${cache.get().infoResult}\n[Tips] 该结果为数据库缓存"
@@ -85,23 +74,6 @@ class SauceNao {
         val msg = msgUtils.build()
         repository.save(SauceNaoCacheEntity(0, imgMd5, msg))
         return msg
-    }
-
-    @MessageHandler(cmd = RegexCMD.SAUCE_NAO_SEARCH)
-    fun sauceNaoHandler(bot: Bot, event: WholeMessageEvent) {
-        SearchModeUtils.setSearchMode(this.javaClass.simpleName, event.userId, event.groupId, bot)
-    }
-
-    @MessageHandler
-    fun sauceNaoSearch(bot: Bot, event: WholeMessageEvent) {
-        if (!SearchModeUtils.check(this.javaClass.simpleName, event.userId, event.groupId)) return
-        // 发送检索结果
-        try {
-            val msg = buildMsg(event.userId, event.groupId, event.arrayMsg) ?: return
-            bot.sendMsg(event, msg, false)
-        } catch (e: Exception) {
-            e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
-        }
     }
 
 }
