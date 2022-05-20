@@ -1,6 +1,5 @@
 package com.mikuac.yuri.config
 
-import com.mikuac.yuri.plugins.passive.AnimeCrawler
 
 data class Config(
     val base: Base,
@@ -10,7 +9,7 @@ data class Config(
         val adminList: List<Long>,
         val botName: String,
         val botSelfId: Long,
-        val searchMode: SearchMode
+        val searchMode: SearchMode,
     ) {
         data class SearchMode(
             val timeout: Int
@@ -24,8 +23,14 @@ data class Config(
         val sauceNao: SauceNao,
         val epic: Epic,
         val tarot: Tarot,
-        val animeCrawler: AnimeCrawler
+        val animeCrawler: AnimeCrawler,
+        val picSearch: PicSearch
     ) {
+        data class PicSearch(
+            val similarityLimit: String,
+            val alwaysUseAscii2d: Boolean
+        )
+
         data class AnimePic(
             val r18: Boolean,
             val cdTime: Int,

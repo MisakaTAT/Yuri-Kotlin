@@ -4,6 +4,7 @@ import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
+import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.SearchModeUtils
@@ -34,7 +35,15 @@ class PicSearch {
             if (imgUrl.isNullOrBlank()) return
             val imgMd5 = imgUrl.split("-").last()
             // SauceNao
-            bot.sendMsg(event, sauceNao.buildMsgForSauceNao(imgUrl, imgMd5), false)
+            val sauceNaoResult = sauceNao.buildMsgForSauceNao(imgUrl, imgMd5)
+            bot.sendMsg(event, sauceNaoResult.second, false)
+
+            if (!ReadConfig.config.plugin.picSearch.alwaysUseAscii2d) {
+                val similarity = sauceNaoResult.first
+                if (similarity.isNotBlank()) {
+                    if (similarity.toFloat() > ReadConfig.config.plugin.picSearch.similarityLimit.toFloat()) return
+                }
+            }
 
             val ascii2dResult = ascii2d.buildMsgForAscii2d(imgUrl, imgMd5)
             // Ascii2d 色合検索
@@ -42,6 +51,7 @@ class PicSearch {
             // Ascii2d 特徴検索
             bot.sendMsg(event, ascii2dResult.second, false)
         } catch (e: Exception) {
+            e.printStackTrace()
             e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
         }
     }

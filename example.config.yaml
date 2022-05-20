@@ -11,6 +11,11 @@ base:
     # 搜图模式超时时间
     timeout: 30
 plugin:
+  picSearch:
+    # 相似度低于多少自动调用Ascii2d搜图（自动转为 Float 类型）
+    similarityLimit: "60"
+    # 始终使用Ascii2d搜图（该设置为 true 时 similarityLimit 不生效）
+    alwaysUseAscii2d: fasle
   animePic:
     # 是否允许请求 r18 色图
     r18: true

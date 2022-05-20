@@ -33,11 +33,11 @@ class SauceNao {
         return data
     }
 
-    fun buildMsgForSauceNao(imgUrl: String, imgMd5: String): String {
+    fun buildMsgForSauceNao(imgUrl: String, imgMd5: String): Pair<String, String> {
         // 查缓存
         val cache = repository.findByMd5(imgMd5)
         if (cache.isPresent) {
-            return "${cache.get().infoResult}\n[Tips] 该结果为数据库缓存"
+            return Pair("", "${cache.get().infoResult}\n[Tips] 该结果为数据库缓存")
         }
 
         // 返回的结果按相识度排序，第一个相似度最高，默认取第一个
@@ -73,7 +73,7 @@ class SauceNao {
         }
         val msg = msgUtils.build()
         repository.save(SauceNaoCacheEntity(0, imgMd5, msg))
-        return msg
+        return Pair(header.similarity, msg)
     }
 
 }
