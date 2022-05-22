@@ -8,6 +8,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.dto.HitokotoDto
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.RequestUtils
 import org.springframework.stereotype.Component
@@ -44,7 +45,7 @@ class Hitokoto {
             val result = RequestUtils.get(api)
             data = Gson().fromJson(result.string(), HitokotoDto::class.java)
         } catch (e: Exception) {
-            throw RuntimeException("一言数据获取异常：${e.message}")
+            throw YuriException("一言数据获取异常：${e.message}")
         }
         return data
     }
@@ -60,8 +61,11 @@ class Hitokoto {
                 .text("\n类型：${typesMap[data.type]}")
                 .build()
             bot.sendMsg(event, msg, false)
-        } catch (e: Exception) {
+        } catch (e: YuriException) {
             e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
+        } catch (e: Exception) {
+            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未知错误：${e.message}")
+            e.printStackTrace()
         }
     }
 

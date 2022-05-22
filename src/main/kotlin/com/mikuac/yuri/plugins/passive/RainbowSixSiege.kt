@@ -8,6 +8,7 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.FormatUtils
 import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.RequestUtils
@@ -19,15 +20,15 @@ import java.util.regex.Matcher
 class RainbowSixSiege {
 
     private fun request(username: String): RainbowSixSiegeDto {
-        if (username.isEmpty()) throw RuntimeException("用户名不合法，请检查输入是否正确。")
+        if (username.isEmpty()) throw YuriException("用户名不合法，请检查输入是否正确。")
         val data: RainbowSixSiegeDto
         try {
             val result = RequestUtils.get("https://www.r6s.cn/Stats?username=${username}", true)
             data = Gson().fromJson(result.string(), RainbowSixSiegeDto::class.java)
-            if (data.status != 200) throw RuntimeException("服务器可能爆炸惹，请稍后重试～")
+            if (data.status != 200) throw YuriException("服务器可能爆炸惹，请稍后重试～")
             return data
         } catch (e: Exception) {
-            throw RuntimeException("R6S数据获取异常：${e.message}")
+            throw YuriException("R6S数据获取异常：${e.message}")
         }
     }
 
@@ -92,11 +93,14 @@ class RainbowSixSiege {
     @MessageHandler(cmd = RegexCMD.R6S)
     fun r6sHandler(bot: Bot, event: WholeMessageEvent, matcher: Matcher) {
         try {
-            val username = matcher.group(1) ?: RuntimeException("用户名获取失败")
+            val username = matcher.group(1) ?: YuriException("用户名获取失败")
             val data = request(username.toString().trim())
             bot.sendMsg(event, buildMsg(data), false)
-        } catch (e: Exception) {
+        } catch (e: YuriException) {
             e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
+        } catch (e: Exception) {
+            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未知错误：${e.message}")
+            e.printStackTrace()
         }
     }
 

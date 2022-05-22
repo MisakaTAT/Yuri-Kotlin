@@ -13,6 +13,7 @@ import com.mikuac.yuri.dto.WhatAnimeBasicDto
 import com.mikuac.yuri.dto.WhatAnimeDto
 import com.mikuac.yuri.entity.WhatAnimeCacheEntity
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.repository.WhatAnimeCacheRepository
 import com.mikuac.yuri.utils.DateUtils
 import com.mikuac.yuri.utils.MsgSendUtils
@@ -67,8 +68,8 @@ class WhatAnime {
             // 获取基本信息
             val basicResult = RequestUtils.get("https://api.trace.moe/search?cutBorders&url=${imgUrl}")
             val basicData = Gson().fromJson(basicResult.string(), WhatAnimeBasicDto::class.java)
-            if (basicData.error != "") throw RuntimeException(basicData.error)
-            if (basicData.result.isEmpty()) throw RuntimeException("未找到匹配结果")
+            if (basicData.error != "") throw YuriException(basicData.error)
+            if (basicData.result.isEmpty()) throw YuriException("未找到匹配结果")
             val animeId = basicData.result[0].aniList
             // 获取详细信息
             val variables = JsonObject()
@@ -80,7 +81,7 @@ class WhatAnime {
             val aniListData = Gson().fromJson(aniListResult.string(), WhatAnimeDto::class.java)
             data = Pair(basicData, aniListData)
         } catch (e: Exception) {
-            throw RuntimeException("WhatAnime数据获取异常：${e.message}")
+            throw YuriException("WhatAnime数据获取异常：${e.message}")
         }
         return data
     }
@@ -133,8 +134,11 @@ class WhatAnime {
             bot.sendMsg(event, msg.first, false)
             // 发送预览视频
             if (ReadConfig.config.plugin.whatAnime.sendPreviewVideo) bot.sendMsg(event, msg.second, false)
-        } catch (e: Exception) {
+        } catch (e: YuriException) {
             e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
+        } catch (e: Exception) {
+            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未知错误：${e.message}")
+            e.printStackTrace()
         }
     }
 

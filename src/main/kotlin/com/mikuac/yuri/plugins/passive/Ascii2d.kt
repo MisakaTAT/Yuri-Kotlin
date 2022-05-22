@@ -1,6 +1,7 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.alibaba.fastjson.JSONObject
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.yuri.entity.Ascii2dCacheEntity
@@ -21,7 +22,7 @@ class Ascii2d {
         // 查缓存
         val cache = repository.findByMd5(imgMd5)
         if (cache.isPresent) {
-            val json = JSONObject.parseObject(cache.get().infoResult)
+            val json = Gson().fromJson(cache.get().infoResult, HashMap::class.java)
             return Pair(
                 "${json["color"].toString()}\n[Tips] 该结果为数据库缓存",
                 "${json["bovw"].toString()}\n[Tips] 该结果为数据库缓存"
@@ -33,11 +34,11 @@ class Ascii2d {
         val colorSearchResult = request(0, colorUrl)
         val bovwSearchResult = request(1, colorUrl.replace("/color/", "/bovw/"))
 
-        val json = JSONObject()
-        json["color"] = colorSearchResult
-        json["bovw"] = bovwSearchResult
+        val json = JsonObject()
+        json.addProperty("color", colorSearchResult)
+        json.addProperty("bovw", bovwSearchResult)
 
-        repository.save(Ascii2dCacheEntity(0, imgMd5, json.toJSONString()))
+        repository.save(Ascii2dCacheEntity(0, imgMd5, json.toString()))
 
         return Pair(colorSearchResult, bovwSearchResult)
     }

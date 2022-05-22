@@ -7,6 +7,7 @@ import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
 import net.coobird.thumbnailator.Thumbnails
 import net.coobird.thumbnailator.geometry.Positions
@@ -66,9 +67,9 @@ class ThrowUser {
 
     private fun buildMsg(event: GroupMessageEvent): String {
         val atList = event.arrayMsg.filter { "at" == it.type }
-        if (atList.isEmpty()) throw RuntimeException("请 @ 一名群成员")
+        if (atList.isEmpty()) throw YuriException("请 @ 一名群成员")
         val atUserId = atList[0].data["qq"]!!
-        if ("all" == atUserId) throw RuntimeException("哼哼～ 没想到你个笨蛋还想把所有人都丢出去")
+        if ("all" == atUserId) throw YuriException("哼哼～ 没想到你个笨蛋还想把所有人都丢出去")
         return "base64://${drawImage(atUserId.toLong())}"
     }
 
@@ -76,8 +77,11 @@ class ThrowUser {
     fun throwUserHandler(bot: Bot, event: GroupMessageEvent) {
         try {
             bot.sendGroupMsg(event.groupId, MsgUtils.builder().img(buildMsg(event)).build(), false)
-        } catch (e: Exception) {
+        } catch (e: YuriException) {
             e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
+        } catch (e: Exception) {
+            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未知错误：${e.message}")
+            e.printStackTrace()
         }
     }
 

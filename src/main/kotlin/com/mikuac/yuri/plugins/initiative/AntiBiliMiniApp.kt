@@ -8,6 +8,7 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.dto.BiliVideoApiDto
+import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.RegexUtils
 import com.mikuac.yuri.utils.RequestUtils
@@ -23,9 +24,9 @@ class AntiBiliMiniApp {
             val api = "https://api.bilibili.com/x/web-interface/view?bvid=${bid}"
             val result = RequestUtils.get(api)
             data = Gson().fromJson(result.string(), BiliVideoApiDto::class.java)
-            if (data.code != 0) throw RuntimeException(data.message)
+            if (data.code != 0) throw YuriException(data.message)
         } catch (e: Exception) {
-            throw RuntimeException("哔哩哔哩数据获取异常：${e.message}")
+            throw YuriException("哔哩哔哩数据获取异常：${e.message}")
         }
         return data
     }
@@ -57,8 +58,11 @@ class AntiBiliMiniApp {
                 it.type == "json"
             }[0].data["data"] ?: return
             bot.sendMsg(event, buildMsg(json), false)
-        } catch (e: Exception) {
+        } catch (e: YuriException) {
             e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
+        } catch (e: Exception) {
+            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未知错误：${e.message}")
+            e.printStackTrace()
         }
     }
 

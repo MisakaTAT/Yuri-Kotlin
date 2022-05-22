@@ -8,6 +8,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.dto.GithubRepoDto
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.RequestUtils
 import org.springframework.stereotype.Component
@@ -23,15 +24,15 @@ class GithubRepo {
             val api = "https://api.github.com/search/repositories?q=${repoName}"
             val result = RequestUtils.get(api)
             data = Gson().fromJson(result.string(), GithubRepoDto::class.java)
-            if (data.totalCount <= 0) throw RuntimeException("未找到名为 $repoName 的仓库")
+            if (data.totalCount <= 0) throw YuriException("未找到名为 $repoName 的仓库")
         } catch (e: Exception) {
-            throw RuntimeException("GitHub数据获取异常：${e.message}")
+            throw YuriException("GitHub数据获取异常：${e.message}")
         }
         return data
     }
 
     private fun buildMsg(matcher: Matcher): String {
-        val searchName = matcher.group(1) ?: throw RuntimeException("请按格式输入正确的仓库名")
+        val searchName = matcher.group(1) ?: throw YuriException("请按格式输入正确的仓库名")
         val data = request(searchName).items[0]
         return MsgUtils.builder()
             .text("RepoName: ${data.fullName}")
@@ -48,10 +49,12 @@ class GithubRepo {
     @MessageHandler(cmd = RegexCMD.GITHUB_REPO)
     fun githubRepoHandler(bot: Bot, event: WholeMessageEvent, matcher: Matcher) {
         try {
-            val msg = buildMsg(matcher)
-            bot.sendMsg(event, msg, false)
-        } catch (e: Exception) {
+            bot.sendMsg(event, buildMsg(matcher), false)
+        } catch (e: YuriException) {
             e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
+        } catch (e: Exception) {
+            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未知错误：${e.message}")
+            e.printStackTrace()
         }
     }
 

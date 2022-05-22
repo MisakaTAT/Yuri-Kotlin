@@ -5,6 +5,7 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.dto.SauceNaoDto
 import com.mikuac.yuri.entity.SauceNaoCacheEntity
+import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.repository.SauceNaoCacheRepository
 import com.mikuac.yuri.utils.RequestUtils
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,11 +25,11 @@ class SauceNao {
             val api = "https://saucenao.com/search.php?api_key=${key}&output_type=2&numres=3&db=999&url=${imgUrl}"
             val result = RequestUtils.get(api)
             data = Gson().fromJson(result.string(), SauceNaoDto::class.java)
-            if (data.header.longRemaining <= 0) throw RuntimeException("今日的搜索配额已耗尽啦")
-            if (data.header.shortRemaining <= 0) throw RuntimeException("短时间内搜索配额已耗尽")
-            if (data.results.isEmpty()) throw RuntimeException("未能找到相似的内容")
+            if (data.header.longRemaining <= 0) throw YuriException("今日的搜索配额已耗尽啦")
+            if (data.header.shortRemaining <= 0) throw YuriException("短时间内搜索配额已耗尽")
+            if (data.results.isEmpty()) throw YuriException("未能找到相似的内容")
         } catch (e: Exception) {
-            throw RuntimeException("SauceNao数据获取异常：${e.message}")
+            throw YuriException("SauceNao数据获取异常：${e.message}")
         }
         return data
     }
@@ -41,11 +42,15 @@ class SauceNao {
         }
 
         // 返回的结果按相识度排序，第一个相似度最高，默认取第一个
-        val result = request(imgUrl).results.filter {
+        val resultList = request(imgUrl).results.filter {
             it.header.indexId in listOf(5, 18, 38, 41)
-        }[0]
-        val header = result.header
+        }
+        if (resultList.isEmpty()) {
+            return Pair("0", "SauceNao未能找到相似的内容，正在使用Acsii2d进行检索···")
+        }
+        val result = resultList[0]
         val data = result.data
+        val header = result.header
         // 构建消息
         val msgUtils = MsgUtils.builder()
             .img(header.thumbnail)

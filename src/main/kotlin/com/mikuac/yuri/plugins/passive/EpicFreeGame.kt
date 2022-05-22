@@ -14,6 +14,7 @@ import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.dto.EpicDto
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.RequestUtils
 import net.jodah.expiringmap.ExpirationPolicy
@@ -62,10 +63,10 @@ class EpicFreeGame {
             val elements = jsonObject.asJsonObject["data"].asJsonObject["Catalog"].asJsonObject["searchStore"]
                 .asJsonObject["elements"].asJsonArray
             data = Gson().fromJson(elements, EpicDto::class.java)
-            if (data.isEmpty()) throw RuntimeException("游戏列表为空")
+            if (data.isEmpty()) throw YuriException("游戏列表为空")
             expiringMap["cache"] = data
         } catch (e: Exception) {
-            throw RuntimeException("EPIC数据获取异常：${e.message}")
+            throw YuriException("EPIC数据获取异常：${e.message}")
         }
         return data
     }
@@ -125,7 +126,7 @@ class EpicFreeGame {
             }
             return msgList
         } catch (e: Exception) {
-            throw RuntimeException("数据解析失败")
+            throw YuriException("数据解析失败")
         }
     }
 
@@ -134,8 +135,11 @@ class EpicFreeGame {
         try {
             val msg = ShiroUtils.generateForwardMsg(event.selfId, ReadConfig.config.base.botName, buildMsg())
             bot.sendGroupForwardMsg(event.groupId, msg)
-        } catch (e: Exception) {
+        } catch (e: YuriException) {
             e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
+        } catch (e: Exception) {
+            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未知错误：${e.message}")
+            e.printStackTrace()
         }
     }
 

@@ -5,6 +5,7 @@ import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.dto.BlockChainDto
+import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.RequestUtils
 import org.springframework.stereotype.Component
@@ -23,15 +24,15 @@ class BlockChain {
             val api = "https://api.huobi.pro/market/history/kline?period=1day&size=1&symbol=${symbol}usdt"
             val result = RequestUtils.get(api)
             data = Gson().fromJson(result.string(), BlockChainDto::class.java)
-            if ("ok" != data.status) throw RuntimeException("数据获取失败")
+            if ("ok" != data.status) throw YuriException("数据获取失败")
         } catch (e: Exception) {
-            throw RuntimeException("火币数据获取异常：${e.message}")
+            throw YuriException("火币数据获取异常：${e.message}")
         }
         return data
     }
 
     private fun buildMsg(matcher: Matcher): String {
-        val symbol = matcher.group(1) ?: throw RuntimeException("币种获取失败，请检查命令格式。")
+        val symbol = matcher.group(1) ?: throw YuriException("币种获取失败，请检查命令格式。")
         val detail = request(symbol.lowercase())
         val data = detail.data[0]
         val updateTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(detail.ts.toLong())
@@ -53,8 +54,11 @@ class BlockChain {
     fun blockChainHandler(bot: Bot, event: WholeMessageEvent, matcher: Matcher) {
         try {
             bot.sendMsg(event, buildMsg(matcher), false)
-        } catch (e: Exception) {
+        } catch (e: YuriException) {
             e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
+        } catch (e: Exception) {
+            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未知错误：${e.message}")
+            e.printStackTrace()
         }
     }
 

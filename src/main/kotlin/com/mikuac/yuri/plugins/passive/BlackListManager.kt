@@ -7,6 +7,7 @@ import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.entity.UserBlackListEntity
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.repository.UserBlackListRepository
 import com.mikuac.yuri.utils.CheckUtils
 import com.mikuac.yuri.utils.MsgSendUtils
@@ -34,8 +35,11 @@ class BlackListManager {
                 }
                 repository.save(UserBlackListEntity(0, blockUserId))
                 bot.sendGroupMsg(event.groupId, "用户 $blockUserId 已封禁", false)
-            } catch (e: Exception) {
+            } catch (e: YuriException) {
                 e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
+            } catch (e: Exception) {
+                MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未知错误：${e.message}")
+                e.printStackTrace()
             }
         } else {
             bot.sendGroupMsg(event.groupId, "该操作仅机器人管理员", false)
@@ -63,9 +67,9 @@ class BlackListManager {
 
     private fun getBlockUser(event: GroupMessageEvent): Long {
         val atList = event.arrayMsg.filter { "at" == it.type }
-        if (atList.isEmpty()) throw RuntimeException("请 @ 一名需要封禁或解封的群成员")
+        if (atList.isEmpty()) throw YuriException("请 @ 一名需要封禁或解封的群成员")
         val atUserId = atList[0].data["qq"]!!
-        if ("all" == atUserId) throw RuntimeException("笨蛋！")
+        if ("all" == atUserId) throw YuriException("笨蛋！")
         return atUserId.toLong()
     }
 

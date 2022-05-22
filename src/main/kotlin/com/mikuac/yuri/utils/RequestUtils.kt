@@ -1,5 +1,6 @@
 package com.mikuac.yuri.utils
 
+import com.mikuac.yuri.exception.YuriException
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -17,7 +18,7 @@ object RequestUtils {
     fun get(url: String): ResponseBody {
         val request = Request.Builder().url(url).get().build()
         val call = client.newCall(request)
-        return call.execute().body ?: throw RuntimeException("API响应异常")
+        return call.execute().body ?: throw YuriException("API响应异常")
     }
 
     @Throws(Exception::class)
@@ -27,7 +28,7 @@ object RequestUtils {
             request.header("referer", "no-referer")
         }
         val call = client.newCall(request.build())
-        return call.execute().body ?: throw RuntimeException("API响应异常")
+        return call.execute().body ?: throw YuriException("API响应异常")
     }
 
     @Throws(Exception::class)
@@ -37,7 +38,7 @@ object RequestUtils {
             request.header(it.key, it.value)
         }
         val call = client.newCall(request.build())
-        return call.execute().body ?: throw RuntimeException("API响应异常")
+        return call.execute().body ?: throw YuriException("API响应异常")
     }
 
     @Throws(Exception::class)
@@ -45,7 +46,7 @@ object RequestUtils {
         val mediaType = "application/json; charset=utf-8".toMediaType()
         val request = Request.Builder().url(url).post(json.toRequestBody(mediaType))
         val call = client.newCall(request.build())
-        return call.execute().body ?: throw RuntimeException("API响应异常")
+        return call.execute().body ?: throw YuriException("API响应异常")
     }
 
     @Throws(Exception::class)
@@ -55,7 +56,7 @@ object RequestUtils {
             request.header(it.key, it.value)
         }
         val call = client.newCall(request.build())
-        return call.execute().body ?: throw RuntimeException("API响应异常")
+        return call.execute().body ?: throw YuriException("API响应异常")
     }
 
     fun findLink(url: String): String {

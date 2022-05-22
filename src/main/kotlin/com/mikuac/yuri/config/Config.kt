@@ -1,6 +1,5 @@
 package com.mikuac.yuri.config
 
-
 data class Config(
     val base: Base,
     val plugin: Plugin

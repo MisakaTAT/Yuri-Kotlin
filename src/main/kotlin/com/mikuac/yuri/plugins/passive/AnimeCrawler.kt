@@ -12,6 +12,7 @@ import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.dto.AnimeCrawlerDto
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.RequestUtils
 import org.springframework.boot.ApplicationArguments
@@ -55,9 +56,9 @@ class AnimeCrawler : ApplicationRunner {
             val api = "https://bangumi.bilibili.com/web_api/timeline_global"
             val result = RequestUtils.get(api)
             data = Gson().fromJson(result.string(), AnimeCrawlerDto::class.java)
-            if (data.code != 0) throw RuntimeException(data.message)
+            if (data.code != 0) throw YuriException(data.message)
         } catch (e: Exception) {
-            throw RuntimeException("哔哩哔哩数据获取异常：${e.message}")
+            throw YuriException("哔哩哔哩数据获取异常：${e.message}")
         }
         return data
     }
@@ -182,14 +183,17 @@ class AnimeCrawler : ApplicationRunner {
     @MessageHandler(cmd = RegexCMD.ANIME_CRAWLER)
     fun animeCrawlerHandler(bot: Bot, event: WholeMessageEvent, matcher: Matcher) {
         try {
-            if (enableLimiter && !rateLimiter.tryAcquire()) throw RuntimeException("主人开启了调用限速QAQ，稍后再试试吧～")
+            if (enableLimiter && !rateLimiter.tryAcquire()) throw YuriException("主人开启了调用限速QAQ，稍后再试试吧～")
             var msg: String = buildMsg(matcher)
             if (msg.startsWith("base64://")) {
                 msg = MsgUtils.builder().img(msg).build()
             }
             bot.sendMsg(event, msg, false)
-        } catch (e: Exception) {
+        } catch (e: YuriException) {
             e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
+        } catch (e: Exception) {
+            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未知错误：${e.message}")
+            e.printStackTrace()
         }
     }
 
