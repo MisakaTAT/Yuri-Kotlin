@@ -46,7 +46,7 @@ class SauceNao {
             it.header.indexId in listOf(5, 18, 38, 41)
         }
         if (resultList.isEmpty()) {
-            return Pair("0", "SauceNao未能找到相似的内容，正在使用Acsii2d进行检索···")
+            return Pair("0", "SauceNao未能找到相似的内容，正在使用Ascii2d进行检索···")
         }
         val result = resultList[0]
         val data = result.data
