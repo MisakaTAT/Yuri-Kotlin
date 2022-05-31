@@ -54,10 +54,10 @@ class AntiBiliMiniApp {
         try {
             val msg = event.message
             if (!msg.contains("com.tencent.miniapp_01") || !msg.contains("哔哩哔哩")) return
-            val json = event.arrayMsg.filter {
-                it.type == "json"
-            }[0].data["data"] ?: return
-            bot.sendMsg(event, buildMsg(json), false)
+            val json = event.arrayMsg.filter { it.type == "json" }
+            if (json.isNotEmpty()) {
+                bot.sendMsg(event, json[0].data["data"]?.let { buildMsg(it) }, false)
+            }
         } catch (e: YuriException) {
             e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
         } catch (e: Exception) {
