@@ -5,6 +5,7 @@ import com.google.gson.JsonParser
 import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
+import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.dto.BiliVideoApiDto
@@ -39,8 +40,8 @@ class AntiBiliMiniApp {
         val data = request(bid).data
         return MsgUtils.builder()
             .img(data.pic)
-            .text("\n${data.title}")
-            .text("\nUP：${data.owner.name}")
+            .text("\n${ShiroUtils.escape2(data.title)}")
+            .text("\nUP：${ShiroUtils.escape2(data.owner.name)}")
             .text("\n播放：${data.stat.view} 弹幕：${data.stat.danmaku}")
             .text("\n投币：${data.stat.coin} 点赞：${data.stat.like}")
             .text("\n评论：${data.stat.reply} 分享：${data.stat.share}")
