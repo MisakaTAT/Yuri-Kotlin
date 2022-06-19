@@ -36,3 +36,19 @@ build/
 
 ### VS Code ###
 .vscode/
+
+.gradle
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+# Cache of project
+.gradletasknamecache
+
+**/build/
+
+# Common working directory
+run/
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
