@@ -11,8 +11,8 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
+import com.mikuac.yuri.bean.dto.EpicDto
 import com.mikuac.yuri.config.ReadConfig
-import com.mikuac.yuri.dto.EpicDto
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils

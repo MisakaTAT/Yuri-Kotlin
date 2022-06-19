@@ -6,7 +6,7 @@ import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
-import com.mikuac.yuri.dto.HitokotoDto
+import com.mikuac.yuri.bean.dto.HitokotoDto
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
@@ -18,7 +18,7 @@ import java.util.*
 @Component
 class Hitokoto {
 
-    val typesMap = object : HashMap<String, String>() {
+    private val typesMap = object : HashMap<String, String>() {
         init {
             put("a", "动画")
             put("b", "漫画")

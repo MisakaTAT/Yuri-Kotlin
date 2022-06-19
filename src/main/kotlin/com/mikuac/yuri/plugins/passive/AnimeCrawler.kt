@@ -9,8 +9,8 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.annotation.Slf4j
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
+import com.mikuac.yuri.bean.dto.AnimeCrawlerDto
 import com.mikuac.yuri.config.ReadConfig
-import com.mikuac.yuri.dto.AnimeCrawlerDto
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
@@ -37,9 +37,9 @@ class AnimeCrawler : ApplicationRunner {
 
     private lateinit var rateLimiter: RateLimiter
 
-    val enableLimiter = ReadConfig.config.plugin.animeCrawler.enable
+    private val enableLimiter = ReadConfig.config.plugin.animeCrawler.enable
 
-    val permitsPerMinute = ReadConfig.config.plugin.animeCrawler.permitsPerMinute.toDouble()
+    private val permitsPerMinute = ReadConfig.config.plugin.animeCrawler.permitsPerMinute.toDouble()
 
     override fun run(args: ApplicationArguments?) {
         if (enableLimiter) {

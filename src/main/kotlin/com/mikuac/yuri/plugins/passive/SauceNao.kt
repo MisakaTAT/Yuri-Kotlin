@@ -2,8 +2,8 @@ package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
 import com.mikuac.shiro.common.utils.MsgUtils
+import com.mikuac.yuri.bean.dto.SauceNaoDto
 import com.mikuac.yuri.config.ReadConfig
-import com.mikuac.yuri.dto.SauceNaoDto
 import com.mikuac.yuri.entity.SauceNaoCacheEntity
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.repository.SauceNaoCacheRepository

@@ -8,7 +8,7 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
-import com.mikuac.yuri.dto.BiliVideoApiDto
+import com.mikuac.yuri.bean.dto.BiliVideoApiDto
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.RegexUtils

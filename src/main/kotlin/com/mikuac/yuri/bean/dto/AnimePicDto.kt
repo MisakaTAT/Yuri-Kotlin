@@ -1,4 +1,4 @@
-package com.mikuac.yuri.dto
+package com.mikuac.yuri.bean.dto
 
 data class AnimePicDto(
     val data: List<Data>,

@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
-import com.mikuac.yuri.dto.BlockChainDto
+import com.mikuac.yuri.bean.dto.BlockChainDto
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.RequestUtils

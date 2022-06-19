@@ -7,8 +7,8 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.annotation.Slf4j
+import com.mikuac.yuri.bean.dto.AnimePicDto
 import com.mikuac.yuri.config.ReadConfig
-import com.mikuac.yuri.dto.AnimePicDto
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils

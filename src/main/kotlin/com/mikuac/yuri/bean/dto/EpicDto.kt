@@ -1,4 +1,4 @@
-package com.mikuac.yuri.dto
+package com.mikuac.yuri.bean.dto
 
 class EpicDto : ArrayList<EpicDto.EpicDtoItem>() {
     data class EpicDtoItem(

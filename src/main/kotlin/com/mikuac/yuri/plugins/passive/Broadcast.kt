@@ -16,7 +16,7 @@ import java.util.regex.Matcher
 @Component
 class Broadcast {
 
-    suspend fun sendGroup(bot: Bot, msg: String) {
+    private fun sendGroup(bot: Bot, msg: String) {
         bot.groupList.data.forEach {
             bot.sendGroupMsg(it.groupId, msg, false)
             log.info("广播到群 [${it.groupName}](${it.groupId}) 成功")
@@ -24,7 +24,7 @@ class Broadcast {
     }
 
     @MessageHandler(cmd = RegexCMD.BROADCAST)
-    suspend fun broadcastHandler(bot: Bot, event: WholeMessageEvent, matcher: Matcher) {
+    fun broadcastHandler(bot: Bot, event: WholeMessageEvent, matcher: Matcher) {
         if (event.userId in ReadConfig.config.base.adminList) {
             val msg = matcher.group(1)
             sendGroup(bot, msg.trim())
