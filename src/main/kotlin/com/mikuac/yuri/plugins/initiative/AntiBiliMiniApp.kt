@@ -19,12 +19,14 @@ import org.springframework.stereotype.Component
 @Component
 class AntiBiliMiniApp {
 
-    private fun request(bid: String): BiliVideoApiDto {
+    private fun request(shortURL: String): BiliVideoApiDto {
         val data: BiliVideoApiDto
         try {
+            val url = RequestUtils.get(shortURL).request.url.toString()
+            val bid = RegexUtils.group(Regex("(?<=video/)(.*)(?=\\?)"), 1, url)
             val api = "https://api.bilibili.com/x/web-interface/view?bvid=${bid}"
-            val result = RequestUtils.get(api)
-            data = Gson().fromJson(result.string(), BiliVideoApiDto::class.java)
+            val result = RequestUtils.get(api).body?.string()
+            data = Gson().fromJson(result, BiliVideoApiDto::class.java)
             if (data.code != 0) throw YuriException(data.message)
         } catch (e: Exception) {
             throw YuriException("哔哩哔哩数据获取异常：${e.message}")
@@ -34,10 +36,8 @@ class AntiBiliMiniApp {
 
     private fun buildMsg(json: String): String {
         val jsonObject = JsonParser.parseString(json)
-        val url = jsonObject.asJsonObject["meta"].asJsonObject["detail_1"].asJsonObject["qqdocurl"].asString
-        val realUrl = RequestUtils.findLink(url)
-        val bid = RegexUtils.group(Regex("(?<=video/)(.*)(?=\\?)"), 1, realUrl)
-        val data = request(bid).data
+        val shortURL = jsonObject.asJsonObject["meta"].asJsonObject["detail_1"].asJsonObject["qqdocurl"].asString
+        val data = request(shortURL).data
         return MsgUtils.builder()
             .img(data.pic)
             .text("\n${ShiroUtils.escape2(data.title)}")

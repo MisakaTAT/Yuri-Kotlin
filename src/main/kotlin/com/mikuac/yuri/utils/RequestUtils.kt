@@ -1,77 +1,48 @@
 package com.mikuac.yuri.utils
 
-import com.mikuac.yuri.exception.YuriException
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.ResponseBody
-import org.springframework.http.HttpMethod
-import java.net.HttpURLConnection
-import java.net.URL
+import okhttp3.Response
 
 object RequestUtils {
 
     private val client = OkHttpClient()
 
-    @Throws(Exception::class)
-    fun get(url: String): ResponseBody {
-        val request = Request.Builder().url(url).get().build()
-        val call = client.newCall(request)
-        return call.execute().body ?: throw YuriException("API响应异常")
+    fun get(url: String): Response {
+        val req = Request.Builder().url(url).get().build()
+        return client.newCall(req).execute()
     }
 
-    @Throws(Exception::class)
-    fun get(url: String, noReferer: Boolean): ResponseBody {
-        val request = Request.Builder().url(url).get()
+    fun get(url: String, noReferer: Boolean): Response {
+        val req = Request.Builder().url(url).get()
         if (noReferer) {
-            request.header("referer", "no-referer")
+            req.header("referer", "no-referer")
         }
-        val call = client.newCall(request.build())
-        return call.execute().body ?: throw YuriException("API响应异常")
+        return client.newCall(req.build()).execute()
     }
 
-    @Throws(Exception::class)
-    fun get(url: String, headers: Map<String, String>): ResponseBody {
-        val request = Request.Builder().url(url).get()
+    fun get(url: String, headers: Map<String, String>): Response {
+        val req = Request.Builder().url(url).get()
         headers.forEach {
-            request.header(it.key, it.value)
+            req.header(it.key, it.value)
         }
-        val call = client.newCall(request.build())
-        return call.execute().body ?: throw YuriException("API响应异常")
+        return client.newCall(req.build()).execute()
     }
 
-    @Throws(Exception::class)
-    fun post(url: String, json: String): ResponseBody {
+    fun post(url: String, json: String): Response {
         val mediaType = "application/json; charset=utf-8".toMediaType()
         val request = Request.Builder().url(url).post(json.toRequestBody(mediaType))
-        val call = client.newCall(request.build())
-        return call.execute().body ?: throw YuriException("API响应异常")
+        return client.newCall(request.build()).execute()
     }
 
-    @Throws(Exception::class)
-    fun post(url: String, json: String, headers: Map<String, String>): ResponseBody {
-        val request = Request.Builder().url(url).post(json.toRequestBody())
+    fun post(url: String, json: String, headers: Map<String, String>): Response {
+        val req = Request.Builder().url(url).post(json.toRequestBody())
         headers.forEach {
-            request.header(it.key, it.value)
+            req.header(it.key, it.value)
         }
-        val call = client.newCall(request.build())
-        return call.execute().body ?: throw YuriException("API响应异常")
-    }
-
-    fun findLink(url: String): String {
-        val conn = URL(url).openConnection() as HttpURLConnection
-        conn.requestMethod = HttpMethod.GET.name
-        conn.connect()
-        var location = conn.getHeaderField("Location")
-        val code = conn.responseCode
-        location = if (code in 301..302) {
-            findLink(location)
-        } else {
-            conn.url.toString()
-        }
-        conn.disconnect()
-        return location
+        return client.newCall(req.build()).execute()
     }
 
 }

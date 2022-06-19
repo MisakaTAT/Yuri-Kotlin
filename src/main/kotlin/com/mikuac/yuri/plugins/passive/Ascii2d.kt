@@ -29,7 +29,7 @@ class Ascii2d {
             )
         }
 
-        val colorUrl = RequestUtils.findLink("https://ascii2d.net/search/url/${imgUrl}")
+        val colorUrl = RequestUtils.get("https://ascii2d.net/search/url/${imgUrl}").request.url.toString()
 
         val colorSearchResult = request(0, colorUrl)
         val bovwSearchResult = request(1, colorUrl.replace("/color/", "/bovw/"))

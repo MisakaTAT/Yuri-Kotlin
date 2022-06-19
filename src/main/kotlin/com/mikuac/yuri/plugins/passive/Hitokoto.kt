@@ -42,8 +42,8 @@ class Hitokoto {
         try {
             val type = types[Random().nextInt(types.size)]
             val api = "https://v1.hitokoto.cn?c=${type}"
-            val result = RequestUtils.get(api)
-            data = Gson().fromJson(result.string(), HitokotoDto::class.java)
+            val result = RequestUtils.get(api).body?.string()
+            data = Gson().fromJson(result, HitokotoDto::class.java)
         } catch (e: Exception) {
             throw YuriException("一言数据获取异常：${e.message}")
         }

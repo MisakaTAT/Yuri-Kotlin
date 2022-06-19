@@ -23,8 +23,8 @@ class RainbowSixSiege {
         if (username.isEmpty()) throw YuriException("用户名不合法，请检查输入是否正确。")
         val data: RainbowSixSiegeDto
         try {
-            val result = RequestUtils.get("https://www.r6s.cn/Stats?username=${username}", true)
-            data = Gson().fromJson(result.string(), RainbowSixSiegeDto::class.java)
+            val result = RequestUtils.get("https://www.r6s.cn/Stats?username=${username}", true).body?.string()
+            data = Gson().fromJson(result, RainbowSixSiegeDto::class.java)
             if (data.status != 200) throw YuriException("服务器可能爆炸惹，请稍后重试～")
             return data
         } catch (e: Exception) {

@@ -46,7 +46,7 @@ class PicSearch {
                 }
             }
 
-            bot.sendMsg(event,"检索结果相似度较低，正在使用Ascii2d进行检索···",false)
+            bot.sendMsg(event, "检索结果相似度较低，正在使用Ascii2d进行检索···", false)
             val ascii2dResult = ascii2d.buildMsgForAscii2d(imgUrl, imgMd5)
             // Ascii2d 色合検索
             bot.sendMsg(event, ascii2dResult.first, false)

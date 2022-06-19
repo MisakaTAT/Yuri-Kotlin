@@ -37,8 +37,8 @@ class AnimePic {
         try {
             var api = "https://api.lolicon.app/setu/v2"
             if (r18) api = "$api?r18=1"
-            val result = RequestUtils.get(api)
-            data = Gson().fromJson(result.string(), AnimePicDto::class.java)
+            val result = RequestUtils.get(api).body?.string()
+            data = Gson().fromJson(result, AnimePicDto::class.java)
             if (data.error.isNotEmpty()) throw YuriException(data.error)
             if (data.data.isEmpty()) throw YuriException("列表为空")
         } catch (e: Exception) {
