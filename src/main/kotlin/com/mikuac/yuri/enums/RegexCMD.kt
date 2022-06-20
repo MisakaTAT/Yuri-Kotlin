@@ -23,6 +23,7 @@ class RegexCMD {
         const val BLOCK_CHAIN = "^(?i)bc\\s([a-z]+)\$"
         const val R6S = "^(?i)r6s\\s(.*)\$"
         const val BROADCAST = "^通知\\s([\\s\\S]+)\$"
+        const val ROULETTE = "^切换轮盘模式\$|^开始轮盘\$|^开枪\$"
     }
 
 }
