@@ -37,7 +37,6 @@ idea.project {
 repositories {
     mavenLocal()
     maven { url 'https://maven.aliyun.com/repository/central' }
-    maven { url 'https://jitpack.io' }
     mavenCentral()
 }
 
@@ -61,6 +60,5 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.15.1'
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
     implementation 'org.projectlombok:lombok:1.18.24'
-    implementation 'com.github.Dituon:petpet:3.0'
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.7.0'
 }
