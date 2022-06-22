@@ -99,12 +99,12 @@ class Roulette {
 
     private fun changeMode(groupId: Long, userId: Long, userRole: String, bot: Bot) {
         // 只有管理员和群主可以切换轮盘模式
-        if (level[userRole]!! < 1) {
-            MsgSendUtils.atSend(userId, groupId, bot, "诶呀~ 切换轮盘模式需要管理员权限呢")
+        if (level[userRole]!! > 1) {
+            rouletteType = if (rouletteType == RouletteType.MUTE) RouletteType.KICK else RouletteType.MUTE
+            bot.sendGroupMsg(groupId, "轮盘已切换至${rouletteType.OperateName}模式", false)
             return
         }
-        rouletteType = if (rouletteType == RouletteType.MUTE) RouletteType.KICK else RouletteType.MUTE
-        bot.sendGroupMsg(groupId, "轮盘已切换至${rouletteType.OperateName}模式", false)
+        MsgSendUtils.atSend(userId, groupId, bot, "诶呀~ 切换轮盘模式需要管理员权限呢")
     }
 
     private fun start(groupId: Long, userId: Long, matcher: Matcher, bot: Bot) {
@@ -142,7 +142,7 @@ class Roulette {
         }
         val data = expiringMap[groupId]!!
         // 重新设置超时
-        expiringMap.resetExpiration((ReadConfig.config.plugin.roulette.timeout * 1000).toLong())
+        expiringMap.resetExpiration(groupId)
         // 最后回复的消息
         val replyMsg: String
         // 判断此处是否有子弹
