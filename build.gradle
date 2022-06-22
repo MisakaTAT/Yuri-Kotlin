@@ -7,6 +7,7 @@ buildscript {
 
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.7.0'
+    id 'org.springframework.boot' version '2.7.0'
 }
 
 apply {
@@ -14,10 +15,11 @@ apply {
     plugin 'idea'
     plugin 'kotlin-jpa'
     plugin 'kotlin-spring'
+    plugin 'io.spring.dependency-management'
 }
 
 group = 'com.mikuac'
-version = '1.0.0'
+version = '1.0'
 description = 'QQ Chat Bot'
 
 java {

@@ -1,5 +1,7 @@
 package com.mikuac.yuri.config
 
+import com.mikuac.yuri.plugins.passive.Roulette
+
 data class Config(
     val base: Base,
     val plugin: Plugin
@@ -23,7 +25,8 @@ data class Config(
         val epic: Epic,
         val tarot: Tarot,
         val animeCrawler: AnimeCrawler,
-        val picSearch: PicSearch
+        val picSearch: PicSearch,
+        val roulette: Roulette,
     ) {
         data class PicSearch(
             val similarityLimit: String,
@@ -61,6 +64,11 @@ data class Config(
         data class AnimeCrawler(
             val enable: Boolean,
             val permitsPerMinute: Int
+        )
+
+        data class Roulette(
+            val timeout: Int,
+            val maxMuteTime: Int
         )
     }
 }

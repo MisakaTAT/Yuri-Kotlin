@@ -2,11 +2,16 @@ package com.mikuac.yuri.plugins.passive
 
 import com.mikuac.shiro.annotation.GroupMessageHandler
 import com.mikuac.shiro.annotation.Shiro
-import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
+import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.utils.MsgSendUtils
+import lombok.Getter
+import net.jodah.expiringmap.ExpirationPolicy
+import net.jodah.expiringmap.ExpiringMap
 import org.springframework.stereotype.Component
+import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
 
 @Shiro
@@ -21,9 +26,14 @@ class Roulette {
         }
     }
 
+    @Getter
     data class GroupRouletteData(
         private var bulletCount: Int,
+        private val userId: Long,
+        private val groupId: Long,
+        private val bot: Bot
     ) {
+        // 未指定装弹量则默认填充 1 颗
         init {
             if (bulletCount !in (1..6)) bulletCount = 1
         }
@@ -40,8 +50,12 @@ class Roulette {
         //当前进度 以 0 作为初始值
         var progress: Int = 0
 
-        // true 代表此处有子弹   false 代表没有
+        // true 代表此处有子弹 false 代表没有，shuffled 对 list 进行 “洗牌”
         val shotList = originShotList[bulletCount - 1].shuffled()
+
+        fun userId(): Long = this.userId
+        fun groupId(): Long = this.groupId
+        fun bot(): Bot = this.bot
     }
 
     enum class RouletteType(val OperateName: String, val introduction: String) {
@@ -51,9 +65,16 @@ class Roulette {
     }
 
     // 使用 groupId 作为 key 储存数据
-    private val dataMap = HashMap<Long, GroupRouletteData>()
+    private val expiringMap: ExpiringMap<Long, GroupRouletteData> = ExpiringMap.builder()
+        .variableExpiration()
+        .expirationPolicy(ExpirationPolicy.CREATED)
+        .asyncExpirationListener { _: Long, v: GroupRouletteData -> expCallBack(v) }
+        .build()
 
-    private val currentUser = HashMap<Long, Long>()
+    // 超时回调
+    private fun expCallBack(v: GroupRouletteData) {
+        MsgSendUtils.atSend(v.userId(), v.groupId(), v.bot(), "当前群组轮盘对决已超时，如需继续请重新发起~")
+    }
 
     // 默认为禁言模式
     private var rouletteType: RouletteType = RouletteType.MUTE
@@ -61,74 +82,67 @@ class Roulette {
     // 默认的回复语录
     private val defaultQuotations = listOf(
         // 未打中时的回复  0-4
-        "无需退路。",
-        "英雄们啊，为这最强大的信念，请站在我们这边。",
-        "颤抖吧，在真正的勇敢面前。",
-        "哭嚎吧，为你们不堪一击的信念。",
-        "现在可没有后悔的余地了。",
+        "呼呼，没有爆裂的声响，你活了下来",
+        "虽然黑洞洞的枪口很恐怖，但好在没有子弹射出来，你活下来了",
+        "\"咔！\"，你没死，看来运气不错",
+        "手别抖.jpg 快把枪拿稳了",
+        "笨蛋，你还活着，把眼睛睁开吧",
         // 轮盘介绍  "$1"为当前子弹数 "$2"为当前模式  5
-        "这是一把充满荣耀与死亡的左轮手枪，六个弹槽只有$1颗子弹，中弹的那个人将会被$2。勇敢的战士们啊，扣动你们的扳机吧！",
-        // 手枪卡壳（5%的概率开枪失败）  6
-        "我的手中的这把武器，找了无数工匠都难以修缮如新。不......不该如此......",
-        // 打中时的回复  "@"为在此处 @发送者 7
-        "米诺斯英雄们的故事......有喜剧，便也会有悲剧。舍弃了荣耀，@选择回归平凡......",
+        "左轮一次可填充六颗子弹，本次填充了$1颗子弹，中弹的人将会被$2，如果你准备好了，请发送 开枪 对自己扣动扳机吧。",
+        // 手枪卡壳（5% 的概率开枪失败）  6
+        "\"咔！\"，伴随着扳机扣动的声响，但是并没有子弹射出来，枪···卡壳了，你因此逃过一劫",
+        // 打中时的回复 7
+        "中弹后穿越到了异世界···",
         // 没有权限时的回答  8
-        "听啊，悲鸣停止了。这是幸福的和平到来前的宁静。（无管理员权限或权限低于目标用户）"
+        "哼哼~ 看起来$1并没有惩罚你的权限呢，这次就先放过你吧，下次可就没这么走运了。"
     )
 
     private fun changeMode(groupId: Long, userId: Long, userRole: String, bot: Bot) {
         // 只有管理员和群主可以切换轮盘模式
         if (level[userRole]!! < 1) {
-            bot.sendGroupMsg(
-                groupId,
-                MsgUtils.builder().at(userId).text("诶呀~ 切换轮盘模式需要管理员权限呢").build(),
-                false
-            )
+            MsgSendUtils.atSend(userId, groupId, bot, "诶呀~ 切换轮盘模式需要管理员权限呢")
             return
         }
         rouletteType = if (rouletteType == RouletteType.MUTE) RouletteType.KICK else RouletteType.MUTE
         bot.sendGroupMsg(groupId, "轮盘已切换至${rouletteType.OperateName}模式", false)
     }
 
-    private fun start(groupId: Long, userId: Long, msg: String, bot: Bot) {
-        if (dataMap.containsKey(groupId)) return
-        val lastChar = msg.trim().last()
-        val bulletCount: Int =
-            if (lastChar.isDigit() && lastChar.toString().toInt() in (1..6)) lastChar.toString().toInt() else 1
-        dataMap[groupId] = GroupRouletteData(bulletCount)
-        bot.sendGroupMsg(
+    private fun start(groupId: Long, userId: Long, matcher: Matcher, bot: Bot) {
+        if (expiringMap.containsKey(groupId)) return
+        // 装弹数
+        val bulletCount: Int = matcher.group(1)?.trim()?.toInt() ?: 1
+        if (bulletCount == 6) MsgSendUtils.atSend(userId, groupId, bot, "这位群友请不要想不开，如果你执意要这么做的话···")
+        expiringMap.put(
             groupId,
-            MsgUtils.builder()
-                .at(userId)
-                .text(
-                    defaultQuotations[5].replace(
-                        "$1",
-                        when (bulletCount) {
-                            1 -> "一"
-                            2 -> "二"
-                            3 -> "三"
-                            4 -> "四"
-                            5 -> "五"
-                            6 -> "六"
-                            else -> ""
-                        }
-                    ).replace("$2", rouletteType.introduction)
-                ).build(),
-            false
+            GroupRouletteData(bulletCount, userId, groupId, bot),
+            ReadConfig.config.plugin.roulette.timeout.toLong(),
+            TimeUnit.SECONDS
+        )
+        MsgSendUtils.atSend(
+            userId, groupId, bot,
+            defaultQuotations[5].replace(
+                "$1",
+                when (bulletCount) {
+                    1 -> "一"
+                    2 -> "二"
+                    3 -> "三"
+                    4 -> "四"
+                    5 -> "五"
+                    6 -> "六"
+                    else -> ""
+                }
+            ).replace("$2", rouletteType.introduction)
         )
     }
 
     private fun shot(groupId: Long, userId: Long, userRole: String, botRole: String, bot: Bot) {
-        if (!dataMap.containsKey(groupId)) {
-            bot.sendGroupMsg(groupId, MsgUtils.builder().at(userId).text("当前暂无进行时的轮盘，请发送 开始轮盘 创建对局。").build(), false)
+        if (!expiringMap.containsKey(groupId)) {
+            MsgSendUtils.atSend(userId, groupId, bot, "当前暂无进行时的轮盘，请发送 开始轮盘 创建对局。")
             return
         }
-        // 一个人一次只能开一枪
-        if (currentUser[groupId] == userId) {
-            bot.sendGroupMsg(groupId, MsgUtils.builder().at(userId).text("您已经开过一枪了，请等候下一位玩家操作。").build(), false)
-            return
-        }
-        val data = dataMap[groupId]!!
+        val data = expiringMap[groupId]!!
+        // 重新设置超时
+        expiringMap.resetExpiration((ReadConfig.config.plugin.roulette.timeout * 1000).toLong())
         // 最后回复的消息
         val replyMsg: String
         // 判断此处是否有子弹
@@ -139,21 +153,25 @@ class Roulette {
             } else {
                 if (level[botRole]!! > level[userRole]!!) {
                     when (rouletteType) {
-                        RouletteType.MUTE -> bot.setGroupBan(groupId, userId, (1..5).random() * 60)
+                        RouletteType.MUTE -> {
+                            bot.setGroupBan(
+                                groupId,
+                                userId,
+                                (1..ReadConfig.config.plugin.roulette.maxMuteTime).random() * 60
+                            )
+                        }
                         RouletteType.KICK -> bot.setGroupKick(groupId, userId, false)
                     }
                     defaultQuotations[7]
                 } else {
-                    defaultQuotations[8]
+                    defaultQuotations[8].replace("$1", ReadConfig.config.base.botName)
                 }
             }
-            dataMap.remove(groupId)
+            expiringMap.remove(groupId)
         } else {
-            replyMsg = "${defaultQuotations[data.progress]}(${data.progress + 1}/6)"
+            replyMsg = "${defaultQuotations[(0..4).random()]} (${data.progress + 1}/6)"
         }
-        if (replyMsg.contains("@")) replyMsg.replace("@", MsgUtils.builder().at(userId).build())
-        bot.sendGroupMsg(groupId, replyMsg, false)
-        currentUser[groupId] = userId
+        MsgSendUtils.atSend(userId, groupId, bot, replyMsg)
         data.progress++
     }
 
@@ -165,8 +183,8 @@ class Roulette {
         val botRole = bot.getGroupMemberInfo(groupId, event.selfId, true).data.role
         when (matcher.group(0)) {
             "切换轮盘模式" -> changeMode(groupId, userId, userRole, bot)
-            "开始轮盘" -> start(groupId, userId, event.message, bot)
             "开枪" -> shot(groupId, userId, userRole, botRole, bot)
+            else -> start(groupId, userId, matcher, bot)
         }
     }
 

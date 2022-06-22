@@ -19,14 +19,14 @@ plugin:
   animePic:
     # 是否允许请求 r18 色图
     r18: true
-    # 冷却时间（单位秒）
+    # 冷却时间（秒）
     cdTime: 60
-    # 图片撤回时间（单位秒）
+    # 图片撤回时间（秒）
     recallMsgPicTime: 30
     # 代理地址
     proxy: "i.pixiv.re"
   repeat:
-    # 多长时间内不复读重复内容（单位秒）
+    # 多长时间内不复读重复内容（秒）
     waitTime: 60
     # 复读阈值
     thresholdValue: 5
@@ -36,13 +36,18 @@ plugin:
   sauceNao:
     key: ""
   epic:
-    # 缓存时间（单位秒）
+    # 缓存时间（秒）
     cacheTime: 600
   tarot:
-    # 冷却时间（单位秒）
+    # 冷却时间（秒）
     cdTime: 60
   animeCrawler:
     # 开启调用限速
     enable: true
-    # 每分钟可调用的次数（例如设置为6则是10秒允许调用一次）
+    # 每分钟可调用的次数（例如设置为 6 则是 10 秒允许调用一次）
     permitsPerMinute: 6
+  roulette:
+    # 超时（秒）
+    timeout: 60
+    # 最大禁言时间（分钟）
+    maxMuteTime: 5
