@@ -5,12 +5,12 @@ import cn.hutool.core.date.DateUtil
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import com.mikuac.shiro.annotation.GroupMessageHandler
+import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.dto.event.message.GroupMessageEvent
+import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.bean.dto.EpicDto
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.enums.RegexCMD
@@ -130,11 +130,11 @@ class EpicFreeGame {
         }
     }
 
-    @GroupMessageHandler(cmd = RegexCMD.EPIC_FREE_GAME)
-    fun epicFreeGameHandler(bot: Bot, event: GroupMessageEvent) {
+    @MessageHandler(cmd = RegexCMD.EPIC_FREE_GAME)
+    fun epicFreeGameHandler(bot: Bot, event: WholeMessageEvent) {
         try {
             val msg = ShiroUtils.generateForwardMsg(event.selfId, ReadConfig.config.base.botName, buildMsg())
-            bot.sendGroupForwardMsg(event.groupId, msg)
+            bot.sendForwardMsg(event, msg)
         } catch (e: YuriException) {
             e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
         } catch (e: Exception) {
