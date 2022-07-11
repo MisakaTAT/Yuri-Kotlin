@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
+import com.mikuac.shiro.common.utils.OneBotMedia
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.bean.dto.GithubRepoDto
@@ -42,7 +43,12 @@ class GithubRepo {
             .text("\nLicense: ${data.license?.spdxId}")
             .text("\n${data.description}")
             .text("\n${data.htmlUrl}")
-            .img("https://opengraph.githubassets.com/0/${data.fullName}?rand=${System.currentTimeMillis()}")
+            .img(
+                OneBotMedia.Builder()
+                    .file("https://opengraph.githubassets.com/0/${data.fullName}")
+                    .cache(false)
+                    .build()
+            )
             .build()
     }
 

@@ -5,6 +5,7 @@ import com.google.gson.JsonObject
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.yuri.entity.Ascii2dCacheEntity
+import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.repository.Ascii2dCacheRepository
 import com.mikuac.yuri.utils.RequestUtils
 import org.jsoup.Jsoup
@@ -31,16 +32,18 @@ class Ascii2d {
 
         val colorUrl = RequestUtils.get("https://ascii2d.net/search/url/${imgUrl}").request.url.toString()
 
-        val colorSearchResult = request(0, colorUrl)
-        val bovwSearchResult = request(1, colorUrl.replace("/color/", "/bovw/"))
+        try {
+            val colorSearchResult = request(0, colorUrl)
+            val bovwSearchResult = request(1, colorUrl.replace("/color/", "/bovw/"))
+            val json = JsonObject()
+            json.addProperty("color", colorSearchResult)
+            json.addProperty("bovw", bovwSearchResult)
+            repository.save(Ascii2dCacheEntity(0, imgMd5, json.toString()))
+            return Pair(colorSearchResult, bovwSearchResult)
+        } catch (e: IndexOutOfBoundsException) {
+            throw YuriException("Ascii2d未检索到相似内容···")
+        }
 
-        val json = JsonObject()
-        json.addProperty("color", colorSearchResult)
-        json.addProperty("bovw", bovwSearchResult)
-
-        repository.save(Ascii2dCacheEntity(0, imgMd5, json.toString()))
-
-        return Pair(colorSearchResult, bovwSearchResult)
     }
 
     private fun request(type: Int, resultUrl: String): String {
