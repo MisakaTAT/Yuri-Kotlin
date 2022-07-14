@@ -15,8 +15,6 @@ class RegexCMD {
         const val UNSET_SEARCH_MODE = "^结束检索|谢谢\$"
         const val HELP = "^(?i)help\$|^帮助\$"
         const val ANIME_PIC = "^(?i)setu(\\sr18)?\$|(?i)色图(\\sr18)?\$"
-        const val BLOCK_USER = "^(?i)ban\\s(.*)\$"
-        const val UNBLOCK_USER = "(?i)unban\\s(.*)\$"
         const val TAROT = "^(?i)tarot\$|^塔罗牌\$"
         const val HITOKOTO = "^(?i)hitokoto\$|^一言\$"
         const val ANIME_CRAWLER = "^(今日放送)\$|^(星期|周)([1-7]|[一二三四五六七日天])番剧\$"
@@ -24,6 +22,7 @@ class RegexCMD {
         const val R6S = "^(?i)r6s\\s(.*)\$"
         const val BROADCAST = "^通知\\s([\\s\\S]+)\$"
         const val ROULETTE = "^切换轮盘模式\$|^开始轮盘(\\s[1-6])?\$|^开枪\$"
+        const val MANAGER = "^(?i)(.*)\\s(.*)\\s(.*)\\s([0-9]+)\$"
     }
 
 }

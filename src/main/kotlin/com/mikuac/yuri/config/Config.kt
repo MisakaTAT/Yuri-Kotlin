@@ -11,6 +11,7 @@ data class Config(
         val botName: String,
         val botSelfId: Long,
         val searchMode: SearchMode,
+        val enableGroupOnlyWhiteList: Boolean
     ) {
         data class SearchMode(
             val timeout: Int

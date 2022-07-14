@@ -10,6 +10,8 @@ base:
   searchMode:
     # 搜图模式超时时间
     timeout: 30
+  # 启用仅群组白名单模式
+  enableGroupOnlyWhiteList: false
 plugin:
   picSearch:
     # 相似度低于多少自动调用Ascii2d搜图（自动转为 Float 类型）
