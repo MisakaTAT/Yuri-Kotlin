@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
 class BotStatus {
 
     private fun buildMsg(): String {
-        val upTime = TimeUnit.MILLISECONDS.toMinutes(ManagementFactory.getRuntimeMXBean().uptime)
+        val upTime = TimeUnit.MILLISECONDS.toHours(ManagementFactory.getRuntimeMXBean().uptime)
         val jvmInfo = SystemUtil.getJvmInfo()
         val osInfo = SystemUtil.getOsInfo()
         val processorInfo = OshiUtil.getHardware().processor
@@ -28,7 +28,7 @@ class BotStatus {
         val cpuInfo = OshiUtil.getCpuInfo()
         return MsgUtils.builder()
             .text("[基本信息]")
-            .text("\nBot UpTime: $upTime min")
+            .text("\nBot UpTime: $upTime hours")
             .text("\nKotlin Version: ${KotlinVersion.CURRENT}")
             .text("\nJVM Version: ${jvmInfo.version}")
             .text("\nJVM Vendor: ${jvmInfo.vendor}")
