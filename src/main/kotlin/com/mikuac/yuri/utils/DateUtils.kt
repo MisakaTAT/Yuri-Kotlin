@@ -16,12 +16,6 @@ class DateUtils {
             return m.toString() + "分" + s + "秒"
         }
 
-        fun getTime(): String {
-            val time = LocalDateTime.now()
-            val format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
-            return time.format(format)
-        }
-
     }
 
 }
