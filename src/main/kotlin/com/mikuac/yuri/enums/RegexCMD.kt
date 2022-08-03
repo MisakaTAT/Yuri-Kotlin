@@ -23,6 +23,7 @@ class RegexCMD {
         const val BROADCAST = "^通知\\s([\\s\\S]+)\$"
         const val ROULETTE = "^切换轮盘模式\$|^开始轮盘(\\s[1-6])?\$|^开枪\$"
         const val MANAGER = "^(?i)(.*)\\s(.*)\\s(.*)\\s([0-9]+)\$"
+        const val WORD_CLOUD = "^(我的|本群)(今日|本周|本月|本年)词云\$"
     }
 
 }

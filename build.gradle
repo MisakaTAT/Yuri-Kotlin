@@ -62,5 +62,7 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.15.1'
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
     implementation 'org.projectlombok:lombok:1.18.24'
+    implementation 'com.kennycason:kumo-core:1.28'
+    implementation 'com.kennycason:kumo-tokenizers:1.28'
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.7.0'
 }
