@@ -28,7 +28,13 @@ data class Config(
         val animeCrawler: AnimeCrawler,
         val picSearch: PicSearch,
         val roulette: Roulette,
+        val wordCloud: WordCloud,
     ) {
+        data class WordCloud(
+            val minFontSize: Int,
+            val maxFontSize: Int,
+        )
+
         data class PicSearch(
             val similarityLimit: String,
             val alwaysUseAscii2d: Boolean

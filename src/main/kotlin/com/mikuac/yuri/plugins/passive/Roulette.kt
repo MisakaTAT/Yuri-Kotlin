@@ -111,7 +111,12 @@ class Roulette {
         if (expiringMap.containsKey(groupId)) return
         // 装弹数
         val bulletCount: Int = matcher.group(1)?.trim()?.toInt() ?: 1
-        if (bulletCount == 6) MsgSendUtils.atSend(userId, groupId, bot, "这位群友请不要想不开，如果你执意要这么做的话···")
+        if (bulletCount == 6) MsgSendUtils.atSend(
+            userId,
+            groupId,
+            bot,
+            "这位群友请不要想不开，如果你执意要这么做的话···"
+        )
         expiringMap.put(
             groupId,
             GroupRouletteData(bulletCount, userId, groupId, bot),
@@ -160,6 +165,7 @@ class Roulette {
                                 (1..ReadConfig.config.plugin.roulette.maxMuteTime).random() * 60
                             )
                         }
+
                         RouletteType.KICK -> bot.setGroupKick(groupId, userId, false)
                     }
                     defaultQuotations[7]

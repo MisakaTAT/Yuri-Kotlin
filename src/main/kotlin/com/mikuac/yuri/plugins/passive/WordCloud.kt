@@ -1,4 +1,4 @@
-package com.mikuac.yuri.plugins.cron
+package com.mikuac.yuri.plugins.passive
 
 import com.kennycason.kumo.CollisionMode
 import com.kennycason.kumo.WordCloud
@@ -14,6 +14,7 @@ import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
+import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.entity.WordCloudEntity
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
@@ -36,7 +37,6 @@ class WordCloud {
 
     @Autowired
     private lateinit var repository: WordCloudRepository
-
 
     @GroupMessageHandler
     fun saveMsg(event: GroupMessageEvent) {
@@ -64,7 +64,12 @@ class WordCloud {
         wordCloud.setColorPalette(
             ColorPalette(colors.map { it.toIntOrNull(16)?.let { it1 -> Color(it1) } })
         )
-        wordCloud.setFontScalar(LinearFontScalar(10, 40))
+        wordCloud.setFontScalar(
+            LinearFontScalar(
+                ReadConfig.config.plugin.wordCloud.minFontSize,
+                ReadConfig.config.plugin.wordCloud.maxFontSize
+            )
+        )
         wordCloud.build(wordFrequencies)
 
         val stream = ByteArrayOutputStream()
@@ -114,9 +119,8 @@ class WordCloud {
     }
 
     @GroupMessageHandler(cmd = RegexCMD.WORD_CLOUD)
-    fun test(event: GroupMessageEvent, bot: Bot, matcher: Matcher) {
+    fun wordCloudHandler(event: GroupMessageEvent, bot: Bot, matcher: Matcher) {
         val msgId = event.messageId
-
         try {
             val type = matcher.group(1)
             val range = matcher.group(2)

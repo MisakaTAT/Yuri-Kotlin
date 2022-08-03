@@ -64,11 +64,13 @@ class SauceNao {
                 msgUtils.text("\n反代地址：https://i.loli.best/${data.pixivId}")
                 msgUtils.text("\n数据来源：SauceNao (Pixiv)")
             }
+
             41 -> {
                 msgUtils.text("\n链接：${data.extUrls[0]}")
                 msgUtils.text("\n用户：" + "https://twitter.com/${data.twitterUserHandle}")
                 msgUtils.text("\n数据来源：SauceNao (Twitter)")
             }
+
             in listOf(18, 38) -> {
                 msgUtils.text("\n来源：${data.source}")
                 msgUtils.text("\n日文名：${data.jpName}")

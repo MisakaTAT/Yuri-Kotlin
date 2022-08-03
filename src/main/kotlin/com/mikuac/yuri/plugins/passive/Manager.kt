@@ -49,6 +49,7 @@ class Manager {
             "GROUP" -> {
                 groupActionType(actionType, action, target, bot, event)
             }
+
             "USER" -> {
                 privateActionType(actionType, action, target, bot, event)
             }
@@ -67,6 +68,7 @@ class Manager {
             "BLACK" -> {
                 groupBlackListAction(action, target, bot, event)
             }
+
             "WHITE" -> {
                 groupWhiteListAction(action, target, bot, event)
             }
@@ -84,6 +86,7 @@ class Manager {
             "BLACK" -> {
                 privateBlackListAction(action, target, bot, event)
             }
+
             "WHITE" -> {
                 bot.sendPrivateMsg(event.userId, "暂不支持用户白名单操作", false)
             }
@@ -100,6 +103,7 @@ class Manager {
                 groupBlackListRepository.save(GroupBlackListEntity(0, target))
                 bot.sendPrivateMsg(event.userId, "群组 $target 已加入黑名单", false)
             }
+
             "DEL" -> {
                 if (!checkUtils.checkGroupInBlackList(target)) {
                     bot.sendPrivateMsg(event.userId, "群组 $target 不在黑名单内，无需删除。", false)
@@ -121,6 +125,7 @@ class Manager {
                 userBlackListRepository.save(UserBlackListEntity(0, target))
                 bot.sendPrivateMsg(event.userId, "用户 $target 已加入黑名单", false)
             }
+
             "DEL" -> {
                 if (!checkUtils.checkUserInBlackList(target)) {
                     bot.sendPrivateMsg(event.userId, "用户 $target 不在黑名单内，无需删除。", false)
@@ -142,6 +147,7 @@ class Manager {
                 groupWhiteListRepository.save(GroupWhiteListEntity(0, target))
                 bot.sendPrivateMsg(event.userId, "群组 $target 已加入白名单", false)
             }
+
             "DEL" -> {
                 if (!checkUtils.checkGroupInWhiteList(target)) {
                     bot.sendPrivateMsg(event.userId, "群组 $target 不在白名单内，无需删除。", false)

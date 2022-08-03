@@ -53,3 +53,6 @@ plugin:
     timeout: 60
     # 最大禁言时间（分钟）
     maxMuteTime: 5
+  wordCloud:
+    minFontSize: 20
+    maxFontSize: 80

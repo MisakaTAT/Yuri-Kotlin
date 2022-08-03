@@ -33,7 +33,12 @@ class SearchModeUtils : BotPlugin() {
 
         // 过期通知
         private fun expCallBack(value: SearchModeBean) {
-            MsgSendUtils.atSend(value.userId, value.groupId, value.bot, "您已经很久没有发送图片啦，帮您退出检索模式了哟～")
+            MsgSendUtils.atSend(
+                value.userId,
+                value.groupId,
+                value.bot,
+                "您已经很久没有发送图片啦，帮您退出检索模式了哟～"
+            )
         }
 
         private fun isSearchMode(key: Long): Boolean {
