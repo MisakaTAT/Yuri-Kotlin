@@ -12,6 +12,7 @@ import com.kennycason.kumo.palette.ColorPalette
 import com.mikuac.shiro.annotation.GroupMessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
+import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.config.ReadConfig
@@ -66,8 +67,7 @@ class WordCloud {
         )
         wordCloud.setFontScalar(
             LinearFontScalar(
-                ReadConfig.config.plugin.wordCloud.minFontSize,
-                ReadConfig.config.plugin.wordCloud.maxFontSize
+                ReadConfig.config.plugin.wordCloud.minFontSize, ReadConfig.config.plugin.wordCloud.maxFontSize
             )
         )
         wordCloud.build(wordFrequencies)
@@ -126,8 +126,14 @@ class WordCloud {
             val range = matcher.group(2)
 
             MsgSendUtils.replySend(msgId, event.userId, event.groupId, bot, "数据检索中，请耐心等待～")
-            val contents = getWordsForRange(event.userId, event.groupId, type, range).filter {
-                !it.contains("词云|http|\\[CQ:".toRegex())
+
+            val contents = ArrayList<String>()
+            getWordsForRange(event.userId, event.groupId, type, range).forEach { raw ->
+                contents.addAll(
+                    ShiroUtils.stringToMsgChain(raw).filter { it.type == "text" }.map {
+                        it.data["text"]!!.trim()
+                    }.filter { !it.contains("http|词云".toRegex()) }.toList()
+                )
             }
 
             if (contents.isEmpty()) {

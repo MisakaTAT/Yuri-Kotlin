@@ -6,13 +6,16 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 
+@Suppress("unused")
 object RequestUtils {
 
     private val client = OkHttpClient()
 
     fun get(url: String): Response {
         val req = Request.Builder().url(url).get().build()
-        return client.newCall(req).execute()
+        val resp = client.newCall(req).execute()
+        resp.close()
+        return resp
     }
 
     fun get(url: String, noReferer: Boolean): Response {
@@ -20,7 +23,9 @@ object RequestUtils {
         if (noReferer) {
             req.header("referer", "no-referer")
         }
-        return client.newCall(req.build()).execute()
+        val resp = client.newCall(req.build()).execute()
+        resp.close()
+        return resp
     }
 
     fun get(url: String, headers: Map<String, String>): Response {
@@ -28,13 +33,17 @@ object RequestUtils {
         headers.forEach {
             req.header(it.key, it.value)
         }
-        return client.newCall(req.build()).execute()
+        val resp = client.newCall(req.build()).execute()
+        resp.close()
+        return resp
     }
 
     fun post(url: String, json: String): Response {
         val mediaType = "application/json; charset=utf-8".toMediaType()
         val request = Request.Builder().url(url).post(json.toRequestBody(mediaType))
-        return client.newCall(request.build()).execute()
+        val resp = client.newCall(request.build()).execute()
+        resp.close()
+        return resp
     }
 
     fun post(url: String, json: String, headers: Map<String, String>): Response {
@@ -42,7 +51,9 @@ object RequestUtils {
         headers.forEach {
             req.header(it.key, it.value)
         }
-        return client.newCall(req.build()).execute()
+        val resp = client.newCall(req.build()).execute()
+        resp.close()
+        return resp
     }
 
 }
