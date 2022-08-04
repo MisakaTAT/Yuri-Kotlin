@@ -13,9 +13,7 @@ object RequestUtils {
 
     fun get(url: String): Response {
         val req = Request.Builder().url(url).get().build()
-        val resp = client.newCall(req).execute()
-        resp.close()
-        return resp
+        return client.newCall(req).execute()
     }
 
     fun get(url: String, noReferer: Boolean): Response {
@@ -23,9 +21,7 @@ object RequestUtils {
         if (noReferer) {
             req.header("referer", "no-referer")
         }
-        val resp = client.newCall(req.build()).execute()
-        resp.close()
-        return resp
+        return client.newCall(req.build()).execute()
     }
 
     fun get(url: String, headers: Map<String, String>): Response {
@@ -33,17 +29,13 @@ object RequestUtils {
         headers.forEach {
             req.header(it.key, it.value)
         }
-        val resp = client.newCall(req.build()).execute()
-        resp.close()
-        return resp
+        return client.newCall(req.build()).execute()
     }
 
     fun post(url: String, json: String): Response {
         val mediaType = "application/json; charset=utf-8".toMediaType()
         val request = Request.Builder().url(url).post(json.toRequestBody(mediaType))
-        val resp = client.newCall(request.build()).execute()
-        resp.close()
-        return resp
+        return client.newCall(request.build()).execute()
     }
 
     fun post(url: String, json: String, headers: Map<String, String>): Response {
@@ -51,9 +43,7 @@ object RequestUtils {
         headers.forEach {
             req.header(it.key, it.value)
         }
-        val resp = client.newCall(req.build()).execute()
-        resp.close()
-        return resp
+        return client.newCall(req.build()).execute()
     }
 
 }
