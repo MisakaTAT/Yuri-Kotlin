@@ -132,7 +132,7 @@ class WordCloud {
                 contents.addAll(
                     ShiroUtils.stringToMsgChain(raw).filter { it.type == "text" }.map {
                         it.data["text"]!!.trim()
-                    }.filter { !it.contains("http|词云".toRegex()) }.toList()
+                    }.filter { !it.contains("http|词云|&#".toRegex()) }.toList()
                 )
             }
 
