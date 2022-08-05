@@ -10,12 +10,14 @@ import com.kennycason.kumo.nlp.FrequencyAnalyzer
 import com.kennycason.kumo.nlp.tokenizers.ChineseWordTokenizer
 import com.kennycason.kumo.palette.ColorPalette
 import com.mikuac.shiro.annotation.GroupMessageHandler
+import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotContainer
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
+import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.entity.WordCloudEntity
@@ -94,8 +96,15 @@ class WordCloud {
         return repository.findAllByGroupIdAndTimeBetween(groupId, start, end).map { it.content }.toList()
     }
 
-    private fun getWordsForRange(userId: Long, groupId: Long, type: String, range: String): List<String> {
-        val today = LocalDate.now()
+    private fun getWordsForRange(
+        userId: Long,
+        groupId: Long,
+        type: String,
+        range: String,
+        cronTask: Boolean
+    ): List<String> {
+        var today = LocalDate.now()
+        if (cronTask) today = today.plusDays(-1)
         val startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
         val endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
         val startOfMonth = today.with(TemporalAdjusters.firstDayOfMonth())
@@ -125,9 +134,9 @@ class WordCloud {
         return listOf()
     }
 
-    private fun getWords(userId: Long, groupId: Long, type: String, range: String): List<String> {
+    private fun getWords(userId: Long, groupId: Long, type: String, range: String, cronTask: Boolean): List<String> {
         val contents = ArrayList<String>()
-        getWordsForRange(userId, groupId, type, range).forEach { raw ->
+        getWordsForRange(userId, groupId, type, range, cronTask).forEach { raw ->
             contents.addAll(ShiroUtils.stringToMsgChain(raw).filter { it.type == "text" }.map {
                 it.data["text"]!!.trim()
             }.filter { !it.contains("http|词云|&#".toRegex()) }.toList()
@@ -143,7 +152,7 @@ class WordCloud {
             val type = matcher.group(1)
             val range = matcher.group(2)
             MsgSendUtils.replySend(msgId, event.userId, event.groupId, bot, "数据检索中，请耐心等待～")
-            val contents = getWords(event.userId, event.groupId, type, range)
+            val contents = getWords(event.userId, event.groupId, type, range, false)
             if (contents.isEmpty()) {
                 throw YuriException("唔呣～数据库里没有找到你的发言记录呢")
             }
@@ -154,6 +163,18 @@ class WordCloud {
         } catch (e: Exception) {
             MsgSendUtils.replySend(msgId, event.userId, event.groupId, bot, "未知错误：${e.message}")
             e.printStackTrace()
+        }
+    }
+
+    @MessageHandler(cmd = RegexCMD.WORD_CLOUD_CRON)
+    fun wordCloudCronHandler(event: WholeMessageEvent, bot: Bot, matcher: Matcher) {
+        if (event.userId !in ReadConfig.config.base.adminList) {
+            bot.sendMsg(event, "此操作需要管理员权限", false)
+        }
+        when (matcher.group(1)) {
+            "day" -> taskForDay()
+            "week" -> taskForWeek()
+            "month" -> taskForMonth()
         }
     }
 
@@ -178,7 +199,7 @@ class WordCloud {
             // TODO: config file set
             sleep(5000L)
             bot.sendGroupMsg(it.groupId, "嗨嗨嗨，摸鱼的一天结束啦，让我来看看群友${range}聊了些什么～", false)
-            val contents = getWords(0L, it.groupId, "本群", range)
+            val contents = getWords(0L, it.groupId, "本群", range, true)
             if (contents.isEmpty()) {
                 bot.sendGroupMsg(it.groupId, "唔呣～ 居然一条记录都没有，难道你们不聊天的嘛？？", false)
                 return@forEach

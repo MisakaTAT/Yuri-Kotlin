@@ -25,6 +25,7 @@ class RegexCMD {
         const val MANAGER = "^(?i)(.*)\\s(.*)\\s(.*)\\s([0-9]+)\$"
         const val WORD_CLOUD = "^(我的|本群)(今日|本周|本月|本年)词云\$"
         const val DRIFT_BOTTLE = "^丢漂流瓶\\s?([\\s\\S]+)\$|^捡漂流瓶\$|^跳海\$"
+        const val WORD_CLOUD_CRON = "^词云\\s(day|week|month)$"
     }
 
 }
