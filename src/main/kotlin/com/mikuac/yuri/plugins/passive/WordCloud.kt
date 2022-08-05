@@ -14,7 +14,9 @@ import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
+import com.mikuac.shiro.core.BotContainer
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
+import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.entity.WordCloudEntity
 import com.mikuac.yuri.enums.RegexCMD
@@ -22,10 +24,12 @@ import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.repository.WordCloudRepository
 import com.mikuac.yuri.utils.MsgSendUtils
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.awt.Color
 import java.awt.Dimension
 import java.io.ByteArrayOutputStream
+import java.lang.Thread.sleep
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
@@ -39,6 +43,9 @@ class WordCloud {
     @Autowired
     private lateinit var repository: WordCloudRepository
 
+    @Autowired
+    private lateinit var botContainer: BotContainer
+
     @GroupMessageHandler
     fun saveMsg(event: GroupMessageEvent) {
         repository.save(
@@ -46,7 +53,7 @@ class WordCloud {
         )
     }
 
-    fun generateWordCloud(text: List<String>): String {
+    private fun generateWordCloud(text: List<String>): String {
         val frequencyAnalyzer = FrequencyAnalyzer()
         frequencyAnalyzer.setWordFrequenciesToReturn(300)
         frequencyAnalyzer.setMinWordLength(2)
@@ -78,16 +85,16 @@ class WordCloud {
         return Base64.getEncoder().encodeToString(stream.toByteArray())
     }
 
-    fun query(userId: Long, groupId: Long, start: LocalDate, end: LocalDate): List<String> {
+    private fun query(userId: Long, groupId: Long, start: LocalDate, end: LocalDate): List<String> {
         return repository.findAllBySenderIdAndGroupIdAndTimeBetween(userId, groupId, start, end).map { it.content }
             .toList()
     }
 
-    fun query(groupId: Long, start: LocalDate, end: LocalDate): List<String> {
+    private fun query(groupId: Long, start: LocalDate, end: LocalDate): List<String> {
         return repository.findAllByGroupIdAndTimeBetween(groupId, start, end).map { it.content }.toList()
     }
 
-    fun getWordsForRange(userId: Long, groupId: Long, type: String, range: String): List<String> {
+    private fun getWordsForRange(userId: Long, groupId: Long, type: String, range: String): List<String> {
         val today = LocalDate.now()
         val startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
         val endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
@@ -118,28 +125,28 @@ class WordCloud {
         return listOf()
     }
 
+    private fun getWords(userId: Long, groupId: Long, type: String, range: String): List<String> {
+        val contents = ArrayList<String>()
+        getWordsForRange(userId, groupId, type, range).forEach { raw ->
+            contents.addAll(ShiroUtils.stringToMsgChain(raw).filter { it.type == "text" }.map {
+                it.data["text"]!!.trim()
+            }.filter { !it.contains("http|词云|&#".toRegex()) }.toList()
+            )
+        }
+        return contents
+    }
+
     @GroupMessageHandler(cmd = RegexCMD.WORD_CLOUD)
     fun wordCloudHandler(event: GroupMessageEvent, bot: Bot, matcher: Matcher) {
         val msgId = event.messageId
         try {
             val type = matcher.group(1)
             val range = matcher.group(2)
-
             MsgSendUtils.replySend(msgId, event.userId, event.groupId, bot, "数据检索中，请耐心等待～")
-
-            val contents = ArrayList<String>()
-            getWordsForRange(event.userId, event.groupId, type, range).forEach { raw ->
-                contents.addAll(
-                    ShiroUtils.stringToMsgChain(raw).filter { it.type == "text" }.map {
-                        it.data["text"]!!.trim()
-                    }.filter { !it.contains("http|词云|&#".toRegex()) }.toList()
-                )
-            }
-
+            val contents = getWords(event.userId, event.groupId, type, range)
             if (contents.isEmpty()) {
                 throw YuriException("唔呣～数据库里没有找到你的发言记录呢")
             }
-
             val msg = MsgUtils.builder().reply(msgId).img("base64://${generateWordCloud(contents)}").build()
             bot.sendGroupMsg(event.groupId, msg, false)
         } catch (e: YuriException) {
@@ -147,6 +154,38 @@ class WordCloud {
         } catch (e: Exception) {
             MsgSendUtils.replySend(msgId, event.userId, event.groupId, bot, "未知错误：${e.message}")
             e.printStackTrace()
+        }
+    }
+
+    @Scheduled(cron = "0 0 00 * * ?")
+    fun taskForDay() {
+        task("今日")
+    }
+
+    @Scheduled(cron = "0 0 00 ? * SUN")
+    fun taskForWeek() {
+        task("本周")
+    }
+
+    @Scheduled(cron = "0 0 00 L * ?")
+    fun taskForMonth() {
+        task("本月")
+    }
+
+    private fun task(range: String) {
+        val bot = botContainer.robots[ReadConfig.config.base.botSelfId] ?: return
+        bot.groupList.data.forEach {
+            // TODO: config file set
+            sleep(5000L)
+            bot.sendGroupMsg(it.groupId, "嗨嗨嗨，摸鱼的一天结束啦，让我来看看群友${range}聊了些什么～", false)
+            val contents = getWords(0L, it.groupId, "本群", range)
+            if (contents.isEmpty()) {
+                bot.sendGroupMsg(it.groupId, "唔呣～ 居然一条记录都没有，难道你们不聊天的嘛？？", false)
+                return@forEach
+            }
+            val msg = MsgUtils.builder().img("base64://${generateWordCloud(contents)}").build()
+            bot.sendGroupMsg(it.groupId, msg, false)
+            log.info("${range}词云推送到群 [${it.groupName}](${it.groupId}) 成功")
         }
     }
 
