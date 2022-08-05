@@ -45,7 +45,7 @@ plugin:
     cdTime: 60
   animeCrawler:
     # 开启调用限速
-    enable: true
+    enableLimiter: true
     # 每分钟可调用的次数（例如设置为 6 则是 10 秒允许调用一次）
     permitsPerMinute: 6
   roulette:
@@ -56,3 +56,8 @@ plugin:
   wordCloud:
     minFontSize: 20
     maxFontSize: 80
+  driftBottle:
+    # 开启调用限速
+    enableLimiter: true
+    # 每分钟可调用的次数（例如设置为 6 则是 10 秒允许调用一次）
+    permitsPerMinute: 6

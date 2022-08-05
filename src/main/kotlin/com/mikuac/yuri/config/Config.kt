@@ -29,6 +29,7 @@ data class Config(
         val picSearch: PicSearch,
         val roulette: Roulette,
         val wordCloud: WordCloud,
+        val driftBottle: DriftBottle
     ) {
         data class WordCloud(
             val minFontSize: Int,
@@ -69,13 +70,18 @@ data class Config(
         )
 
         data class AnimeCrawler(
-            val enable: Boolean,
+            val enableLimiter: Boolean,
             val permitsPerMinute: Int
         )
 
         data class Roulette(
             val timeout: Int,
             val maxMuteTime: Int
+        )
+
+        data class DriftBottle(
+            val enableLimiter: Boolean,
+            val permitsPerMinute: Int
         )
     }
 }

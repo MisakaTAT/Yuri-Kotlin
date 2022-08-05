@@ -37,7 +37,7 @@ class AnimeCrawler : ApplicationRunner {
 
     private lateinit var rateLimiter: RateLimiter
 
-    private val enableLimiter = ReadConfig.config.plugin.animeCrawler.enable
+    private val enableLimiter = ReadConfig.config.plugin.animeCrawler.enableLimiter
 
     private val permitsPerMinute = ReadConfig.config.plugin.animeCrawler.permitsPerMinute.toDouble()
 
