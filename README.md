@@ -20,6 +20,7 @@
 - WhatAnime搜番
 - R6S战绩查询
 - 俄罗斯轮盘
+- 个人与群词云
 
 # Credits
 
