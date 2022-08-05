@@ -80,8 +80,7 @@ data class Config(
         )
 
         data class DriftBottle(
-            val enableLimiter: Boolean,
-            val permitsPerMinute: Int
+            val cdTime: Int
         )
     }
 }

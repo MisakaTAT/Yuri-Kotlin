@@ -54,10 +54,10 @@ plugin:
     # 最大禁言时间（分钟）
     maxMuteTime: 5
   wordCloud:
+    # 最小字体大小
     minFontSize: 20
+    # 最大字体大小
     maxFontSize: 80
   driftBottle:
-    # 开启调用限速
-    enableLimiter: true
-    # 每分钟可调用的次数（例如设置为 6 则是 10 秒允许调用一次）
-    permitsPerMinute: 6
+    # 多久可以捞一次瓶子（秒）
+    cdTime: 30

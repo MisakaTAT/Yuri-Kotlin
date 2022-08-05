@@ -8,7 +8,7 @@ import javax.transaction.Transactional
 @Component
 interface DriftBottleRepository : JpaRepository<DriftBottleEntity, Int> {
 
-    fun findAllByOpenIsFalseAndUserIdNotLike(userId: Long): List<DriftBottleEntity>
+    fun findAllByOpenIsFalseAndUserIdNotLikeAndGroupIdNotLike(userId: Long, groupId: Long): List<DriftBottleEntity>
 
     fun countAllByOpenIsFalse(): Int
 

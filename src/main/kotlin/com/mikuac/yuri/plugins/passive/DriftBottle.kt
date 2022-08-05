@@ -1,42 +1,32 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.google.common.util.concurrent.RateLimiter
 import com.mikuac.shiro.annotation.GroupMessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
-import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import com.mikuac.yuri.config.ReadConfig
 import com.mikuac.yuri.entity.DriftBottleEntity
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.repository.DriftBottleRepository
 import com.mikuac.yuri.utils.MsgSendUtils
+import net.jodah.expiringmap.ExpirationPolicy
+import net.jodah.expiringmap.ExpiringMap
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.ApplicationArguments
-import org.springframework.boot.ApplicationRunner
 import org.springframework.stereotype.Component
 import java.util.*
+import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
 
 @Shiro
 @Component
-@Suppress("UnstableApiUsage")
-class DriftBottle : ApplicationRunner {
+class DriftBottle {
 
-    private lateinit var rateLimiter: RateLimiter
-
-    private val enableLimiter = ReadConfig.config.plugin.animeCrawler.enableLimiter
-
-    private val permitsPerMinute = ReadConfig.config.plugin.driftBottle.permitsPerMinute.toDouble()
-
-    override fun run(args: ApplicationArguments?) {
-        if (enableLimiter) {
-            rateLimiter = RateLimiter.create(permitsPerMinute / 60)
-            log.info("${this.javaClass.simpleName} 已开启调用限速")
-        }
-    }
+    private val expiringMap: ExpiringMap<Long, Long> = ExpiringMap.builder()
+        .variableExpiration()
+        .expirationPolicy(ExpirationPolicy.CREATED)
+        .build()
 
     @Autowired
     private lateinit var repository: DriftBottleRepository
@@ -44,7 +34,6 @@ class DriftBottle : ApplicationRunner {
     @GroupMessageHandler(cmd = RegexCMD.DRIFT_BOTTLE)
     fun driftBottleHandler(event: GroupMessageEvent, bot: Bot, matcher: Matcher) {
         try {
-            if (enableLimiter && !rateLimiter.tryAcquire()) throw YuriException("呜～ 太快了，会坏掉的···")
             val msg = event.message
             val groupId = event.groupId
             val userId = event.userId
@@ -67,22 +56,39 @@ class DriftBottle : ApplicationRunner {
             }
 
             if (msg.startsWith("捡漂流瓶")) {
-                val bottles = repository.findAllByOpenIsFalseAndUserIdNotLike(event.userId)
+                if (expiringMap[groupId] != null && expiringMap[groupId] == userId) {
+                    val expectedExpiration = expiringMap.getExpectedExpiration(groupId) / 1000
+                    throw YuriException("呜～ 太快了会坏掉的··· 冷却：[${expectedExpiration}秒]")
+                }
+                expiringMap.put(groupId, userId, ReadConfig.config.plugin.driftBottle.cdTime.toLong(), TimeUnit.SECONDS)
+                val bottles =
+                    repository.findAllByOpenIsFalseAndUserIdNotLikeAndGroupIdNotLike(event.userId, event.groupId)
                 if (bottles.isEmpty()) {
-                    throw YuriException("当前无漂流瓶可捞起或仅有你自己的漂流瓶")
+                    throw YuriException("暂无可捞取的漂流瓶（无法捞取本群或自己的瓶子）")
                 }
                 // Update open state
                 val bottle = bottles[Random().nextInt(bottles.size)]
                 bottle.open = true
                 repository.save(bottle)
                 bot.sendGroupMsg(
+                    bottle.groupId,
+                    MsgUtils.builder()
+                        .at(bottle.userId)
+                        .text("\n你编号为 ${bottle.id} 的漂流瓶被人捞起来啦~")
+                        .text("\n群：${bottle.groupName}（${bottle.groupId}")
+                        .text("\n用户：${bottle.userName}（${bottle.userId}）")
+                        .text("\n编号查询漂流瓶内容暂未开发（咕")
+                        .build(),
+                    false
+                )
+                bot.sendGroupMsg(
                     groupId,
                     MsgUtils.builder()
                         .at(userId)
-                        .text("\n你在海边捡到了一个透明的玻璃瓶，你打开了瓶子，里面写着：\n")
+                        .text("\n你在海边捡到了一个透明的玻璃瓶，你打开了瓶子，里面写着：\n\n")
                         .text(bottle.content)
-                        .text("\n该瓶子来自群：${bottle.groupName}（${bottle.groupId}）")
-                        .text("\n该瓶子来自用户：${bottle.userName}（${bottle.userId}）")
+                        .text("\n\n群：${bottle.groupName}（${bottle.groupId}）")
+                        .text("\n用户：${bottle.userName}（${bottle.userId}）")
                         .build(),
                     false
                 )
