@@ -12,14 +12,19 @@ import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.utils.MsgSendUtils
 import org.springframework.stereotype.Component
 import java.lang.management.ManagementFactory
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.concurrent.TimeUnit
+
 
 @Shiro
 @Component
 class BotStatus {
 
     private fun buildMsg(): String {
-        val upTime = TimeUnit.MILLISECONDS.toHours(ManagementFactory.getRuntimeMXBean().uptime)
+        val formatter = SimpleDateFormat("HH:mm:ss")
+        formatter.timeZone = TimeZone.getTimeZone("GMT+00:00")
+        val upTime = formatter.format(ManagementFactory.getRuntimeMXBean().uptime)
         val jvmInfo = SystemUtil.getJvmInfo()
         val osInfo = SystemUtil.getOsInfo()
         val processorInfo = OshiUtil.getHardware().processor
@@ -28,7 +33,7 @@ class BotStatus {
         val cpuInfo = OshiUtil.getCpuInfo()
         return MsgUtils.builder()
             .text("[基本信息]")
-            .text("\nBot UpTime: $upTime hours")
+            .text("\nBot UpTime: $upTime")
             .text("\nKotlin Version: ${KotlinVersion.CURRENT}")
             .text("\nJVM Version: ${jvmInfo.version}")
             .text("\nJVM Vendor: ${jvmInfo.vendor}")
