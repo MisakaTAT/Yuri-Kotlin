@@ -75,8 +75,8 @@ class DriftBottle {
                     MsgUtils.builder()
                         .at(bottle.userId)
                         .text("\n你编号为 ${bottle.id} 的漂流瓶被人捞起来啦~")
-                        .text("\n\n群：${groupName}（${groupId}")
-                        .text("\n用户：${userName}（${userId}）")
+                        .text("\n\n群：${groupName}")
+                        .text("\n用户：${userName}")
                         .text("\n编号查询漂流瓶内容暂未开发（咕")
                         .build(),
                     false
@@ -87,8 +87,8 @@ class DriftBottle {
                         .at(userId)
                         .text("\n你在海边捡到了一个透明的玻璃瓶，你打开了瓶子，里面写着：\n\n")
                         .text(bottle.content)
-                        .text("\n\n群：${bottle.groupName}（${bottle.groupId}）")
-                        .text("\n用户：${bottle.userName}（${bottle.userId}）")
+                        .text("\n\n群：${bottle.groupName}")
+                        .text("\n用户：${bottle.userName}")
                         .build(),
                     false
                 )
