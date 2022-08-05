@@ -37,12 +37,12 @@ class DriftBottle {
             val msg = event.message
             val groupId = event.groupId
             val userId = event.userId
+            val groupName = bot.getGroupInfo(groupId, false).data.groupName
+            val userName = bot.getGroupMemberInfo(groupId, userId, false).data.nickname
 
             if (msg.startsWith("丢漂流瓶")) {
                 val content = matcher.group(1).trim()
                 if (content.isEmpty()) throw YuriException("你居然还想丢空瓶子？")
-                val groupName = bot.getGroupInfo(groupId, false).data.groupName
-                val userName = bot.getGroupMemberInfo(groupId, userId, false).data.nickname
                 repository.save(DriftBottleEntity(0, groupId, groupName, userId, userName, content, false))
                 bot.sendGroupMsg(
                     groupId,
@@ -75,8 +75,8 @@ class DriftBottle {
                     MsgUtils.builder()
                         .at(bottle.userId)
                         .text("\n你编号为 ${bottle.id} 的漂流瓶被人捞起来啦~")
-                        .text("\n群：${bottle.groupName}（${bottle.groupId}")
-                        .text("\n用户：${bottle.userName}（${bottle.userId}）")
+                        .text("\n\n群：${groupName}（${groupId}")
+                        .text("\n用户：${userName}（${userId}）")
                         .text("\n编号查询漂流瓶内容暂未开发（咕")
                         .build(),
                     false
