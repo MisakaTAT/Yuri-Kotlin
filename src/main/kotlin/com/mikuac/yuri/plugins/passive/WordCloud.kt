@@ -143,9 +143,12 @@ class WordCloud {
     private fun getWords(userId: Long, groupId: Long, type: String, range: String, cronTask: Boolean): List<String> {
         val contents = ArrayList<String>()
         getWordsForRange(userId, groupId, type, range, cronTask).forEach { raw ->
-            contents.addAll(ShiroUtils.stringToMsgChain(raw).filter { it.type == "text" }.map {
-                it.data["text"]!!.trim()
-            }.filter { !it.contains("http|词云|&#|漂流".toRegex()) }.toList()
+            contents.addAll(
+                ShiroUtils.stringToMsgChain(raw)
+                    .filter { it.type == "text" }
+                    .map { it.data["text"]!!.trim() }
+                    .filter { !it.contains("http|&#".toRegex()) }
+                    .toList()
             )
         }
         return contents
