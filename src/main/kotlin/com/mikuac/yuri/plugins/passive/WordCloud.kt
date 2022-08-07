@@ -173,25 +173,25 @@ class WordCloud {
         }
         when (matcher.group(1)) {
             "day" -> taskForDay()
-            "week" -> taskForWeek()
-            "month" -> taskForMonth()
+//            "week" -> taskForWeek()
+//            "month" -> taskForMonth()
         }
     }
 
-    @Scheduled(cron = "0 0 00 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     fun taskForDay() {
         task("今日")
     }
 
-    @Scheduled(cron = "0 0 00 ? * SUN")
-    fun taskForWeek() {
-        task("本周")
-    }
-
-    @Scheduled(cron = "0 0 00 L * ?")
-    fun taskForMonth() {
-        task("本月")
-    }
+//    @Scheduled(cron = "0 0 0 ? * SUN")
+//    fun taskForWeek() {
+//        task("本周")
+//    }
+//
+//    @Scheduled(cron = "0 0 0 L * ?")
+//    fun taskForMonth() {
+//        task("本月")
+//    }
 
     private fun task(range: String) {
         val bot = botContainer.robots[ReadConfig.config.base.botSelfId] ?: return
