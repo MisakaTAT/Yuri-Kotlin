@@ -34,6 +34,7 @@ import java.io.ByteArrayOutputStream
 import java.lang.Thread.sleep
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.temporal.TemporalAdjusters
 import java.util.*
 import java.util.regex.Matcher
@@ -41,6 +42,10 @@ import java.util.regex.Matcher
 @Shiro
 @Component
 class WordCloud {
+
+    companion object {
+        private const val ZONE = "Asia/Shanghai"
+    }
 
     @Autowired
     private lateinit var repository: WordCloudRepository
@@ -103,19 +108,19 @@ class WordCloud {
         range: String,
         cronTask: Boolean
     ): List<String> {
-        var today = LocalDate.now()
-        if (cronTask) today = today.plusDays(-1)
-        val startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-        val endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
-        val startOfMonth = today.with(TemporalAdjusters.firstDayOfMonth())
-        val endOfMonth = today.with(TemporalAdjusters.lastDayOfMonth())
-        val startOfYear = today.with(TemporalAdjusters.firstDayOfYear())
-        val endOfYear = today.with(TemporalAdjusters.lastDayOfYear())
+        var now = LocalDate.now()
+        if (cronTask) now = now.plusDays(-1)
+        val startOfWeek = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+        val endOfWeek = now.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+        val startOfMonth = now.with(TemporalAdjusters.firstDayOfMonth())
+        val endOfMonth = now.with(TemporalAdjusters.lastDayOfMonth())
+        val startOfYear = now.with(TemporalAdjusters.firstDayOfYear())
+        val endOfYear = now.with(TemporalAdjusters.lastDayOfYear())
 
         when (type) {
             "我的" -> {
                 when (range) {
-                    "今日" -> return query(userId, groupId, today, today)
+                    "今日" -> return query(userId, groupId, now, now)
                     "本周" -> return query(userId, groupId, startOfWeek, endOfWeek)
                     "本月" -> return query(userId, groupId, startOfMonth, endOfMonth)
                     "本年" -> return query(userId, groupId, startOfYear, endOfYear)
@@ -124,7 +129,7 @@ class WordCloud {
 
             "本群" -> {
                 when (range) {
-                    "今日" -> return query(groupId, today, today)
+                    "今日" -> return query(groupId, now, now)
                     "本周" -> return query(groupId, startOfWeek, endOfWeek)
                     "本月" -> return query(groupId, startOfMonth, endOfMonth)
                     "本年" -> return query(groupId, startOfYear, endOfYear)
@@ -173,25 +178,27 @@ class WordCloud {
         }
         when (matcher.group(1)) {
             "day" -> taskForDay()
-//            "week" -> taskForWeek()
-//            "month" -> taskForMonth()
+            "week" -> taskForWeek()
+            "month" -> taskForMonth()
         }
     }
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?", zone = ZONE)
     fun taskForDay() {
+        if (!dayCheck()) return
         task("今日")
     }
 
-//    @Scheduled(cron = "0 0 0 ? * SUN")
-//    fun taskForWeek() {
-//        task("本周")
-//    }
-//
-//    @Scheduled(cron = "0 0 0 L * ?")
-//    fun taskForMonth() {
-//        task("本月")
-//    }
+    @Scheduled(cron = "0 0 0 ? * SUN", zone = ZONE)
+    fun taskForWeek() {
+        if (!dayCheck()) return
+        task("本周")
+    }
+
+    @Scheduled(cron = "0 0 0 L * ?", zone = ZONE)
+    fun taskForMonth() {
+        task("本月")
+    }
 
     private fun task(range: String) {
         val bot = botContainer.robots[ReadConfig.config.base.botSelfId] ?: return
@@ -208,6 +215,15 @@ class WordCloud {
             bot.sendGroupMsg(it.groupId, msg, false)
             log.info("${range}词云推送到群 [${it.groupName}](${it.groupId}) 成功")
         }
+    }
+
+    private fun dayCheck(): Boolean {
+        val now = LocalDateTime.now()
+        // Skip task for week
+        if (now.dayOfWeek == DayOfWeek.SUNDAY) return false
+        // Skip task for month
+        if (now == now.with(TemporalAdjusters.lastDayOfMonth())) return false
+        return true
     }
 
 }
