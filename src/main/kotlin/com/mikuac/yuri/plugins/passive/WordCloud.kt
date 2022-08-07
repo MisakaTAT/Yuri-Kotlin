@@ -139,7 +139,7 @@ class WordCloud {
         getWordsForRange(userId, groupId, type, range, cronTask).forEach { raw ->
             contents.addAll(ShiroUtils.stringToMsgChain(raw).filter { it.type == "text" }.map {
                 it.data["text"]!!.trim()
-            }.filter { !it.contains("http|词云|&#".toRegex()) }.toList()
+            }.filter { !it.contains("http|词云|&#|漂流".toRegex()) }.toList()
             )
         }
         return contents
