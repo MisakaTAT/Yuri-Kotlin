@@ -1,5 +1,6 @@
 package com.mikuac.yuri.plugins.passive
 
+import com.huaban.analysis.jieba.JiebaSegmenter
 import com.kennycason.kumo.CollisionMode
 import com.kennycason.kumo.WordCloud
 import com.kennycason.kumo.bg.CircleBackground
@@ -7,7 +8,7 @@ import com.kennycason.kumo.font.KumoFont
 import com.kennycason.kumo.font.scale.LinearFontScalar
 import com.kennycason.kumo.image.AngleGenerator
 import com.kennycason.kumo.nlp.FrequencyAnalyzer
-import com.kennycason.kumo.nlp.tokenizers.ChineseWordTokenizer
+import com.kennycason.kumo.nlp.tokenizer.api.WordTokenizer
 import com.kennycason.kumo.palette.ColorPalette
 import com.mikuac.shiro.annotation.GroupMessageHandler
 import com.mikuac.shiro.annotation.MessageHandler
@@ -64,7 +65,7 @@ class WordCloud {
         val frequencyAnalyzer = FrequencyAnalyzer()
         frequencyAnalyzer.setWordFrequenciesToReturn(300)
         frequencyAnalyzer.setMinWordLength(2)
-        frequencyAnalyzer.setWordTokenizer(ChineseWordTokenizer())
+        frequencyAnalyzer.setWordTokenizer(JieBaTokenizer())
         val wordFrequencies = frequencyAnalyzer.load(text)
         val dimension = Dimension(1000, 1000)
         val wordCloud = WordCloud(dimension, CollisionMode.PIXEL_PERFECT)
@@ -224,6 +225,15 @@ class WordCloud {
         // Skip task for month
         if (now == now.with(TemporalAdjusters.lastDayOfMonth())) return false
         return true
+    }
+
+    private class JieBaTokenizer : WordTokenizer {
+        override fun tokenize(sentence: String?): MutableList<String> {
+            return JiebaSegmenter()
+                .process(sentence, JiebaSegmenter.SegMode.INDEX)
+                .map { it.word.trim() }
+                .toMutableList()
+        }
     }
 
 }
