@@ -4,7 +4,7 @@ import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
-import com.mikuac.yuri.config.ReadConfig
+import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
@@ -39,10 +39,10 @@ class PicSearch {
             val sauceNaoResult = sauceNao.buildMsgForSauceNao(imgUrl, imgMd5)
             bot.sendMsg(event, sauceNaoResult.second, false)
 
-            if (!ReadConfig.config.plugin.picSearch.alwaysUseAscii2d) {
+            if (!Config.plugins.picSearch.alwaysUseAscii2d) {
                 val similarity = sauceNaoResult.first
                 if (similarity.isNotBlank()) {
-                    if (similarity.toFloat() > ReadConfig.config.plugin.picSearch.similarityLimit.toFloat()) return
+                    if (similarity.toFloat() > Config.plugins.picSearch.similarity.toFloat()) return
                 }
             }
 

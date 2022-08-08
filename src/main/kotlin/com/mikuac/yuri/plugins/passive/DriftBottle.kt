@@ -5,7 +5,7 @@ import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
-import com.mikuac.yuri.config.ReadConfig
+import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.entity.DriftBottleEntity
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
@@ -60,7 +60,7 @@ class DriftBottle {
                     val expectedExpiration = expiringMap.getExpectedExpiration(groupId) / 1000
                     throw YuriException("呜～ 太快了会坏掉的··· 冷却：[${expectedExpiration}秒]")
                 }
-                expiringMap.put(groupId, userId, ReadConfig.config.plugin.driftBottle.cdTime.toLong(), TimeUnit.SECONDS)
+                expiringMap.put(groupId, userId, Config.plugins.driftBottle.cd.toLong(), TimeUnit.SECONDS)
                 val bottles =
                     repository.findAllByOpenIsFalseAndUserIdNotLikeAndGroupIdNotLike(event.userId, event.groupId)
                 if (bottles.isEmpty()) {

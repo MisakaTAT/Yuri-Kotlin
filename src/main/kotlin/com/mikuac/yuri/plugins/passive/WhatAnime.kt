@@ -10,7 +10,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.bean.dto.WhatAnimeBasicDto
 import com.mikuac.yuri.bean.dto.WhatAnimeDto
-import com.mikuac.yuri.config.ReadConfig
+import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.entity.WhatAnimeCacheEntity
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
@@ -133,7 +133,7 @@ class WhatAnime {
             val msg = buildMsg(event.userId, event.groupId, event.arrayMsg) ?: return
             bot.sendMsg(event, msg.first, false)
             // 发送预览视频
-            if (ReadConfig.config.plugin.whatAnime.sendPreviewVideo) bot.sendMsg(event, msg.second, false)
+            if (Config.plugins.picSearch.animePreviewVideo) bot.sendMsg(event, msg.second, false)
         } catch (e: YuriException) {
             e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
         } catch (e: Exception) {

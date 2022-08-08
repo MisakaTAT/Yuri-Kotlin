@@ -12,7 +12,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @EnableCaching
 @EnableScheduling
 @EnableAspectJAutoProxy
-@DependsOn("readConfig")
+@DependsOn("config")
 @SpringBootApplication
 class YuriApplication
 

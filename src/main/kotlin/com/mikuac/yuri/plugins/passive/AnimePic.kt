@@ -8,7 +8,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.annotation.Slf4j
 import com.mikuac.yuri.bean.dto.AnimePicDto
-import com.mikuac.yuri.config.ReadConfig
+import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
@@ -29,7 +29,7 @@ class AnimePic {
     private val expiringMap: ExpiringMap<Long, Long> = ExpiringMap.builder()
         .variableExpiration()
         .expirationPolicy(ExpirationPolicy.CREATED)
-        .expiration(ReadConfig.config.plugin.animePic.cdTime.times(1000L), TimeUnit.MILLISECONDS)
+        .expiration(Config.plugins.animePic.cd.times(1000L), TimeUnit.MILLISECONDS)
         .build()
 
     private fun request(r18: Boolean): AnimePicDto.Data {
@@ -49,7 +49,7 @@ class AnimePic {
 
     private fun buildTextMsg(r18: Boolean): Pair<String, String?> {
         val data = request(r18)
-        val imgUrl = data.urls.original.replace("i.pixiv.cat", ReadConfig.config.plugin.animePic.proxy)
+        val imgUrl = data.urls.original.replace("i.pixiv.cat", Config.plugins.animePic.proxy)
         return Pair(
             MsgUtils.builder()
                 .text("标题：${data.title}")
@@ -69,7 +69,7 @@ class AnimePic {
 
     private fun recallMsgPic(msgId: Int, bot: Bot) = runBlocking {
         launch {
-            delay(ReadConfig.config.plugin.animePic.recallMsgPicTime.times(1000L))
+            delay(Config.plugins.animePic.recallPicTime.times(1000L))
             bot.deleteMsg(msgId)
         }
     }
@@ -81,7 +81,7 @@ class AnimePic {
             throw YuriException("整天色图色图，信不信把你变成色图？冷却：[${expectedExpiration}秒]")
         }
         val r18 = msg.contains(Regex("(?i)r18"))
-        if (!ReadConfig.config.plugin.animePic.r18 && r18) throw YuriException("NSFW禁止！")
+        if (!Config.plugins.animePic.r18 && r18) throw YuriException("NSFW禁止！")
         val buildTextMsg = buildTextMsg(r18)
         return Pair(buildTextMsg.first, buildTextMsg.second)
     }
@@ -91,7 +91,7 @@ class AnimePic {
         try {
             val msg = buildMsg(event.message, event.userId, event.groupId)
             bot.sendMsg(event, msg.first, false)
-            val cdTime = ReadConfig.config.plugin.animePic.cdTime.times(1000L)
+            val cdTime = Config.plugins.animePic.cd.times(1000L)
             expiringMap.put(event.groupId + event.userId, event.userId, cdTime, TimeUnit.MILLISECONDS)
             val picMsgId = bot.sendMsg(event, buildPicMsg(msg.second), false).data?.messageId
             if (picMsgId != null) recallMsgPic(picMsgId, bot)

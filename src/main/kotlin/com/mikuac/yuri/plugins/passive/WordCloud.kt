@@ -20,12 +20,13 @@ import com.mikuac.shiro.core.BotContainer
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
-import com.mikuac.yuri.config.ReadConfig
+import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.entity.WordCloudEntity
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.repository.WordCloudRepository
 import com.mikuac.yuri.utils.MsgSendUtils
+import org.apache.commons.lang3.StringUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -82,7 +83,7 @@ class WordCloud {
         )
         wordCloud.setFontScalar(
             LinearFontScalar(
-                ReadConfig.config.plugin.wordCloud.minFontSize, ReadConfig.config.plugin.wordCloud.maxFontSize
+                Config.plugins.wordCloud.minFontSize, Config.plugins.wordCloud.maxFontSize
             )
         )
         wordCloud.build(wordFrequencies)
@@ -141,13 +142,14 @@ class WordCloud {
     }
 
     private fun getWords(userId: Long, groupId: Long, type: String, range: String, cronTask: Boolean): List<String> {
+        val filterRule = StringUtils.join(Config.plugins.wordCloud.filterRule, "|").toRegex()
         val contents = ArrayList<String>()
         getWordsForRange(userId, groupId, type, range, cronTask).forEach { raw ->
             contents.addAll(
                 ShiroUtils.stringToMsgChain(raw)
                     .filter { it.type == "text" }
                     .map { it.data["text"]!!.trim() }
-                    .filter { !it.contains("http|&#".toRegex()) }
+                    .filter { !it.contains(filterRule) }
                     .toList()
             )
         }
@@ -177,7 +179,7 @@ class WordCloud {
 
     @MessageHandler(cmd = RegexCMD.WORD_CLOUD_CRON)
     fun wordCloudCronHandler(event: WholeMessageEvent, bot: Bot, matcher: Matcher) {
-        if (event.userId !in ReadConfig.config.base.adminList) {
+        if (event.userId !in Config.base.adminList) {
             bot.sendMsg(event, "此操作需要管理员权限", false)
         }
         when (matcher.group(1)) {
@@ -189,13 +191,13 @@ class WordCloud {
 
     @Scheduled(cron = "0 0 0 * * ?", zone = ZONE)
     fun taskForDay() {
-        if (!dayCheck()) return
+        if (!dayCheck(false)) return
         task("今日")
     }
 
     @Scheduled(cron = "0 0 0 ? * SUN", zone = ZONE)
     fun taskForWeek() {
-        if (!dayCheck()) return
+        if (!dayCheck(true)) return
         task("本周")
     }
 
@@ -205,7 +207,7 @@ class WordCloud {
     }
 
     private fun task(range: String) {
-        val bot = botContainer.robots[ReadConfig.config.base.botSelfId] ?: return
+        val bot = botContainer.robots[Config.base.selfId] ?: return
         bot.groupList.data.forEach {
             // TODO: config file set
             sleep(5000L)
@@ -221,10 +223,11 @@ class WordCloud {
         }
     }
 
-    private fun dayCheck(): Boolean {
+    private fun dayCheck(isMoth: Boolean): Boolean {
         val now = LocalDateTime.now()
         // Skip task for week
         if (now.dayOfWeek == DayOfWeek.SUNDAY) return false
+        if (!isMoth) return true
         // Skip task for month
         if (now == now.with(TemporalAdjusters.lastDayOfMonth())) return false
         return true

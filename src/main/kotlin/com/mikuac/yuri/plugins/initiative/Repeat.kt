@@ -5,7 +5,7 @@ import com.mikuac.shiro.annotation.GroupMessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
-import com.mikuac.yuri.config.ReadConfig
+import com.mikuac.yuri.config.Config
 import net.jodah.expiringmap.ExpirationPolicy
 import net.jodah.expiringmap.ExpiringMap
 import org.springframework.stereotype.Component
@@ -18,7 +18,7 @@ class Repeat {
     private val expiringMap: ExpiringMap<Long, String> = ExpiringMap.builder()
         .variableExpiration()
         .expirationPolicy(ExpirationPolicy.CREATED)
-        .expiration(ReadConfig.config.plugin.repeat.waitTime.times(1000L), TimeUnit.MILLISECONDS)
+        .expiration(Config.plugins.repeat.waitTime.times(1000L), TimeUnit.MILLISECONDS)
         .build()
 
     private val lastMsgMap: HashMap<Long, String> = HashMap()
@@ -47,9 +47,9 @@ class Repeat {
             lastMsgMap[groupId] = msg
             lastUserMap[groupId] = userId
             msgCountMap[groupId] = ++count
-            if (count == RandomUtil.randomInt(ReadConfig.config.plugin.repeat.thresholdValue)) {
+            if (count == RandomUtil.randomInt(Config.plugins.repeat.thresholdValue)) {
                 bot.sendGroupMsg(groupId, msg, false)
-                val waitTime = ReadConfig.config.plugin.repeat.waitTime.times(1000L)
+                val waitTime = Config.plugins.repeat.waitTime.times(1000L)
                 expiringMap.put(groupId, msg, waitTime, TimeUnit.MILLISECONDS)
                 msgCountMap[groupId] = 0
             }

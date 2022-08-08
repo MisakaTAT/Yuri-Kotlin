@@ -4,7 +4,7 @@ import com.mikuac.shiro.annotation.GroupMessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
-import com.mikuac.yuri.config.ReadConfig
+import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.utils.MsgSendUtils
 import lombok.Getter
@@ -47,7 +47,7 @@ class Roulette {
             listOf(true, true, true, true, true, true),
         )
 
-        //当前进度 以 0 作为初始值
+        // 当前进度 以 0 作为初始值
         var progress: Int = 0
 
         // true 代表此处有子弹 false 代表没有，shuffled 对 list 进行 “洗牌”
@@ -120,7 +120,7 @@ class Roulette {
         expiringMap.put(
             groupId,
             GroupRouletteData(bulletCount, userId, groupId, bot),
-            ReadConfig.config.plugin.roulette.timeout.toLong(),
+            Config.plugins.roulette.timeout.toLong(),
             TimeUnit.SECONDS
         )
         MsgSendUtils.atSend(
@@ -162,7 +162,7 @@ class Roulette {
                             bot.setGroupBan(
                                 groupId,
                                 userId,
-                                (1..ReadConfig.config.plugin.roulette.maxMuteTime).random() * 60
+                                (1..Config.plugins.roulette.maxMuteTime).random() * 60
                             )
                         }
 
@@ -170,7 +170,7 @@ class Roulette {
                     }
                     defaultQuotations[7]
                 } else {
-                    defaultQuotations[8].replace("$1", ReadConfig.config.base.botName)
+                    defaultQuotations[8].replace("$1", Config.base.nickname)
                 }
             }
             expiringMap.remove(groupId)

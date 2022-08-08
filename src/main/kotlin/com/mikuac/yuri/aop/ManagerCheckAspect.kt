@@ -3,7 +3,7 @@ package com.mikuac.yuri.aop
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
-import com.mikuac.yuri.config.ReadConfig
+import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.utils.CheckUtils
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
@@ -47,7 +47,7 @@ class ManagerCheckAspect {
         // 如果用户处于黑名单不响应本次请求
         if (checkUtils.checkUserInBlackList(userId)) return false
         // 如果开启仅白名单模式，则只处理白名单内群组请求
-        if (ReadConfig.config.base.enableGroupOnlyWhiteList && !isPrivate) {
+        if (Config.base.enableGroupOnlyWhiteList && !isPrivate) {
             if (checkUtils.checkGroupInWhiteList(groupId)) return true
             return false
         }

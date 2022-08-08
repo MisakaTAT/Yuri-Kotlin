@@ -1,0 +1,90 @@
+{
+  "base": {
+    // 机器人名称
+    "nickname": "悠里",
+    // 机器人自身账号
+    "selfId": 12345678,
+    // 管理员用户列表
+    "adminList": [
+      12345678,
+      87654321
+    ],
+    // 启用群组仅白名单模式（仅响应白名单内的群组）
+    "enableGroupOnlyWhiteList": false
+  },
+  // 插件配置
+  "plugins": {
+    // 搜图插件配置
+    "picSearch": {
+      // 搜图超时（秒）
+      "timeout": 30,
+      // 相似度低于多少自动调用Ascii2d搜图（自动转为 Float 类型）
+      "similarity": 60,
+      // 始终使用 Ascii2d 搜图（该设置为 true 时 similarity 不生效）
+      "alwaysUseAscii2d": false,
+      // 如果是番剧是否发送预览视频
+      "animePreviewVideo": true,
+      // 该值为示例 请自行申请
+      "sauceNaoKey": "46af29v9aa5f7ec60b9ad1m23b03e4de2bva12"
+    },
+    // 色图插件配置
+    "animePic": {
+      // 是否允许请求 r18 色图
+      "r18": true,
+      // 冷却时间（秒）
+      "cd": 60,
+      // 图片撤回时间（秒）
+      "recallPicTime": 30,
+      // 代理地址
+      "proxy": "i.pixiv.re"
+    },
+    // 复读插件配置
+    "repeat": {
+      // 多长时间内不复读重复内容（秒）
+      "waitTime": 60,
+      // 复读阈值
+      "thresholdValue": 5
+    },
+    // Epic 周免插件配置
+    "epic": {
+      // 缓存时间（秒）
+      "cacheTime": 600
+    },
+    // 塔罗牌插件配置
+    "tarot": {
+      // 冷却时间（秒）
+      "cd": 60
+    },
+    // 番剧插件配置
+    "animeCrawler": {
+      // 开启调用限速
+      "rateLimiter": true,
+      // 每分钟可调用的次数（例如设置为 6 则是 10 秒允许调用一次）
+      "permitsPerMinute": 6
+    },
+    // 轮盘插件配置
+    "roulette": {
+      // 超时（秒）
+      "timeout": 60,
+      // 最大禁言时间（分钟）
+      "maxMuteTime": 5
+    },
+    // 词云插件配置
+    "wordCloud": {
+      // 最小字号
+      "minFontSize": 20,
+      // 最大字号
+      "maxFontSize": 80,
+      // 过滤规则 匹配方式为 contains
+      "FilterRule": [
+        "http",
+        "&#"
+      ]
+    },
+    // 漂流瓶插件配置
+    "driftBottle": {
+      // 多久可以捞一次瓶子（秒）
+      "cd": 30
+    }
+  }
+}

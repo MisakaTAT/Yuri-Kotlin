@@ -3,7 +3,7 @@ package com.mikuac.yuri.plugins.passive
 import com.google.gson.Gson
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.yuri.bean.dto.SauceNaoDto
-import com.mikuac.yuri.config.ReadConfig
+import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.entity.SauceNaoCacheEntity
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.repository.SauceNaoCacheRepository
@@ -21,7 +21,7 @@ class SauceNao {
     private fun request(imgUrl: String): SauceNaoDto {
         val data: SauceNaoDto
         try {
-            val key = ReadConfig.config.plugin.sauceNao.key
+            val key = Config.plugins.picSearch.sauceNaoKey
             val api = "https://saucenao.com/search.php?api_key=${key}&output_type=2&numres=3&db=999&url=${imgUrl}"
             val result = RequestUtils.get(api).body?.string()
             data = Gson().fromJson(result, SauceNaoDto::class.java)

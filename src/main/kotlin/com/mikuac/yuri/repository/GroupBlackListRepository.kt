@@ -24,5 +24,4 @@ interface GroupBlackListRepository : JpaRepository<GroupBlackListEntity, Int> {
         TODO("Not yet implemented")
     }
 
-
 }

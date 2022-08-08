@@ -15,7 +15,6 @@ import java.lang.management.ManagementFactory
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 @Shiro
 @Component
 class BotStatus {

@@ -7,7 +7,7 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.bean.TarotDataBean
-import com.mikuac.yuri.config.ReadConfig
+import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
@@ -30,7 +30,7 @@ class Tarot : ApplicationRunner {
     private val expiringMap: ExpiringMap<Long, Boolean> = ExpiringMap.builder()
         .variableExpiration()
         .expirationPolicy(ExpirationPolicy.CREATED)
-        .expiration(ReadConfig.config.plugin.tarot.cdTime.times(1000L), TimeUnit.MILLISECONDS)
+        .expiration(Config.plugins.tarot.cd.times(1000L), TimeUnit.MILLISECONDS)
         .build()
 
     companion object {

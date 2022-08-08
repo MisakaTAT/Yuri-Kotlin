@@ -8,6 +8,7 @@ target/
 .DS_Store
 logs
 config.yaml
+config.jsonc
 
 ### STS ###
 .apt_generated

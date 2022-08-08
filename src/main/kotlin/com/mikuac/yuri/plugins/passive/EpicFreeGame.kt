@@ -12,7 +12,7 @@ import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.bean.dto.EpicDto
-import com.mikuac.yuri.config.ReadConfig
+import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
@@ -29,7 +29,7 @@ class EpicFreeGame {
     private val expiringMap: ExpiringMap<String, EpicDto> = ExpiringMap.builder()
         .variableExpiration()
         .expirationPolicy(ExpirationPolicy.CREATED)
-        .expiration(ReadConfig.config.plugin.epic.cacheTime.times(1000L), TimeUnit.MILLISECONDS)
+        .expiration(Config.plugins.epic.cacheTime.times(1000L), TimeUnit.MILLISECONDS)
         .build()
 
     private fun request(): EpicDto {
@@ -133,7 +133,7 @@ class EpicFreeGame {
     @MessageHandler(cmd = RegexCMD.EPIC_FREE_GAME)
     fun epicFreeGameHandler(bot: Bot, event: WholeMessageEvent) {
         try {
-            val msg = ShiroUtils.generateForwardMsg(event.selfId, ReadConfig.config.base.botName, buildMsg())
+            val msg = ShiroUtils.generateForwardMsg(event.selfId, Config.base.nickname, buildMsg())
             bot.sendForwardMsg(event, msg)
         } catch (e: YuriException) {
             e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }

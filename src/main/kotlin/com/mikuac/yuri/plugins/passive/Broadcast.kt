@@ -6,7 +6,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.annotation.Slf4j
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
-import com.mikuac.yuri.config.ReadConfig
+import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import org.springframework.stereotype.Component
 import java.util.regex.Matcher
@@ -25,7 +25,7 @@ class Broadcast {
 
     @MessageHandler(cmd = RegexCMD.BROADCAST)
     fun broadcastHandler(bot: Bot, event: WholeMessageEvent, matcher: Matcher) {
-        if (event.userId in ReadConfig.config.base.adminList) {
+        if (event.userId in Config.base.adminList) {
             val msg = matcher.group(1)
             sendGroup(bot, msg.trim())
             return

@@ -6,7 +6,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.bean.SearchModeBean
-import com.mikuac.yuri.config.ReadConfig
+import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import net.jodah.expiringmap.ExpirationPolicy
 import net.jodah.expiringmap.ExpiringMap
@@ -54,7 +54,7 @@ class SearchModeUtils : BotPlugin() {
                 MsgSendUtils.atSend(userId, groupId, bot, "当前已经处于搜${nativeMode}模式啦，请直接发送需要检索的图片。")
                 return
             }
-            val timeout = ReadConfig.config.base.searchMode.timeout.times(1000L)
+            val timeout = Config.plugins.picSearch.timeout.times(1000L)
             expiringMap.put(key, info, timeout, TimeUnit.MILLISECONDS)
             nativeMode = hashMap[mode].toString()
             MsgSendUtils.atSend(userId, groupId, bot, "您已进入搜${nativeMode}模式，请发送想要查找的图片。")

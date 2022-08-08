@@ -4,7 +4,7 @@ import com.mikuac.shiro.annotation.PrivateMessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
-import com.mikuac.yuri.config.ReadConfig
+import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.entity.GroupBlackListEntity
 import com.mikuac.yuri.entity.GroupWhiteListEntity
 import com.mikuac.yuri.entity.UserBlackListEntity
@@ -36,7 +36,7 @@ class Manager {
 
     @PrivateMessageHandler(cmd = RegexCMD.MANAGER)
     fun managerHandler(bot: Bot, event: PrivateMessageEvent, matcher: Matcher) {
-        if (event.userId !in ReadConfig.config.base.adminList) {
+        if (event.userId !in Config.base.adminList) {
             bot.sendPrivateMsg(event.userId, "此操作仅管理员可执行 config.yaml --> adminList", false)
             return
         }
