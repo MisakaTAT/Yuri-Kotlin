@@ -16,7 +16,6 @@ class Help {
     fun helpHandler(bot: Bot, event: WholeMessageEvent) {
         val msg = """
             使用教程: https://mikuac.com/archives/675
-            Version: ${Config.base.version}
             GitHub: https://github.com/MisakaTAT/Yuri-Kotlin
             Powered By: https://github.com/MisakaTAT/Shiro
         """.trimIndent()

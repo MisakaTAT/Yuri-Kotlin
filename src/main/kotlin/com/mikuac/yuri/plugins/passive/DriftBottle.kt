@@ -43,12 +43,13 @@ class DriftBottle {
             if (msg.startsWith("丢漂流瓶")) {
                 val content = matcher.group(1).trim()
                 if (content.isEmpty()) throw YuriException("你居然还想丢空瓶子？")
-                repository.save(DriftBottleEntity(0, groupId, groupName, userId, userName, content, false))
+                val res = repository.save(DriftBottleEntity(0, groupId, groupName, userId, userName, content))
                 bot.sendGroupMsg(
                     groupId,
                     MsgUtils.builder()
                         .at(userId)
-                        .text("\n你将一个写着 $content 的纸条塞入瓶中扔进大海，希望有人能够捞到～")
+                        .text("你将一个编号为 ${res.id} 写着如下内容的纸条塞入瓶中扔进大海，希望有人能够捞到～")
+                        .text("\n\n${content}")
                         .build(),
                     false
                 )
@@ -61,14 +62,18 @@ class DriftBottle {
                     throw YuriException("呜～ 太快了会坏掉的··· 冷却：[${expectedExpiration}秒]")
                 }
                 expiringMap.put(groupId, userId, Config.plugins.driftBottle.cd.toLong(), TimeUnit.SECONDS)
-                val bottles =
-                    repository.findAllByOpenIsFalseAndUserIdNotLikeAndGroupIdNotLike(event.userId, event.groupId)
+                val bottles = repository.findAllByOpenIsFalseAndUserIdNotLikeAndGroupIdNotLike(userId, groupId)
+                val count = repository.countAllByOpenIsFalse()
                 if (bottles.isEmpty()) {
-                    throw YuriException("暂无可捞取的漂流瓶（无法捞取本群或自己的瓶子）")
+                    throw YuriException("当前剩余 $count 个未被捞取的漂流瓶，你暂无可捞取的漂流瓶（无法捞取本群或自己的瓶子）")
                 }
                 // Update open state
                 val bottle = bottles[Random().nextInt(bottles.size)]
                 bottle.open = true
+                bottle.openUser = userId
+                bottle.openGroup = groupId
+                bottle.openUserName = userName
+                bottle.openGroupName = groupName
                 repository.save(bottle)
                 bot.sendGroupMsg(
                     bottle.groupId,
@@ -77,7 +82,6 @@ class DriftBottle {
                         .text("\n你编号为 ${bottle.id} 的漂流瓶被人捞起来啦~")
                         .text("\n\n群：${groupName}")
                         .text("\n用户：${userName}")
-                        .text("\n编号查询漂流瓶内容暂未开发（咕")
                         .build(),
                     false
                 )
@@ -100,7 +104,7 @@ class DriftBottle {
                 bot.sendGroupMsg(
                     groupId,
                     MsgUtils.builder()
-                        .at(event.userId)
+                        .at(userId)
                         .text("\n你缓缓走入大海，感受着海浪轻柔地拍打着你的小腿，膝盖……\n")
                         .text("波浪卷着你的腰腹，你感觉有些把握不住平衡了……\n")
                         .text("……\n")
@@ -110,6 +114,25 @@ class DriftBottle {
                     false
                 )
                 return
+            }
+
+            if (msg.startsWith("查漂流瓶")) {
+                val id = matcher.group(2).trim().toInt()
+                val queryBottle = repository.findById(id)
+                if (!queryBottle.isPresent) throw YuriException("未查询到编号为 $id 的漂流瓶")
+                bot.sendGroupMsg(
+                    groupId,
+                    MsgUtils.builder()
+                        .at(userId)
+                        .text("\n${queryBottle.get().content}")
+                        .text("\n\n状态：${if (queryBottle.get().open) "被捞起" else "未被捞起"}")
+                        .text("\n所属用户：${queryBottle.get().userName}")
+                        .text("\n所属群组：${queryBottle.get().groupName}")
+                        .text("\n捞起用户：${queryBottle.get().openUserName}")
+                        .text("\n捞起群组：${queryBottle.get().openGroupName}")
+                        .build(),
+                    false
+                )
             }
         } catch (e: YuriException) {
             e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }

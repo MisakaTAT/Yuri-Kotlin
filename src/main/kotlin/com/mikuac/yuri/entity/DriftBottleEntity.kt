@@ -24,6 +24,18 @@ data class DriftBottleEntity(
     val content: String,
 
     @Column(nullable = false)
-    var open: Boolean
+    var open: Boolean = false,
+
+    @Column(nullable = false)
+    var openUser: Long = 0L,
+
+    @Column(nullable = false)
+    var openGroup: Long = 0L,
+
+    @Column(nullable = false)
+    var openUserName: String = "未知",
+
+    @Column(nullable = false)
+    var openGroupName: String = "未知"
 
 )

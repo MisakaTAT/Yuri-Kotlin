@@ -5,7 +5,6 @@ data class ConfigDataClass(
     val plugins: Plugins
 ) {
     data class Base(
-        val version: String,
         val adminList: List<Long>,
         val nickname: String,
         val selfId: Long,

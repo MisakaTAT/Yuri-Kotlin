@@ -26,9 +26,9 @@ class Config {
 
     private var isReload = false
 
-    private val configFile = "config.jsonc"
+    private val configFileName = "config.jsonc"
 
-    private val defaultConfigFile = "example.config.jsonc"
+    private val defaultConfigFileName = "default.config.jsonc"
 
     companion object {
         lateinit var base: ConfigDataClass.Base
@@ -40,23 +40,26 @@ class Config {
 
     @PostConstruct
     private fun initConfig() {
-        val defaultConfigFile = File(defaultConfigFile)
-        if (!File(configFile).exists()) {
-            try {
-                log.error("未检测到 config.jsonc 即将从默认配置文件创建")
-                FileUtils.copyFile(defaultConfigFile, File(configFile))
-                log.info("config.jsoc 创建完成 请修改配置文件后重新启动")
+        try {
+            val defaultConfigFile = File(javaClass.classLoader.getResource(defaultConfigFileName)!!.file)
+            val configFile = File(configFileName)
+            if (!configFile.exists()) {
+                log.error("未检测到 $configFileName 即将从 $defaultConfigFileName 创建")
+                FileUtils.copyFile(defaultConfigFile, configFile)
+                log.info("$configFileName 创建完成 请修改配置文件后重新启动")
                 val exitCode = SpringApplication.exit(ctx, ExitCodeGenerator { 0 })
                 exitProcess(exitCode)
-            } catch (e: Exception) {
-                log.error("从默认配置文件创建失败")
-                e.printStackTrace()
             }
+        } catch (e: Exception) {
+            log.error("配置文件生成失败")
+            e.printStackTrace()
         }
-        val reader = Files.newBufferedReader(Paths.get(configFile))
+
+        val reader = Files.newBufferedReader(Paths.get(configFileName))
         val config = Gson().fromJson(reader, ConfigDataClass::class.java)
         base = config.base
         plugins = config.plugins
+
         if (!isReload) log.info("配置文件初始化完毕")
     }
 
@@ -64,10 +67,10 @@ class Config {
     private fun watchMonitorConfigFile() {
         val monitor = WatchMonitor.createAll("./", object : DelayWatcher(object : SimpleWatcher() {
             override fun onModify(event: WatchEvent<*>?, currentPath: Path?) {
-                if (configFile == event?.context().toString()) {
+                if (configFileName == event?.context().toString()) {
                     isReload = true
                     initConfig()
-                    log.info("配置文件 $configFile 已重载")
+                    log.info("配置文件 $configFileName 已重载")
                 }
             }
         }, 500) {})
