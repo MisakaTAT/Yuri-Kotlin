@@ -4,6 +4,7 @@ import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
+import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import org.springframework.stereotype.Component
 
@@ -14,8 +15,8 @@ class Help {
     @MessageHandler(cmd = RegexCMD.HELP)
     fun helpHandler(bot: Bot, event: WholeMessageEvent) {
         val msg = """
-            Version: Beta
             使用教程: https://mikuac.com/archives/675
+            Version: ${Config.base.version}
             GitHub: https://github.com/MisakaTAT/Yuri-Kotlin
             Powered By: https://github.com/MisakaTAT/Shiro
         """.trimIndent()

@@ -1,10 +1,15 @@
 package com.mikuac.yuri.config
 
 data class ConfigDataClass(
-    val base: Base, val plugins: Plugins
+    val base: Base,
+    val plugins: Plugins
 ) {
     data class Base(
-        val adminList: List<Long>, val nickname: String, val selfId: Long, val enableGroupOnlyWhiteList: Boolean
+        val version: String,
+        val adminList: List<Long>,
+        val nickname: String,
+        val selfId: Long,
+        val enableGroupOnlyWhiteList: Boolean
     )
 
     data class Plugins(
@@ -33,11 +38,15 @@ data class ConfigDataClass(
         )
 
         data class AnimePic(
-            val r18: Boolean, val cd: Int, val proxy: String, val recallPicTime: Int
+            val r18: Boolean,
+            val cd: Int,
+            val proxy: String,
+            val recallPicTime: Int
         )
 
         data class Repeat(
-            val waitTime: Int, val thresholdValue: Int
+            val waitTime: Int,
+            val thresholdValue: Int
         )
 
         data class WhatAnime(
@@ -57,11 +66,13 @@ data class ConfigDataClass(
         )
 
         data class AnimeCrawler(
-            val rateLimiter: Boolean, val permitsPerMinute: Int
+            val rateLimiter: Boolean,
+            val permitsPerMinute: Int
         )
 
         data class Roulette(
-            val timeout: Int, val maxMuteTime: Int
+            val timeout: Int,
+            val maxMuteTime: Int
         )
 
         data class DriftBottle(

@@ -19,7 +19,6 @@ apply {
 }
 
 group = 'com.mikuac'
-version = '1.0'
 description = 'QQ Chat Bot'
 
 java {
