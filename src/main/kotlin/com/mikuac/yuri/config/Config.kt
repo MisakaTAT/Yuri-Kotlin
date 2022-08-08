@@ -41,11 +41,11 @@ class Config {
     @PostConstruct
     private fun initConfig() {
         try {
-            val defaultConfigFile = File(javaClass.classLoader.getResource(defaultConfigFileName)!!.file)
+            val defaultConfigFile = javaClass.classLoader.getResourceAsStream(defaultConfigFileName)
             val configFile = File(configFileName)
             if (!configFile.exists()) {
                 log.error("未检测到 $configFileName 即将从 $defaultConfigFileName 创建")
-                FileUtils.copyFile(defaultConfigFile, configFile)
+                FileUtils.copyInputStreamToFile(defaultConfigFile, configFile)
                 log.info("$configFileName 创建完成 请修改配置文件后重新启动")
                 val exitCode = SpringApplication.exit(ctx, ExitCodeGenerator { 0 })
                 exitProcess(exitCode)

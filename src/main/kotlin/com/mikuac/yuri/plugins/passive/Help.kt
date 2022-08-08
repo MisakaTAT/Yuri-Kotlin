@@ -4,7 +4,6 @@ import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
-import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import org.springframework.stereotype.Component
 
