@@ -230,15 +230,6 @@ class WordCloud {
         }
     }
 
-    private fun dayCheck(): Boolean {
-        val now = LocalDateTime.now()
-        // Skip task for week
-        if (now.dayOfWeek == DayOfWeek.SUNDAY) return false
-        // if (!isMoth) return true
-        // Skip task for month
-        return true
-    }
-
     private class JieBaTokenizer : WordTokenizer {
         override fun tokenize(sentence: String?): MutableList<String> {
             return JiebaSegmenter().process(sentence, JiebaSegmenter.SegMode.INDEX).map { it.word.trim() }
