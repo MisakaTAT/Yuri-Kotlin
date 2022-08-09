@@ -71,6 +71,8 @@
     },
     // 词云插件配置
     "wordCloud": {
+      // 定时任务推送速率（5秒一个群）
+      "cronTaskRate": 5,
       // 最小字号
       "minFontSize": 20,
       // 最大字号

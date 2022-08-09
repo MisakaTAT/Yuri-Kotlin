@@ -23,6 +23,7 @@ data class ConfigDataClass(
         val driftBottle: DriftBottle
     ) {
         data class WordCloud(
+            val cronTaskRate: Int,
             val minFontSize: Int,
             val maxFontSize: Int,
             val filterRule: List<String>,

@@ -146,7 +146,8 @@ class WordCloud {
         val contents = ArrayList<String>()
         getWordsForRange(userId, groupId, type, range, cronTask).forEach { raw ->
             contents.addAll(
-                ShiroUtils.stringToMsgChain(raw)
+                ShiroUtils
+                    .stringToMsgChain(raw)
                     .filter { it.type == "text" }
                     .map { it.data["text"]!!.trim() }
                     .filter { !it.contains(filterRule) }
@@ -191,13 +192,15 @@ class WordCloud {
 
     @Scheduled(cron = "0 0 0 * * ?", zone = ZONE)
     fun taskForDay() {
-        if (!dayCheck(false)) return
+        val now = LocalDateTime.now()
+        if (now.dayOfWeek == DayOfWeek.SUNDAY) return
         task("今日")
     }
 
     @Scheduled(cron = "0 0 0 ? * SUN", zone = ZONE)
     fun taskForWeek() {
-        if (!dayCheck(true)) return
+        val now = LocalDateTime.now()
+        if (now == now.with(TemporalAdjusters.lastDayOfMonth())) return
         task("本周")
     }
 
@@ -207,10 +210,14 @@ class WordCloud {
     }
 
     private fun task(range: String) {
-        val bot = botContainer.robots[Config.base.selfId] ?: return
+        val bot = botContainer.robots[Config.base.selfId]
+        if (bot == null) {
+            log.error("词云插件定时任务执行失败 未获取到 Bot 对象")
+            return
+        }
+        val cronTaskRate = Config.plugins.wordCloud.cronTaskRate.times(1000L)
         bot.groupList.data.forEach {
-            // TODO: config file set
-            sleep(5000L)
+            sleep(cronTaskRate)
             bot.sendGroupMsg(it.groupId, "嗨嗨嗨，摸鱼的一天结束啦，让我来看看群友${range}聊了些什么～", false)
             val contents = getWords(0L, it.groupId, "本群", range, true)
             if (contents.isEmpty()) {
@@ -223,21 +230,18 @@ class WordCloud {
         }
     }
 
-    private fun dayCheck(isMoth: Boolean): Boolean {
+    private fun dayCheck(): Boolean {
         val now = LocalDateTime.now()
         // Skip task for week
         if (now.dayOfWeek == DayOfWeek.SUNDAY) return false
-        if (!isMoth) return true
+        // if (!isMoth) return true
         // Skip task for month
-        if (now == now.with(TemporalAdjusters.lastDayOfMonth())) return false
         return true
     }
 
     private class JieBaTokenizer : WordTokenizer {
         override fun tokenize(sentence: String?): MutableList<String> {
-            return JiebaSegmenter()
-                .process(sentence, JiebaSegmenter.SegMode.INDEX)
-                .map { it.word.trim() }
+            return JiebaSegmenter().process(sentence, JiebaSegmenter.SegMode.INDEX).map { it.word.trim() }
                 .toMutableList()
         }
     }
