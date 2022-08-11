@@ -98,7 +98,7 @@ class EpicFreeGame {
                         val endDate = formatDate(promotionData.endDate)
                         val msg = MsgUtils.builder()
                             .img(gameThumbnail)
-                            .text("$gameName ($gamePrice) 即将在 $startDate 推出免费游玩，预计截止时间为 $endDate，该游戏由 $gameCorp 发行。")
+                            .text("\n$gameName ($gamePrice) 即将在 $startDate 推出免费游玩，预计截止时间为 $endDate，该游戏由 $gameCorp 发行。")
                             .build()
                         msgList.add(msg)
                     } else {
