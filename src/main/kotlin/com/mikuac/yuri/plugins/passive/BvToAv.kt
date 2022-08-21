@@ -61,7 +61,7 @@ class BvToAv {
         try {
             bot.sendMsg(event, buildMsg(matcher), false)
         } catch (e: Exception) {
-            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未知错误：${e.message}")
+            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "格式非法")
             e.printStackTrace()
         }
     }
