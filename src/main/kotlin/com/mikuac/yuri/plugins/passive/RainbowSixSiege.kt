@@ -96,6 +96,8 @@ class RainbowSixSiege {
             val username = matcher.group(1) ?: YuriException("用户名获取失败")
             val data = request(username.toString().trim())
             bot.sendMsg(event, buildMsg(data), false)
+        } catch (e: IndexOutOfBoundsException) {
+            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未查询到此ID游戏数据")
         } catch (e: YuriException) {
             e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
         } catch (e: Exception) {
