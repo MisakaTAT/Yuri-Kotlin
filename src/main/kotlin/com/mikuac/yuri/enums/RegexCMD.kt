@@ -24,8 +24,8 @@ class RegexCMD {
         const val ROULETTE = "^切换轮盘模式\$|^开始轮盘(\\s[1-6])?\$|^开枪\$"
         const val MANAGER = "^(?i)(.*)\\s(.*)\\s(.*)\\s([0-9]+)\$"
         const val WORD_CLOUD = "^(我的|本群)(今日|本周|本月|本年)词云\$"
-        const val DRIFT_BOTTLE = "^丢漂流瓶\\s?([\\s\\S]+)\$|^捡漂流瓶\$|^跳海\$|^查漂流瓶\\s?(.*)\$"
-        const val WORD_CLOUD_CRON = "^词云\\s(day|week|month)$"
+        const val DRIFT_BOTTLE = "^[丢扔]漂流瓶\\s?([\\s\\S]+)\$|^[捡捞]漂流瓶\$|^跳海\$|^查漂流瓶\\s?(.*)\$"
+        const val WORD_CLOUD_CRON = "^词云\\s(day|week|month)\$"
         const val NSFW = "^(?i)nsfw标签\\s?[\\s\\S]+\$"
     }
 
