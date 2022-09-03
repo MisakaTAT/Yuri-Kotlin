@@ -22,11 +22,15 @@ class AntiBiliMiniApp {
     private fun request(shortURL: String): BiliVideoApiDto {
         val data: BiliVideoApiDto
         try {
-            val url = RequestUtils.get(shortURL).request.url.toString()
-            val bid = RegexUtils.group(Regex("(?<=video/)(.*)(?=\\?)"), 1, url)
+            val urlResp = RequestUtils.get(shortURL)
+            val bid = RegexUtils.group(Regex("(?<=video/)(.*)(?=\\?)"), 1, urlResp.request.url.toString())
+            urlResp.close()
+
             val api = "https://api.bilibili.com/x/web-interface/view?bvid=${bid}"
-            val result = RequestUtils.get(api).body?.string()
-            data = Gson().fromJson(result, BiliVideoApiDto::class.java)
+            val resp = RequestUtils.get(api)
+            data = Gson().fromJson(resp.body?.string(), BiliVideoApiDto::class.java)
+            resp.close()
+
             if (data.code != 0) throw YuriException(data.message)
         } catch (e: Exception) {
             throw YuriException("哔哩哔哩数据获取异常：${e.message}")

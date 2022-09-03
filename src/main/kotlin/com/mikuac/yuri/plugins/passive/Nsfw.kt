@@ -20,8 +20,9 @@ class Nsfw {
         val data: NsfwDto
         try {
             val api = "https://nsfwtag.azurewebsites.net/api/nsfw?url=${img}"
-            val result = RequestUtils.get(api).body?.string()
-            data = Gson().fromJson(result, NsfwDto::class.java)
+            val resp = RequestUtils.get(api)
+            data = Gson().fromJson(resp.body?.string(), NsfwDto::class.java)
+            resp.close()
         } catch (e: Exception) {
             throw YuriException("NSFW鉴定失败：${e.message}")
         }

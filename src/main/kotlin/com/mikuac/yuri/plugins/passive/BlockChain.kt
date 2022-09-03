@@ -22,8 +22,9 @@ class BlockChain {
         val data: BlockChainDto
         try {
             val api = "https://api.huobi.pro/market/history/kline?period=1day&size=1&symbol=${symbol}usdt"
-            val result = RequestUtils.get(api).body?.string()
-            data = Gson().fromJson(result, BlockChainDto::class.java)
+            val resp = RequestUtils.get(api)
+            data = Gson().fromJson(resp.body?.string(), BlockChainDto::class.java)
+            resp.close()
             if ("ok" != data.status) throw YuriException("数据获取失败")
         } catch (e: Exception) {
             throw YuriException("火币数据获取异常：${e.message}")

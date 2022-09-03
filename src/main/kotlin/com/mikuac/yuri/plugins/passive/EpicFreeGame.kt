@@ -58,8 +58,9 @@ class EpicFreeGame {
         try {
             val api =
                 "https://store-site-backend-static-ipv4.ak.epicgames.com/freeGamesPromotions?locale=zh-CN&country=CN&allowCountries=CN"
-            val result = RequestUtils.get(api, headers).body?.string()
-            val jsonObject = JsonParser.parseString(result)
+            val resp = RequestUtils.get(api, headers)
+            val jsonObject = JsonParser.parseString(resp.body?.string())
+            resp.close()
             val elements = jsonObject.asJsonObject["data"].asJsonObject["Catalog"].asJsonObject["searchStore"]
                 .asJsonObject["elements"].asJsonArray
             data = Gson().fromJson(elements, EpicDto::class.java)

@@ -66,8 +66,9 @@ class WhatAnime {
         val data: Pair<WhatAnimeBasicDto, WhatAnimeDto>
         try {
             // 获取基本信息
-            val basicResult = RequestUtils.get("https://api.trace.moe/search?cutBorders&url=${imgUrl}").body?.string()
-            val basicData = Gson().fromJson(basicResult, WhatAnimeBasicDto::class.java)
+            val basicResult = RequestUtils.get("https://api.trace.moe/search?cutBorders&url=${imgUrl}")
+            val basicData = Gson().fromJson(basicResult.body?.string(), WhatAnimeBasicDto::class.java)
+            basicResult.close()
             if (basicData.error != "") throw YuriException(basicData.error)
             if (basicData.result.isEmpty()) throw YuriException("未找到匹配结果")
             val animeId = basicData.result[0].aniList
@@ -77,8 +78,9 @@ class WhatAnime {
             val reqBody = JsonObject()
             reqBody.addProperty("query", graphqlQuery)
             reqBody.add("variables", variables)
-            val aniListResult = RequestUtils.post("https://trace.moe/anilist/", reqBody.toString()).body?.string()
-            val aniListData = Gson().fromJson(aniListResult, WhatAnimeDto::class.java)
+            val aniListResult = RequestUtils.post("https://trace.moe/anilist/", reqBody.toString())
+            val aniListData = Gson().fromJson(aniListResult.body?.string(), WhatAnimeDto::class.java)
+            aniListResult.close()
             data = Pair(basicData, aniListData)
         } catch (e: Exception) {
             throw YuriException("WhatAnime数据获取异常：${e.message}")

@@ -54,8 +54,9 @@ class AnimeCrawler : ApplicationRunner {
         val data: AnimeCrawlerDto
         try {
             val api = "https://bangumi.bilibili.com/web_api/timeline_global"
-            val result = RequestUtils.get(api).body?.string()
-            data = Gson().fromJson(result, AnimeCrawlerDto::class.java)
+            val resp = RequestUtils.get(api)
+            data = Gson().fromJson(resp.body?.string(), AnimeCrawlerDto::class.java)
+            resp.close()
             if (data.code != 0) throw YuriException(data.message)
         } catch (e: Exception) {
             throw YuriException("哔哩哔哩数据获取异常：${e.message}")

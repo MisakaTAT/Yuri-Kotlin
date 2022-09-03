@@ -23,8 +23,9 @@ class GithubRepo {
         val data: GithubRepoDto
         try {
             val api = "https://api.github.com/search/repositories?q=${repoName}"
-            val result = RequestUtils.get(api).body?.string()
-            data = Gson().fromJson(result, GithubRepoDto::class.java)
+            val resp = RequestUtils.get(api)
+            data = Gson().fromJson(resp.body?.string(), GithubRepoDto::class.java)
+            resp.close()
             if (data.totalCount <= 0) throw YuriException("未找到名为 $repoName 的仓库")
         } catch (e: Exception) {
             throw YuriException("GitHub数据获取异常：${e.message}")

@@ -30,7 +30,9 @@ class Ascii2d {
             )
         }
 
-        val colorUrl = RequestUtils.get("https://ascii2d.net/search/url/${imgUrl}").request.url.toString()
+        val colorUrlResp = RequestUtils.get("https://ascii2d.net/search/url/${imgUrl}")
+        val colorUrl = colorUrlResp.request.url.toString()
+        colorUrlResp.close()
 
         try {
             val colorSearchResult = request(0, colorUrl)
