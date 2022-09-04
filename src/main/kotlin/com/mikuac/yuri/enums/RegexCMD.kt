@@ -27,6 +27,7 @@ class RegexCMD {
         const val DRIFT_BOTTLE = "^[丢扔]漂流瓶\\s?([\\s\\S]+)\$|^[捡捞]漂流瓶\$|^跳海\$|^查漂流瓶\\s?(.*)\$"
         const val WORD_CLOUD_CRON = "^词云\\s(day|week|month)\$"
         const val NSFW = "^(?i)nsfw标签\\s?[\\s\\S]+\$"
+        const val TTS = "^tts\\s([\\s\\S]+)\$"
     }
 
 }
