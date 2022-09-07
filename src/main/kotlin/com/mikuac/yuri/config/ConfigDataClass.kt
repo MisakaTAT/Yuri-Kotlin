@@ -49,14 +49,6 @@ data class ConfigDataClass(
             val thresholdValue: Int
         )
 
-        data class WhatAnime(
-            val sendPreviewVideo: Boolean
-        )
-
-        data class SauceNao(
-            val key: String
-        )
-
         data class Epic(
             val cacheTime: Int
         )
