@@ -1,18 +1,22 @@
 package com.mikuac.yuri.plugins.initiative
 
+import com.mikuac.shiro.annotation.GroupDecreaseHandler
+import com.mikuac.shiro.annotation.GroupIncreaseHandler
+import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.notice.GroupDecreaseNoticeEvent
 import com.mikuac.shiro.dto.event.notice.GroupIncreaseNoticeEvent
 import com.mikuac.yuri.config.Config
 import org.springframework.stereotype.Component
 
+@Shiro
 @Component
-class GroupJoinAndQuit : BotPlugin() {
+class GroupJoinAndQuit {
 
-    override fun onGroupDecreaseNotice(bot: Bot, event: GroupDecreaseNoticeEvent): Int {
+    @GroupDecreaseHandler
+    fun decreaseHandler(bot: Bot, event: GroupDecreaseNoticeEvent) {
         val userId = event.userId
         val subType = event.subType
         val groupId = event.groupId
@@ -27,19 +31,18 @@ class GroupJoinAndQuit : BotPlugin() {
         if ("leave" == subType) {
             bot.sendGroupMsg(groupId, "$target 退出群聊", false)
         }
-        return MESSAGE_IGNORE
     }
 
-    override fun onGroupIncreaseNotice(bot: Bot, event: GroupIncreaseNoticeEvent): Int {
+
+    @GroupIncreaseHandler
+    fun increaseHandler(bot: Bot, event: GroupIncreaseNoticeEvent) {
         val groupId = event.groupId
         val userId = event.userId
         // 排除BOT自身入群通知
-        if (userId == Config.base.selfId) return MESSAGE_IGNORE
-        val msg = MsgUtils.builder()
-            .at(userId)
+        if (userId == Config.base.selfId) return
+        val msg = MsgUtils.builder().at(userId)
             .text("Hi~ 我是${Config.base.nickname}，欢迎加入本群，如果想了解我，请发送 帮助 或 help 获取帮助信息。")
         bot.sendGroupMsg(groupId, msg.build(), false)
-        return MESSAGE_IGNORE
     }
 
 }
