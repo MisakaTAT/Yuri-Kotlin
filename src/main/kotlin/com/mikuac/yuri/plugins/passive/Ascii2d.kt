@@ -49,7 +49,10 @@ class Ascii2d {
     }
 
     private fun request(type: Int, resultUrl: String): String {
-        val document = Jsoup.connect(resultUrl).get()
+        val connect = Jsoup.connect(resultUrl)
+        val header = connect.header("User-Agent", "PostmanRuntime/7.29.0")
+        val document = header.get()
+
         val itemBox = document.getElementsByClass("item-box")[1]
         val thumbnail = itemBox.select("div.image-box > img")
         val link = itemBox.select("div.detail-box > h6 > a")[0]
