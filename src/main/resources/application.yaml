@@ -16,5 +16,5 @@ spring:
 shiro:
   plugin-list:
     - com.mikuac.yuri.plugins.initiative.Poke
-    - com.mikuac.yuri.plugins.passive.GroupInvite
+    - com.mikuac.yuri.plugins.passive.GroupAddRequest
 
