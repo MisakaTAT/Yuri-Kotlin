@@ -8,8 +8,16 @@ data class ConfigDataClass(
         val adminList: List<Long>,
         val nickname: String,
         val selfId: Long,
-        val enableGroupOnlyWhiteList: Boolean
-    )
+        val enableGroupOnlyWhiteList: Boolean,
+        val proxy: Proxy
+    ) {
+        data class Proxy(
+            val enable: Boolean,
+            val host: String,
+            val port: Int,
+            val type: String
+        )
+    }
 
     data class Plugins(
         val picSearch: PicSearch,
@@ -20,7 +28,8 @@ data class ConfigDataClass(
         val animeCrawler: AnimeCrawler,
         val roulette: Roulette,
         val wordCloud: WordCloud,
-        val driftBottle: DriftBottle
+        val driftBottle: DriftBottle,
+        val telegram: Telegram
     ) {
         data class WordCloud(
             val cronTaskRate: Int,
@@ -70,5 +79,18 @@ data class ConfigDataClass(
         data class DriftBottle(
             val cd: Int
         )
+
+        data class Telegram(
+            val enable: Boolean,
+            val botUsername: String,
+            val botToken: String,
+            val proxy: Boolean,
+            val rules: List<Rule>
+        ) {
+            data class Rule(
+                val tg: String,
+                val qq: Long,
+            )
+        }
     }
 }

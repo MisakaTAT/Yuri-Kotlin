@@ -33,7 +33,6 @@ class GroupJoinAndQuit {
         }
     }
 
-
     @GroupIncreaseHandler
     fun increaseHandler(bot: Bot, event: GroupIncreaseNoticeEvent) {
         val groupId = event.groupId

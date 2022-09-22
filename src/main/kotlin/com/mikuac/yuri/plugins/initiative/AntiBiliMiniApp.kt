@@ -23,7 +23,7 @@ class AntiBiliMiniApp {
         val data: BiliVideoApiDto
         try {
             val urlResp = RequestUtils.get(shortURL)
-            val bid = RegexUtils.group(Regex("(?<=video\\/)(.*)(?=\\/\\?)"), 1, urlResp.request.url.toString())
+            val bid = RegexUtils.group(Regex("(?<=video/)(.*)(?=/\\?)"), 1, urlResp.request.url.toString())
             urlResp.close()
 
             val api = "https://api.bilibili.com/x/web-interface/view?bvid=${bid}"
@@ -33,7 +33,6 @@ class AntiBiliMiniApp {
 
             if (data.code != 0) throw YuriException(data.message)
         } catch (e: Exception) {
-            e.printStackTrace()
             throw YuriException("哔哩哔哩数据获取异常：${e.message}")
         }
         return data

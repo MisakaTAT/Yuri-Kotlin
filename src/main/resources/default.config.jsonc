@@ -10,7 +10,16 @@
       87654321
     ],
     // 启用群组仅白名单模式（仅响应白名单内的群组）
-    "enableGroupOnlyWhiteList": false
+    "enableGroupOnlyWhiteList": false,
+    // 代理
+    proxy: {
+      // 代理地址
+      host: "127.0.0.1",
+      // 代理端口
+      port: 7890,
+      // Proxy type: [HTTP|SOCKS4|SOCKS5]
+      type: "HTTP"
+    }
   },
   // 插件配置
   "plugins": {
@@ -87,6 +96,26 @@
     "driftBottle": {
       // 多久可以捞一次瓶子（秒）
       "cd": 30
+    },
+    // Telegram 消息转发
+    "telegram": {
+      // 是否启用
+      enable: true,
+      // Telegram bot username
+      botUsername: "bot_username",
+      // Telegram bot token
+      botToken: "bot_token",
+      // 是否启用代理
+      proxy: true,
+      // 转发规则
+      rules: [
+        {
+          // Telegram 群名
+          tg: "test",
+          // 转发的目标群号
+          qq: 123456789
+        }
+      ]
     }
   }
 }
