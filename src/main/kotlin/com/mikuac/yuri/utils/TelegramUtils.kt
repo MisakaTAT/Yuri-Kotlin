@@ -16,8 +16,9 @@ object TelegramUtils {
 
     @JvmStatic
     fun formatPNG(imgURL: String): String {
-        val byteStream = RequestUtils.proxyGet(imgURL).body?.byteStream()
-        val bufferedImage = ImageIO.read(byteStream)
+        val resp = RequestUtils.proxyGet(imgURL)
+        val bufferedImage = ImageIO.read(resp.body?.byteStream())
+        resp.close()
         val byteArrayOutputStream = ByteArrayOutputStream()
         ImageIO.write(bufferedImage, "png", byteArrayOutputStream)
         return imgToBase64(byteArrayOutputStream.toByteArray())
