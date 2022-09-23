@@ -65,6 +65,7 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.15.3'
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
     implementation 'org.projectlombok:lombok:1.18.24'
+    implementation 'com.twelvemonkeys.imageio:imageio-webp:3.8.3'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
     implementation 'com.kennycason:kumo-core:1.28'
     implementation 'com.huaban:jieba-analysis:1.0.2'

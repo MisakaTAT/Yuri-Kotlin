@@ -49,21 +49,25 @@ public class MessageForward extends TelegramLongPollingBot {
         }
 
         if (update.getMessage().hasPhoto()) {
-            val photos = update.getMessage().getPhoto();
-            val photo = photos.stream().max(Comparator.comparingInt(PhotoSize::getFileSize));
+            val photoSizeList = update.getMessage().getPhoto();
+            val photo = photoSizeList.stream().max(Comparator.comparingInt(PhotoSize::getFileSize));
             if (photo.isPresent()) {
                 val file = TelegramUtils.getFile(photo.get().getFileId());
                 if (file != null) {
-                    msg.img(TelegramUtils.imgToBase64(file));
+                    msg.img(TelegramUtils.formatPNG(file));
                 }
             }
         }
 
         if (update.getMessage().hasSticker()) {
             val sticker = update.getMessage().getSticker();
+            // 跳过动画表情和视频
+            if (sticker.getIsAnimated() || sticker.getIsVideo()) {
+                return;
+            }
             val file = TelegramUtils.getFile(sticker.getFileId());
             if (file != null) {
-                msg.img(TelegramUtils.imgToBase64(file));
+                msg.img(TelegramUtils.formatPNG(file));
             }
         }
 
@@ -85,13 +89,12 @@ public class MessageForward extends TelegramLongPollingBot {
             log.error("Telegram MessageForward bot instance is null");
             return;
         }
-        Config.plugins.getTelegram()
+        Config.plugins
+                .getTelegram()
                 .getRules()
                 .stream()
                 .filter(it -> tgGroupName.equals(it.getTg()))
-                .forEach(
-                        it -> bot.sendGroupMsg(it.getQq(), msg, false)
-                );
+                .forEach(it -> bot.sendGroupMsg(it.getQq(), msg, false));
     }
 
 }

@@ -3,26 +3,36 @@ package com.mikuac.yuri.utils
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.mikuac.yuri.config.Config
+import java.io.ByteArrayOutputStream
 import java.util.*
+import javax.imageio.ImageIO
 
 object TelegramUtils {
 
     @JvmStatic
-    fun imgToBase64(imgURL: String): String {
-        val bytes = RequestUtils.proxyGet(imgURL).body?.bytes()
+    fun imgToBase64(bytes: ByteArray): String {
         return "base64://${Base64.getEncoder().encodeToString(bytes)}"
     }
 
     @JvmStatic
+    fun formatPNG(imgURL: String): String {
+        val byteStream = RequestUtils.proxyGet(imgURL).body?.byteStream()
+        val bufferedImage = ImageIO.read(byteStream)
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        ImageIO.write(bufferedImage, "png", byteArrayOutputStream)
+        return imgToBase64(byteArrayOutputStream.toByteArray())
+    }
+
+    @JvmStatic
     fun getFile(fileId: String): String? {
-        val baseUrl = "https://api.telegram.org"
-        val token = Config.plugins.telegram.botToken
-        val api = "${baseUrl}/bot${token}/getFile?file_id=${fileId}"
+        val baseURL = "https://api.telegram.org"
+        val botToken = Config.plugins.telegram.botToken
+        val api = "${baseURL}/bot${botToken}/getFile?file_id=${fileId}"
         val resp = RequestUtils.proxyGet(api)
         val data = Gson().fromJson(resp.body?.string(), Result::class.java)
         resp.close()
         if (data.ok) {
-            return "${baseUrl}/file/bot${token}/${data.result.filePath}"
+            return "${baseURL}/file/bot${botToken}/${data.result.filePath}"
         }
         return null
     }
