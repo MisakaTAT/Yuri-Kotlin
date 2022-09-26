@@ -12,13 +12,13 @@
     // 启用群组仅白名单模式（仅响应白名单内的群组）
     "enableGroupOnlyWhiteList": false,
     // 代理
-    proxy: {
+    "proxy": {
       // 代理地址
-      host: "127.0.0.1",
+      "host": "127.0.0.1",
       // 代理端口
-      port: 7890,
+      "port": 7890,
       // Proxy type: [HTTP|SOCKS4|SOCKS5]
-      type: "HTTP"
+      "type": "HTTP"
     }
   },
   // 插件配置
@@ -100,26 +100,26 @@
     // Telegram 消息转发
     "telegram": {
       // 是否启用
-      enable: true,
+      "enable": false,
       // Telegram bot username
-      botUsername: "bot_username",
+      "botUsername": "bot_username",
       // Telegram bot token
-      botToken: "bot_token",
+      "botToken": "bot_token",
       // 是否启用代理
-      proxy: true,
+      "proxy": true,
       // 是否启用用户白名单
-      enableUserWhiteList: false,
+      "enableUserWhiteList": false,
       // 转发规则
-      rules: [
+      "rules": [
         {
           // Telegram 群名
-          tg: "TestGroup",
+          "tg": "TestGroup",
           // 转发的目标群号
-          qq: 123456789
+          "qq": 123456789
         }
       ],
       // 用户白名单
-      userWhiteList: [
+      "userWhiteList": [
         "TestUser"
       ]
     }
