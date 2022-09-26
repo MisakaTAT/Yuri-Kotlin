@@ -85,7 +85,9 @@ data class ConfigDataClass(
             val botUsername: String,
             val botToken: String,
             val proxy: Boolean,
-            val rules: List<Rule>
+            val rules: List<Rule>,
+            val enableUserWhiteList: Boolean,
+            val userWhiteList: List<String>
         ) {
             data class Rule(
                 val tg: String,

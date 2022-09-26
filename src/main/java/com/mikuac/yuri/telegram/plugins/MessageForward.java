@@ -38,7 +38,18 @@ public class MessageForward extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        if (!Config.plugins.getTelegram().getEnable() || !update.hasMessage()) {
+        val config = Config.plugins.getTelegram();
+
+        // check enable and has message
+        if (!config.getEnable() || !update.hasMessage()) {
+            return;
+        }
+
+        val chat = update.getMessage().getChat();
+        val fromUser = update.getMessage().getFrom().getUserName();
+
+        // check user white list
+        if (config.getEnableUserWhiteList() && !config.getUserWhiteList().contains(fromUser)) {
             return;
         }
 
@@ -72,18 +83,18 @@ public class MessageForward extends TelegramLongPollingBot {
         }
 
         if (!msg.build().isBlank()) {
-            val tgGroupName = update.getMessage().getChat().getTitle();
+            val groupTitle = chat.getTitle();
             // 私聊为 null
-            if (tgGroupName == null) {
+            if (groupTitle == null) {
                 return;
             }
-            msg.text("\n发送者：" + update.getMessage().getFrom().getUserName());
-            msg.text("\nTG群组：" + tgGroupName);
-            sendGroup(msg.build(), tgGroupName);
+            msg.text("\n发送者：" + fromUser);
+            msg.text("\nTG群组：" + groupTitle);
+            sendGroup(msg.build(), groupTitle);
         }
     }
 
-    private void sendGroup(String msg, String tgGroupName) {
+    private void sendGroup(String msg, String groupTitle) {
         val bot = botContainer.robots.get(Config.base.getSelfId());
         if (bot == null) {
             log.error("Telegram MessageForward bot instance is null");
@@ -93,7 +104,7 @@ public class MessageForward extends TelegramLongPollingBot {
                 .getTelegram()
                 .getRules()
                 .stream()
-                .filter(it -> tgGroupName.equals(it.getTg()))
+                .filter(it -> groupTitle.equals(it.getTg()))
                 .forEach(it -> bot.sendGroupMsg(it.getQq(), msg, false));
     }
 

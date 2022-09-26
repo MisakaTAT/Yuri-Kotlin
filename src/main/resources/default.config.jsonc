@@ -107,14 +107,20 @@
       botToken: "bot_token",
       // 是否启用代理
       proxy: true,
+      // 是否启用用户白名单
+      enableUserWhiteList: false,
       // 转发规则
       rules: [
         {
           // Telegram 群名
-          tg: "test",
+          tg: "TestGroup",
           // 转发的目标群号
           qq: 123456789
         }
+      ],
+      // 用户白名单
+      userWhiteList: [
+        "TestUser"
       ]
     }
   }
