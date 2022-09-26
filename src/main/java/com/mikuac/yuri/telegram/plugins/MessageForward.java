@@ -1,6 +1,7 @@
 package com.mikuac.yuri.telegram.plugins;
 
 import com.mikuac.shiro.common.utils.MsgUtils;
+import com.mikuac.shiro.core.Bot;
 import com.mikuac.shiro.core.BotContainer;
 import com.mikuac.yuri.config.Config;
 import com.mikuac.yuri.utils.BeanUtils;
@@ -19,6 +20,8 @@ import java.util.Comparator;
  */
 @Slf4j
 public class MessageForward extends TelegramLongPollingBot {
+
+    private static Bot bot;
 
     public MessageForward(DefaultBotOptions options) {
         super(options);
@@ -88,21 +91,20 @@ public class MessageForward extends TelegramLongPollingBot {
             if (groupTitle == null) {
                 return;
             }
-            msg.text("\n发送者：" + fromUser);
+            msg.text("\n\n发送者：" + fromUser);
             msg.text("\nTG群组：" + groupTitle);
             sendGroup(msg.build(), groupTitle);
         }
     }
 
-    private void sendGroup(String msg, String groupTitle) {
-        val bot = botContainer.robots.get(Config.base.getSelfId());
+    public void sendGroup(String msg, String groupTitle) {
         if (bot == null) {
-            log.error("Telegram MessageForward bot instance is null");
+            bot = botContainer.robots.get(Config.base.getSelfId());
             return;
         }
         Config.plugins
                 .getTelegram()
-                .getRules()
+                .getGroupRules()
                 .stream()
                 .filter(it -> groupTitle.equals(it.getTg()))
                 .forEach(it -> bot.sendGroupMsg(it.getQq(), msg, false));

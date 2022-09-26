@@ -118,6 +118,15 @@
           "qq": 123456789
         }
       ],
+      // 转发规则
+      "channelRules": [
+        {
+          // Telegram 频道名
+          "tg": "TestChannel",
+          // 转发的目标群号
+          "qq": 123456789
+        }
+      ],
       // 用户白名单
       "userWhiteList": [
         "TestUser"

@@ -23,14 +23,16 @@ public class Register implements ApplicationRunner {
         val botsApi = new TelegramBotsApi(DefaultBotSession.class);
         val botOptions = new DefaultBotOptions();
 
-        if (Config.plugins.getTelegram().getEnable()) {
-            val proxy = Config.base.getProxy();
-            val type = DefaultBotOptions.ProxyType.valueOf(proxy.getType());
-            botOptions.setProxyHost(proxy.getHost());
-            botOptions.setProxyPort(proxy.getPort());
-            botOptions.setProxyType(type);
-            log.info("Telegram 代理启用: {}:{} 代理类型: {}", proxy.getHost(), proxy.getPort(), type);
+        if (!Config.plugins.getTelegram().getEnable()) {
+            return;
         }
+
+        val proxy = Config.base.getProxy();
+        val type = DefaultBotOptions.ProxyType.valueOf(proxy.getType());
+        botOptions.setProxyHost(proxy.getHost());
+        botOptions.setProxyPort(proxy.getPort());
+        botOptions.setProxyType(type);
+        log.info("Telegram 代理启用: {}:{} 代理类型: {}", proxy.getHost(), proxy.getPort(), type);
 
         try {
             botsApi.registerBot(new MessageForward(botOptions));
