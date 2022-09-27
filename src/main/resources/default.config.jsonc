@@ -110,15 +110,46 @@
       // 是否启用用户白名单
       "enableUserWhiteList": false,
       // 转发规则
-      "rules": [
-        {
-          // Telegram 群名
-          "tg": "TestGroup",
-          // 转发的目标群号
-          "qq": 123456789
-        }
-      ],
-      // 用户白名单
+      "rules": {
+        // Telegram 群聊消息转发
+        "group": [
+          {
+            // 需要转发的TG群名
+            "source": "TestGroup",
+            "target": {
+              // 转发到QQ群聊
+              "group": [
+                12345678
+              ],
+              // 转发到QQ私聊
+              "friend": [
+                12345678
+              ]
+            }
+          }
+        ],
+        // 频道消息转发
+        "channel": [
+          {
+            "source": "TestChannel",
+            "target": {
+              "group": [],
+              "friend": []
+            }
+          }
+        ],
+        // 好友消息转发
+        "friend": [
+          {
+            "source": "TestFried",
+            "target": {
+              "group": [],
+              "friend": []
+            }
+          }
+        ]
+      },
+      // 用户白名单（仅对群聊生效）
       "userWhiteList": [
         "TestUser"
       ]

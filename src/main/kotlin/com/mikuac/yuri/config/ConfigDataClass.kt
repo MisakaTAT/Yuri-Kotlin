@@ -85,14 +85,25 @@ data class ConfigDataClass(
             val botUsername: String,
             val botToken: String,
             val proxy: Boolean,
-            val rules: List<Rule>,
+            val rules: Rules,
             val enableUserWhiteList: Boolean,
             val userWhiteList: List<String>
         ) {
-            data class Rule(
-                val tg: String,
-                val qq: Long,
-            )
+            data class Rules(
+                val group: List<RuleItem>,
+                val channel: List<RuleItem>,
+                val friend: List<RuleItem>
+            ) {
+                data class RuleItem(
+                    val source: String,
+                    val target: Target,
+                ) {
+                    data class Target(
+                        val group: List<Long>,
+                        val friend: List<Long>,
+                    )
+                }
+            }
         }
     }
 }
