@@ -1,10 +1,12 @@
 package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
+import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.bean.dto.BlockChainDto
+import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.RequestUtils
@@ -22,7 +24,7 @@ class BlockChain {
         val data: BlockChainDto
         try {
             val api = "https://api.huobi.pro/market/history/kline?period=1day&size=1&symbol=${symbol}usdt"
-            val resp = RequestUtils.get(api)
+            val resp = RequestUtils.proxyGet(api)
             data = Gson().fromJson(resp.body?.string(), BlockChainDto::class.java)
             resp.close()
             if ("ok" != data.status) throw YuriException("数据获取失败")
@@ -51,7 +53,7 @@ class BlockChain {
         """.trimIndent()
     }
 
-    // @MessageHandler(cmd = RegexCMD.BLOCK_CHAIN)
+    @MessageHandler(cmd = RegexCMD.BLOCK_CHAIN)
     fun blockChainHandler(bot: Bot, event: WholeMessageEvent, matcher: Matcher) {
         try {
             bot.sendMsg(event, buildMsg(matcher), false)
