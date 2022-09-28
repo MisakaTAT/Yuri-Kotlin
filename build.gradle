@@ -42,7 +42,6 @@ idea.project {
 repositories {
     mavenLocal()
     maven { url 'https://maven.aliyun.com/repository/central' }
-    maven { url "https://mvn.mchv.eu/repository/mchv/" }
     mavenCentral()
 }
 
