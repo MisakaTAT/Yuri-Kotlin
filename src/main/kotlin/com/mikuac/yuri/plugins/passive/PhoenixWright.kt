@@ -7,6 +7,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
+import com.mikuac.yuri.utils.ImageUtils.formatPNG
 import com.mikuac.yuri.utils.MsgSendUtils
 import org.springframework.stereotype.Component
 import java.net.URLEncoder
@@ -22,7 +23,8 @@ class PhoenixWright {
         var bottomText = matcher.group(2) ?: throw YuriException("请输入底部内容")
         topText = URLEncoder.encode(topText, StandardCharsets.UTF_8.toString())
         bottomText = URLEncoder.encode(bottomText, StandardCharsets.UTF_8.toString())
-        return MsgUtils.builder().img("https://5000choyen.mikuac.com/image?top=${topText}&bottom=${bottomText}").build()
+        val img = formatPNG("https://gsapi.cbrx.io/image?top=${topText}&bottom=${bottomText}")
+        return MsgUtils.builder().img(img).build()
     }
 
     @MessageHandler(cmd = RegexCMD.PHOENIX_WRIGHT)

@@ -6,6 +6,7 @@ import com.mikuac.shiro.core.BotContainer;
 import com.mikuac.yuri.config.Config;
 import com.mikuac.yuri.config.ConfigDataClass.Plugins.Telegram.Rules.RuleItem;
 import com.mikuac.yuri.utils.BeanUtils;
+import com.mikuac.yuri.utils.ImageUtils;
 import com.mikuac.yuri.utils.TelegramUtils;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -72,7 +73,7 @@ public class MessageForward extends TelegramLongPollingBot {
             if (photo.isPresent()) {
                 val file = TelegramUtils.getFile(photo.get().getFileId());
                 if (file != null) {
-                    msg.img(TelegramUtils.formatPNG(file));
+                    msg.img(ImageUtils.formatPNG(file));
                 }
             }
             val caption = message.getCaption();
@@ -90,7 +91,7 @@ public class MessageForward extends TelegramLongPollingBot {
             }
             val file = TelegramUtils.getFile(sticker.getFileId());
             if (file != null) {
-                msg.img(TelegramUtils.formatPNG(file));
+                msg.img(ImageUtils.formatPNG(file));
             }
         }
 
