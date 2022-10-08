@@ -17,7 +17,7 @@ import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.repository.WhatAnimeCacheRepository
 import com.mikuac.yuri.utils.DateUtils
 import com.mikuac.yuri.utils.MsgSendUtils
-import com.mikuac.yuri.utils.RequestUtils
+import com.mikuac.yuri.utils.NetUtils
 import com.mikuac.yuri.utils.SearchModeUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -66,7 +66,10 @@ class WhatAnime {
         val data: Pair<WhatAnimeBasicDto, WhatAnimeDto>
         try {
             // 获取基本信息
-            val basicResult = RequestUtils.get("https://api.trace.moe/search?cutBorders&url=${imgUrl}")
+            val basicResult = NetUtils.get(
+                "https://api.trace.moe/search?cutBorders&url=${imgUrl}",
+                Config.plugins.picSearch.proxy
+            )
             val basicData = Gson().fromJson(basicResult.body?.string(), WhatAnimeBasicDto::class.java)
             basicResult.close()
             if (basicData.error != "") throw YuriException(basicData.error)
@@ -78,7 +81,11 @@ class WhatAnime {
             val reqBody = JsonObject()
             reqBody.addProperty("query", graphqlQuery)
             reqBody.add("variables", variables)
-            val aniListResult = RequestUtils.post("https://trace.moe/anilist/", reqBody.toString())
+            val aniListResult = NetUtils.post(
+                "https://trace.moe/anilist/",
+                reqBody.toString(),
+                Config.plugins.picSearch.proxy
+            )
             val aniListData = Gson().fromJson(aniListResult.body?.string(), WhatAnimeDto::class.java)
             aniListResult.close()
             data = Pair(basicData, aniListData)

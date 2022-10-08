@@ -7,7 +7,7 @@ import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.entity.SauceNaoCacheEntity
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.repository.SauceNaoCacheRepository
-import com.mikuac.yuri.utils.RequestUtils
+import com.mikuac.yuri.utils.NetUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -23,7 +23,7 @@ class SauceNao {
         try {
             val key = Config.plugins.picSearch.sauceNaoKey
             val api = "https://saucenao.com/search.php?api_key=${key}&output_type=2&numres=3&db=999&url=${imgUrl}"
-            val resp = RequestUtils.get(api)
+            val resp = NetUtils.get(api)
             data = Gson().fromJson(resp.body?.string(), SauceNaoDto::class.java)
             resp.close()
             if (data.header.longRemaining <= 0) throw YuriException("今日的搜索配额已耗尽啦")

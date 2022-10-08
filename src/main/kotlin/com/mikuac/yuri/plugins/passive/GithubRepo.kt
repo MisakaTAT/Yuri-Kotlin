@@ -8,10 +8,12 @@ import com.mikuac.shiro.common.utils.OneBotMedia
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.bean.dto.GithubRepoDto
+import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
+import com.mikuac.yuri.utils.ImageUtils
 import com.mikuac.yuri.utils.MsgSendUtils
-import com.mikuac.yuri.utils.RequestUtils
+import com.mikuac.yuri.utils.NetUtils
 import org.springframework.stereotype.Component
 import java.util.regex.Matcher
 
@@ -23,7 +25,7 @@ class GithubRepo {
         val data: GithubRepoDto
         try {
             val api = "https://api.github.com/search/repositories?q=${repoName}"
-            val resp = RequestUtils.get(api)
+            val resp = NetUtils.get(api)
             data = Gson().fromJson(resp.body?.string(), GithubRepoDto::class.java)
             resp.close()
             if (data.totalCount <= 0) throw YuriException("未找到名为 $repoName 的仓库")
@@ -36,6 +38,10 @@ class GithubRepo {
     private fun buildMsg(matcher: Matcher): String {
         val searchName = matcher.group(1) ?: throw YuriException("请按格式输入正确的仓库名")
         val data = request(searchName).items[0]
+        val img = ImageUtils.formatPNG(
+            "https://opengraph.githubassets.com/0/${data.fullName}",
+            Config.plugins.githubRepo.proxy
+        )
         return MsgUtils.builder()
             .text("RepoName: ${data.fullName}")
             .text("\nDefaultBranch: ${data.defaultBranch}")
@@ -46,7 +52,7 @@ class GithubRepo {
             .text("\n${data.htmlUrl}")
             .img(
                 OneBotMedia.Builder()
-                    .file("https://opengraph.githubassets.com/0/${data.fullName}")
+                    .file(img)
                     .cache(false)
                     .build()
             )

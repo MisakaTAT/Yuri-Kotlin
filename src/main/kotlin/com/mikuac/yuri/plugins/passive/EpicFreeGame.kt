@@ -16,7 +16,7 @@ import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
-import com.mikuac.yuri.utils.RequestUtils
+import com.mikuac.yuri.utils.NetUtils
 import net.jodah.expiringmap.ExpirationPolicy
 import net.jodah.expiringmap.ExpiringMap
 import org.springframework.stereotype.Component
@@ -58,7 +58,7 @@ class EpicFreeGame {
         try {
             val api =
                 "https://store-site-backend-static-ipv4.ak.epicgames.com/freeGamesPromotions?locale=zh-CN&country=CN&allowCountries=CN"
-            val resp = RequestUtils.get(api, headers)
+            val resp = NetUtils.get(api, headers)
             val jsonObject = JsonParser.parseString(resp.body?.string())
             resp.close()
             val elements = jsonObject.asJsonObject["data"].asJsonObject["Catalog"].asJsonObject["searchStore"]

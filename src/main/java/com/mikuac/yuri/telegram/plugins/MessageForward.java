@@ -73,7 +73,7 @@ public class MessageForward extends TelegramLongPollingBot {
             if (photo.isPresent()) {
                 val file = TelegramUtils.getFile(photo.get().getFileId());
                 if (file != null) {
-                    msg.img(ImageUtils.formatPNG(file));
+                    msg.img(ImageUtils.formatPNG(file, config.getProxy()));
                 }
             }
             val caption = message.getCaption();
@@ -91,7 +91,7 @@ public class MessageForward extends TelegramLongPollingBot {
             }
             val file = TelegramUtils.getFile(sticker.getFileId());
             if (file != null) {
-                msg.img(ImageUtils.formatPNG(file));
+                msg.img(ImageUtils.formatPNG(file, config.getProxy()));
             }
         }
 

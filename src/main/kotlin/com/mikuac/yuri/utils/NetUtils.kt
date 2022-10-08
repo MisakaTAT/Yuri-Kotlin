@@ -10,7 +10,7 @@ import java.net.InetSocketAddress
 import java.net.Proxy
 
 @Suppress("unused")
-object RequestUtils {
+object NetUtils {
 
     private val client = OkHttpClient()
 
@@ -19,12 +19,19 @@ object RequestUtils {
         return client.newCall(req).execute()
     }
 
-    fun get(url: String, noReferer: Boolean): Response {
+    fun get(url: String, proxy: Boolean): Response {
         val req = Request.Builder().url(url).get()
-        if (noReferer) {
-            req.header("referer", "no-referer")
+        val client = client.newBuilder()
+        if (proxy) {
+            client.proxy(
+                Proxy(
+                    Proxy.Type.valueOf(Config.base.proxy.type),
+                    InetSocketAddress(Config.base.proxy.host, Config.base.proxy.port)
+                )
+            )
         }
-        return client.newCall(req.build()).execute()
+        return client.build().newCall(req.build()).execute()
+
     }
 
     fun get(url: String, headers: Map<String, String>): Response {
@@ -42,21 +49,27 @@ object RequestUtils {
     }
 
     fun post(url: String, json: String, headers: Map<String, String>): Response {
-        val req = Request.Builder().url(url).post(json.toRequestBody())
+        val mediaType = "application/json; charset=utf-8".toMediaType()
+        val req = Request.Builder().url(url).post(json.toRequestBody(mediaType))
         headers.forEach {
             req.header(it.key, it.value)
         }
         return client.newCall(req.build()).execute()
     }
 
-    fun proxyGet(url: String): Response {
-        val req = Request.Builder().url(url).get()
-        val proxy = Proxy(
-            Proxy.Type.valueOf(Config.base.proxy.type),
-            InetSocketAddress(Config.base.proxy.host, Config.base.proxy.port)
-        )
-        val client = client.newBuilder().proxy(proxy).build()
-        return client.newCall(req.build()).execute()
+    fun post(url: String, json: String, proxy: Boolean): Response {
+        val mediaType = "application/json; charset=utf-8".toMediaType()
+        val req = Request.Builder().url(url).post(json.toRequestBody(mediaType))
+        val client = client.newBuilder()
+        if (proxy) {
+            client.proxy(
+                Proxy(
+                    Proxy.Type.valueOf(Config.base.proxy.type),
+                    InetSocketAddress(Config.base.proxy.host, Config.base.proxy.port)
+                )
+            )
+        }
+        return client.build().newCall(req.build()).execute()
     }
 
 }

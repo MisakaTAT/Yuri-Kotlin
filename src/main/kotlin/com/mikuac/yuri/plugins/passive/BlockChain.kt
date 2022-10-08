@@ -6,10 +6,11 @@ import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.bean.dto.BlockChainDto
+import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
-import com.mikuac.yuri.utils.RequestUtils
+import com.mikuac.yuri.utils.NetUtils
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -24,7 +25,7 @@ class BlockChain {
         val data: BlockChainDto
         try {
             val api = "https://api.huobi.pro/market/history/kline?period=1day&size=1&symbol=${symbol}usdt"
-            val resp = RequestUtils.proxyGet(api)
+            val resp = NetUtils.get(api, Config.plugins.blockChain.proxy)
             data = Gson().fromJson(resp.body?.string(), BlockChainDto::class.java)
             resp.close()
             if ("ok" != data.status) throw YuriException("数据获取失败")

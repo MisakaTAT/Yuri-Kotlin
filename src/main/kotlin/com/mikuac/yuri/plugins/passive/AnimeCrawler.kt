@@ -14,7 +14,7 @@ import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
-import com.mikuac.yuri.utils.RequestUtils
+import com.mikuac.yuri.utils.NetUtils
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.stereotype.Component
@@ -54,7 +54,7 @@ class AnimeCrawler : ApplicationRunner {
         val data: AnimeCrawlerDto
         try {
             val api = "https://bangumi.bilibili.com/web_api/timeline_global"
-            val resp = RequestUtils.get(api)
+            val resp = NetUtils.get(api)
             data = Gson().fromJson(resp.body?.string(), AnimeCrawlerDto::class.java)
             resp.close()
             if (data.code != 0) throw YuriException(data.message)

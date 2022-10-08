@@ -29,7 +29,10 @@ data class ConfigDataClass(
         val roulette: Roulette,
         val wordCloud: WordCloud,
         val driftBottle: DriftBottle,
-        val telegram: Telegram
+        val telegram: Telegram,
+        val blockChain: BlockChain,
+        val githubRepo: GithubRepo,
+        val phoenixWright: PhoenixWright
     ) {
         data class WordCloud(
             val cronTaskRate: Int,
@@ -44,12 +47,13 @@ data class ConfigDataClass(
             val alwaysUseAscii2d: Boolean,
             val animePreviewVideo: Boolean,
             val sauceNaoKey: String,
+            val proxy: Boolean,
         )
 
         data class AnimePic(
             val r18: Boolean,
             val cd: Int,
-            val proxy: String,
+            val reverseProxy: String,
             val recallPicTime: Int
         )
 
@@ -78,6 +82,18 @@ data class ConfigDataClass(
 
         data class DriftBottle(
             val cd: Int
+        )
+
+        data class BlockChain(
+            val proxy: Boolean
+        )
+
+        data class PhoenixWright(
+            val proxy: Boolean
+        )
+
+        data class GithubRepo(
+            val proxy: Boolean
         )
 
         data class Telegram(

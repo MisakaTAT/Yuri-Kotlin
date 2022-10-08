@@ -4,13 +4,16 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
+import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.entity.Ascii2dCacheEntity
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.repository.Ascii2dCacheRepository
-import com.mikuac.yuri.utils.RequestUtils
+import com.mikuac.yuri.utils.NetUtils
 import org.jsoup.Jsoup
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.net.InetSocketAddress
+import java.net.Proxy
 
 @Shiro
 @Component
@@ -30,13 +33,13 @@ class Ascii2d {
             )
         }
 
-        val colorUrlResp = RequestUtils.get("https://ascii2d.net/search/url/${imgUrl}")
+        val colorUrlResp = NetUtils.get("https://ascii2d.net/search/url/${imgUrl}", Config.plugins.picSearch.proxy)
         val colorUrl = colorUrlResp.request.url.toString()
         colorUrlResp.close()
 
         try {
-            val colorSearchResult = request(0, colorUrl)
-            val bovwSearchResult = request(1, colorUrl.replace("/color/", "/bovw/"))
+            val colorSearchResult = request(0, colorUrl, Config.plugins.picSearch.proxy)
+            val bovwSearchResult = request(1, colorUrl.replace("/color/", "/bovw/"), Config.plugins.picSearch.proxy)
             val json = JsonObject()
             json.addProperty("color", colorSearchResult)
             json.addProperty("bovw", bovwSearchResult)
@@ -48,8 +51,14 @@ class Ascii2d {
 
     }
 
-    private fun request(type: Int, resultUrl: String): String {
+    private fun request(type: Int, resultUrl: String, proxy: Boolean): String {
         val connect = Jsoup.connect(resultUrl)
+        if (proxy) {
+            val p = Config.base.proxy
+            connect.proxy(
+                Proxy(Proxy.Type.valueOf(p.type), InetSocketAddress(p.host, p.port))
+            )
+        }
         val header = connect.header("User-Agent", "PostmanRuntime/7.29.0")
         val document = header.get()
 

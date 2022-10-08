@@ -11,8 +11,8 @@ import com.mikuac.shiro.dto.event.message.WholeMessageEvent
 import com.mikuac.yuri.bean.dto.BiliVideoApiDto
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
+import com.mikuac.yuri.utils.NetUtils
 import com.mikuac.yuri.utils.RegexUtils
-import com.mikuac.yuri.utils.RequestUtils
 import org.springframework.stereotype.Component
 
 @Shiro
@@ -22,12 +22,12 @@ class AntiBiliMiniApp {
     private fun request(shortURL: String): BiliVideoApiDto {
         val data: BiliVideoApiDto
         try {
-            val urlResp = RequestUtils.get(shortURL)
+            val urlResp = NetUtils.get(shortURL)
             val bid = RegexUtils.group(Regex("(?<=video/)(.*)(?=/\\?)"), 1, urlResp.request.url.toString())
             urlResp.close()
 
             val api = "https://api.bilibili.com/x/web-interface/view?bvid=${bid}"
-            val resp = RequestUtils.get(api)
+            val resp = NetUtils.get(api)
             data = Gson().fromJson(resp.body?.string(), BiliVideoApiDto::class.java)
             resp.close()
 

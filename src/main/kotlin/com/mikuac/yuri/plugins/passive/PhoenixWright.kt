@@ -5,6 +5,7 @@ import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.WholeMessageEvent
+import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.ImageUtils.formatPNG
@@ -23,7 +24,10 @@ class PhoenixWright {
         var bottomText = matcher.group(2) ?: throw YuriException("请输入底部内容")
         topText = URLEncoder.encode(topText, StandardCharsets.UTF_8.toString())
         bottomText = URLEncoder.encode(bottomText, StandardCharsets.UTF_8.toString())
-        val img = formatPNG("https://gsapi.cbrx.io/image?top=${topText}&bottom=${bottomText}")
+        val img = formatPNG(
+            "https://gsapi.cbrx.io/image?top=${topText}&bottom=${bottomText}",
+            Config.plugins.phoenixWright.proxy
+        )
         return MsgUtils.builder().img(img).build()
     }
 

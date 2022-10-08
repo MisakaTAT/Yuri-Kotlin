@@ -12,7 +12,7 @@ import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
-import com.mikuac.yuri.utils.RequestUtils
+import com.mikuac.yuri.utils.NetUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -37,7 +37,7 @@ class AnimePic {
         try {
             var api = "https://api.lolicon.app/setu/v2"
             if (r18) api = "$api?r18=1"
-            val resp = RequestUtils.get(api)
+            val resp = NetUtils.get(api)
             data = Gson().fromJson(resp.body?.string(), AnimePicDto::class.java)
             resp.close()
             if (data.error.isNotEmpty()) throw YuriException(data.error)
@@ -50,7 +50,7 @@ class AnimePic {
 
     private fun buildTextMsg(r18: Boolean): Pair<String, String?> {
         val data = request(r18)
-        val imgUrl = data.urls.original.replace("i.pixiv.cat", Config.plugins.animePic.proxy)
+        val imgUrl = data.urls.original.replace("i.pixiv.cat", Config.plugins.animePic.reverseProxy)
         return Pair(
             MsgUtils.builder()
                 .text("标题：${data.title}")

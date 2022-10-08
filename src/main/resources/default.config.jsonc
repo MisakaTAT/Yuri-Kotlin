@@ -25,6 +25,8 @@
   "plugins": {
     // 搜图插件配置
     "picSearch": {
+      // 是否启用代理
+      proxy: true,
       // 搜图超时（秒）
       "timeout": 30,
       // 相似度低于多少自动调用Ascii2d搜图（自动转为 Float 类型）
@@ -44,8 +46,8 @@
       "cd": 60,
       // 图片撤回时间（秒）
       "recallPicTime": 30,
-      // 代理地址
-      "proxy": "i.pixiv.re"
+      // 反代地址
+      "reverseProxy": "i.pixiv.re"
     },
     // 复读插件配置
     "repeat": {
@@ -153,6 +155,19 @@
       "userWhiteList": [
         "TestUser"
       ]
-    }
+    },
+    // 区块链插件配置
+    "blockChain": {
+      // 是否启用代理
+      proxy: true
+    },
+    "phoenixWright": {
+      // 是否启用代理
+      proxy: true
+    },
+    "githubRepo": {
+      // 是否启用代理
+      proxy: true
+    },
   }
 }

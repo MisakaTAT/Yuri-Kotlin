@@ -10,7 +10,7 @@ import com.mikuac.yuri.bean.dto.HitokotoDto
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
-import com.mikuac.yuri.utils.RequestUtils
+import com.mikuac.yuri.utils.NetUtils
 import org.springframework.stereotype.Component
 import java.util.*
 
@@ -42,7 +42,7 @@ class Hitokoto {
         try {
             val type = types[Random().nextInt(types.size)]
             val api = "https://v1.hitokoto.cn?c=${type}"
-            val resp = RequestUtils.get(api)
+            val resp = NetUtils.get(api)
             data = Gson().fromJson(resp.body?.string(), HitokotoDto::class.java)
             resp.close()
         } catch (e: Exception) {

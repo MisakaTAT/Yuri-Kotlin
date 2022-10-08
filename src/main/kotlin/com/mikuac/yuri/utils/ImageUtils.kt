@@ -12,8 +12,8 @@ object ImageUtils {
     }
 
     @JvmStatic
-    fun formatPNG(imgURL: String): String {
-        val resp = RequestUtils.proxyGet(imgURL)
+    fun formatPNG(imgURL: String, proxy: Boolean): String {
+        val resp = NetUtils.get(imgURL, proxy)
         val bufferedImage = ImageIO.read(resp.body?.byteStream())
         resp.close()
         val byteArrayOutputStream = ByteArrayOutputStream()

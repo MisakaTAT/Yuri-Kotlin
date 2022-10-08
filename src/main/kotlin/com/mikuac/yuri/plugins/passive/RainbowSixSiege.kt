@@ -11,7 +11,7 @@ import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.FormatUtils
 import com.mikuac.yuri.utils.MsgSendUtils
-import com.mikuac.yuri.utils.RequestUtils
+import com.mikuac.yuri.utils.NetUtils
 import org.springframework.stereotype.Component
 import java.util.regex.Matcher
 
@@ -23,7 +23,10 @@ class RainbowSixSiege {
         if (username.isEmpty()) throw YuriException("用户名不合法，请检查输入是否正确。")
         val data: RainbowSixSiegeDto
         try {
-            val resp = RequestUtils.get("https://www.r6s.cn/Stats?username=${username}", true)
+            val resp = NetUtils.get(
+                "https://www.r6s.cn/Stats?username=${username}",
+                mapOf(Pair("referer", "no-referer"))
+            )
             data = Gson().fromJson(resp.body?.string(), RainbowSixSiegeDto::class.java)
             resp.close()
             if (data.status != 200) throw YuriException("服务器可能爆炸惹，请稍后重试～")
