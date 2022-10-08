@@ -26,7 +26,7 @@
     // 搜图插件配置
     "picSearch": {
       // 是否启用代理
-      proxy: true,
+      "proxy": true,
       // 搜图超时（秒）
       "timeout": 30,
       // 相似度低于多少自动调用Ascii2d搜图（自动转为 Float 类型）
@@ -159,17 +159,17 @@
     // 区块链插件配置
     "blockChain": {
       // 是否启用代理
-      proxy: true
+      "proxy": true
     },
     // 逆转裁判字体生成插件配置
     "phoenixWright": {
       // 是否启用代理
-      proxy: true
+      "proxy": true
     },
     // 仓库信息插件配置
     "githubRepo": {
       // 是否启用代理
-      proxy: true
-    },
+      "proxy": true
+    }
   }
 }
