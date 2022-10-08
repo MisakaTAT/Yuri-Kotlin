@@ -23,7 +23,7 @@ class SauceNao {
         try {
             val key = Config.plugins.picSearch.sauceNaoKey
             val api = "https://saucenao.com/search.php?api_key=${key}&output_type=2&numres=3&db=999&url=${imgUrl}"
-            val resp = NetUtils.get(api)
+            val resp = NetUtils.get(api, Config.plugins.picSearch.proxy)
             data = Gson().fromJson(resp.body?.string(), SauceNaoDto::class.java)
             resp.close()
             if (data.header.longRemaining <= 0) throw YuriException("今日的搜索配额已耗尽啦")

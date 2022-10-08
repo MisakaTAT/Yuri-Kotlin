@@ -161,10 +161,12 @@
       // 是否启用代理
       proxy: true
     },
+    // 逆转裁判字体生成插件配置
     "phoenixWright": {
       // 是否启用代理
       proxy: true
     },
+    // 仓库信息插件配置
     "githubRepo": {
       // 是否启用代理
       proxy: true

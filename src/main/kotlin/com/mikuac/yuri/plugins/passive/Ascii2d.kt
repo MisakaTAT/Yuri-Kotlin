@@ -33,13 +33,14 @@ class Ascii2d {
             )
         }
 
-        val colorUrlResp = NetUtils.get("https://ascii2d.net/search/url/${imgUrl}", Config.plugins.picSearch.proxy)
+        val proxy = Config.plugins.picSearch.proxy
+        val colorUrlResp = NetUtils.get("https://ascii2d.net/search/url/${imgUrl}", proxy)
         val colorUrl = colorUrlResp.request.url.toString()
         colorUrlResp.close()
 
         try {
-            val colorSearchResult = request(0, colorUrl, Config.plugins.picSearch.proxy)
-            val bovwSearchResult = request(1, colorUrl.replace("/color/", "/bovw/"), Config.plugins.picSearch.proxy)
+            val colorSearchResult = request(0, colorUrl, proxy)
+            val bovwSearchResult = request(1, colorUrl.replace("/color/", "/bovw/"), proxy)
             val json = JsonObject()
             json.addProperty("color", colorSearchResult)
             json.addProperty("bovw", bovwSearchResult)
