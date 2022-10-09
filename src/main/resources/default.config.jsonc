@@ -170,6 +170,13 @@
     "githubRepo": {
       // 是否启用代理
       "proxy": true
+    },
+    // Youtube视频链接解析
+    "parseYoutube": {
+      // 是否启用代理
+      "proxy": true,
+      // https://console.cloud.google.com/apis/dashboard
+      "apiKey": ""
     }
   }
 }

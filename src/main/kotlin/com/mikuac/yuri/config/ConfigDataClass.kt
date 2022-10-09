@@ -32,7 +32,8 @@ data class ConfigDataClass(
         val telegram: Telegram,
         val blockChain: BlockChain,
         val githubRepo: GithubRepo,
-        val phoenixWright: PhoenixWright
+        val phoenixWright: PhoenixWright,
+        val parseYoutube: ParseYoutube
     ) {
         data class WordCloud(
             val cronTaskRate: Int,
@@ -94,6 +95,11 @@ data class ConfigDataClass(
 
         data class GithubRepo(
             val proxy: Boolean
+        )
+
+        data class ParseYoutube(
+            val proxy: Boolean,
+            val apiKey: String
         )
 
         data class Telegram(
