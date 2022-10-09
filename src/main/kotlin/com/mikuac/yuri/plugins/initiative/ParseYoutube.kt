@@ -41,6 +41,7 @@ class ParseYoutube {
     }
 
     private fun buildMsg(parseYoutubeDto: ParseYoutubeDto): String {
+        if (parseYoutubeDto.items.isEmpty()) throw YuriException("数据获取失败")
         val data = parseYoutubeDto.items[0]
         val img = ImageUtils.formatPNG(
             data.snippet.thumbnails.maxres.url,
