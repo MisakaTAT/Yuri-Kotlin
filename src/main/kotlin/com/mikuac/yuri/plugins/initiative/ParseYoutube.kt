@@ -22,12 +22,12 @@ import org.springframework.stereotype.Component
 @Component
 class ParseYoutube {
 
-    private val regex = "^.*(youtu\\.be/|vi?/|u/\\w/|embed/|\\?vi?=|&vi?=)([^#&?]*).*".toRegex()
+    private val regex = "^(?:https?://)?(?:www.)?(?:youtube.com|youtu.be)/(?:watch\\?v=)([^#&?]*).*\$".toRegex()
 
     private fun request(url: String): ParseYoutubeDto {
         val data: ParseYoutubeDto
         try {
-            val id = RegexUtils.group(regex, 2, url)
+            val id = RegexUtils.group(regex, 1, url)
             if (id.isBlank()) throw YuriException("Youtube链接解析失败")
             val api = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet," +
                     "statistics&id=${id}&key=${Config.plugins.parseYoutube.apiKey}"
