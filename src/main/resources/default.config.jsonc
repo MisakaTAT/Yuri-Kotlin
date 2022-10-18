@@ -89,7 +89,7 @@
       // 最大字号
       "maxFontSize": 80,
       // 过滤规则 匹配方式为 contains
-      "FilterRule": [
+      "filterRule": [
         "http",
         "&#"
       ]
