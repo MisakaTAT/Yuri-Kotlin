@@ -6,7 +6,7 @@ import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.dto.event.message.WholeMessageEvent
+import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.annotation.Slf4j
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import com.mikuac.yuri.bean.dto.AnimeCrawlerDto
@@ -182,7 +182,7 @@ class AnimeCrawler : ApplicationRunner {
     }
 
     @MessageHandler(cmd = RegexCMD.ANIME_CRAWLER)
-    fun animeCrawlerHandler(bot: Bot, event: WholeMessageEvent, matcher: Matcher) {
+    fun animeCrawlerHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         try {
             if (enableLimiter && !rateLimiter.tryAcquire()) throw YuriException("主人开启了调用限速QAQ，稍后再试试吧～")
             var msg: String = buildMsg(matcher)

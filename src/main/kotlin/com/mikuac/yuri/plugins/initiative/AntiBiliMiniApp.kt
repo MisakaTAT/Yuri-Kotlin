@@ -7,7 +7,7 @@ import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.dto.event.message.WholeMessageEvent
+import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.bean.dto.BiliVideoApiDto
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
@@ -55,7 +55,7 @@ class AntiBiliMiniApp {
     }
 
     @MessageHandler
-    fun handler(bot: Bot, event: WholeMessageEvent) {
+    fun handler(bot: Bot, event: AnyMessageEvent) {
         try {
             val msg = event.message
             if (!msg.contains("com.tencent.miniapp_01") || !msg.contains("哔哩哔哩")) return

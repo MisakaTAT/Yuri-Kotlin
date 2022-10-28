@@ -5,7 +5,7 @@ import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.dto.event.message.WholeMessageEvent
+import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.bean.dto.HitokotoDto
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
@@ -52,7 +52,7 @@ class Hitokoto {
     }
 
     @MessageHandler(cmd = RegexCMD.HITOKOTO)
-    fun hitokotoHandler(bot: Bot, event: WholeMessageEvent) {
+    fun hitokotoHandler(bot: Bot, event: AnyMessageEvent) {
         try {
             val data = request()
             val msg = MsgUtils.builder()

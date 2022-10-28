@@ -5,7 +5,7 @@ import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.dto.event.message.WholeMessageEvent
+import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.bean.TarotDataBean
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
@@ -57,7 +57,7 @@ class Tarot : ApplicationRunner {
     }
 
     @MessageHandler(cmd = RegexCMD.TAROT)
-    fun tarotHandler(bot: Bot, event: WholeMessageEvent) {
+    fun tarotHandler(bot: Bot, event: AnyMessageEvent) {
         try {
             val userId = event.userId
             if (expiringMap[userId] != null && expiringMap[userId] == true) {

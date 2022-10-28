@@ -8,7 +8,7 @@ import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.dto.event.message.WholeMessageEvent
+import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.bean.dto.ParseYoutubeDto
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.exception.YuriException
@@ -61,7 +61,7 @@ class ParseYoutube {
     }
 
     @MessageHandler
-    fun handler(bot: Bot, event: WholeMessageEvent) {
+    fun handler(bot: Bot, event: AnyMessageEvent) {
         try {
             if (!regex.matches(event.message)) return
             bot.sendMsg(event, buildMsg(request(event.message)), false)

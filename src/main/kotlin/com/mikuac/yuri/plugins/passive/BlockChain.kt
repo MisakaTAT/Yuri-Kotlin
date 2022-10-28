@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.dto.event.message.WholeMessageEvent
+import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.bean.dto.BlockChainDto
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
@@ -55,7 +55,7 @@ class BlockChain {
     }
 
     @MessageHandler(cmd = RegexCMD.BLOCK_CHAIN)
-    fun blockChainHandler(bot: Bot, event: WholeMessageEvent, matcher: Matcher) {
+    fun blockChainHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         try {
             bot.sendMsg(event, buildMsg(matcher), false)
         } catch (e: YuriException) {

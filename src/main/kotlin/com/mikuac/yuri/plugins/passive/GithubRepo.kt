@@ -6,7 +6,7 @@ import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.OneBotMedia
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.dto.event.message.WholeMessageEvent
+import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.bean.dto.GithubRepoDto
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
@@ -60,7 +60,7 @@ class GithubRepo {
     }
 
     @MessageHandler(cmd = RegexCMD.GITHUB_REPO)
-    fun githubRepoHandler(bot: Bot, event: WholeMessageEvent, matcher: Matcher) {
+    fun githubRepoHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         try {
             bot.sendMsg(event, buildMsg(matcher), false)
         } catch (e: YuriException) {

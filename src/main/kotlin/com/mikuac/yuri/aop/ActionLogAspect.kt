@@ -2,7 +2,7 @@ package com.mikuac.yuri.aop
 
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
-import com.mikuac.shiro.dto.event.message.WholeMessageEvent
+import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.annotation.Slf4j
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import org.aspectj.lang.JoinPoint
@@ -26,7 +26,7 @@ class ActionLogAspect {
     @Before("execution(* com.mikuac.yuri.plugins.passive.*.*Handler(..))")
     fun handler(jp: JoinPoint) {
         jp.args.forEach { arg ->
-            if (arg is WholeMessageEvent) {
+            if (arg is AnyMessageEvent) {
                 val msgType = arg.messageType
                 val pluginInfo =
                     "[${jp.target.javaClass.simpleName}:${arg.javaClass.simpleName}](${upperCase(msgType)})"

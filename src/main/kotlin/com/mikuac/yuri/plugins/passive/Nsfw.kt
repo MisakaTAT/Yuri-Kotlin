@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.dto.event.message.WholeMessageEvent
+import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.bean.dto.NsfwDto
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
@@ -51,7 +51,7 @@ class Nsfw {
     }
 
     @MessageHandler(cmd = RegexCMD.NSFW)
-    fun nsfwHandler(event: WholeMessageEvent, bot: Bot) {
+    fun nsfwHandler(event: AnyMessageEvent, bot: Bot) {
         try {
             val images = event.arrayMsg.filter { it.type == "image" }
             if (images.isEmpty()) throw YuriException("没有发现需要鉴定的图片")

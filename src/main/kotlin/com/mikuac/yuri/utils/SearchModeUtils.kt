@@ -4,7 +4,7 @@ import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.bean.MsgChainBean
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
-import com.mikuac.shiro.dto.event.message.WholeMessageEvent
+import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.bean.SearchModeBean
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 class SearchModeUtils : BotPlugin() {
 
     @MessageHandler(cmd = RegexCMD.UNSET_SEARCH_MODE)
-    fun unsetSearchMode(bot: Bot, event: WholeMessageEvent) {
+    fun unsetSearchMode(bot: Bot, event: AnyMessageEvent) {
         remove(event.userId, event.groupId, bot)
     }
 

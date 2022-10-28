@@ -10,7 +10,7 @@ import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.dto.event.message.WholeMessageEvent
+import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.bean.dto.EpicDto
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
@@ -132,7 +132,7 @@ class EpicFreeGame {
     }
 
     @MessageHandler(cmd = RegexCMD.EPIC_FREE_GAME)
-    fun epicFreeGameHandler(bot: Bot, event: WholeMessageEvent) {
+    fun epicFreeGameHandler(bot: Bot, event: AnyMessageEvent) {
         try {
             val msg = ShiroUtils.generateForwardMsg(event.selfId, Config.base.nickname, buildMsg())
             bot.sendForwardMsg(event, msg)

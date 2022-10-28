@@ -18,7 +18,7 @@ import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotContainer
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
-import com.mikuac.shiro.dto.event.message.WholeMessageEvent
+import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.entity.WordCloudEntity
@@ -179,7 +179,7 @@ class WordCloud {
     }
 
     @MessageHandler(cmd = RegexCMD.WORD_CLOUD_CRON)
-    fun wordCloudCronHandler(event: WholeMessageEvent, bot: Bot, matcher: Matcher) {
+    fun wordCloudCronHandler(event: AnyMessageEvent, bot: Bot, matcher: Matcher) {
         if (event.userId !in Config.base.adminList) {
             bot.sendMsg(event, "此操作需要管理员权限", false)
         }

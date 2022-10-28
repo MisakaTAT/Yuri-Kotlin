@@ -5,7 +5,7 @@ import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.dto.event.message.WholeMessageEvent
+import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.annotation.Slf4j
 import com.mikuac.yuri.bean.dto.AnimePicDto
 import com.mikuac.yuri.config.Config
@@ -88,7 +88,7 @@ class AnimePic {
     }
 
     @MessageHandler(cmd = RegexCMD.ANIME_PIC)
-    fun animePicHandler(bot: Bot, event: WholeMessageEvent) {
+    fun animePicHandler(bot: Bot, event: AnyMessageEvent) {
         try {
             val msg = buildMsg(event.message, event.userId, event.groupId)
             bot.sendMsg(event, msg.first, false)

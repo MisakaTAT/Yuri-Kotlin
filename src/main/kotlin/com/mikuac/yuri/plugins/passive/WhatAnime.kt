@@ -7,7 +7,7 @@ import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.bean.MsgChainBean
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.dto.event.message.WholeMessageEvent
+import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.bean.dto.WhatAnimeBasicDto
 import com.mikuac.yuri.bean.dto.WhatAnimeDto
 import com.mikuac.yuri.config.Config
@@ -130,12 +130,12 @@ class WhatAnime {
     }
 
     @MessageHandler(cmd = RegexCMD.WHAT_ANIME_SEARCH)
-    fun whatAnimeHandler(bot: Bot, event: WholeMessageEvent) {
+    fun whatAnimeHandler(bot: Bot, event: AnyMessageEvent) {
         SearchModeUtils.setSearchMode(this.javaClass.simpleName, event.userId, event.groupId, bot)
     }
 
     @MessageHandler
-    fun whatAnimeSearch(bot: Bot, event: WholeMessageEvent) {
+    fun whatAnimeSearch(bot: Bot, event: AnyMessageEvent) {
         if (!SearchModeUtils.check(this.javaClass.simpleName, event.userId, event.groupId)) return
         // 发送检索结果
         try {

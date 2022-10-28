@@ -3,7 +3,7 @@ package com.mikuac.yuri.plugins.passive
 import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.dto.event.message.WholeMessageEvent
+import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.enums.RegexCMD
 import org.springframework.stereotype.Component
 
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 class Help {
 
     @MessageHandler(cmd = RegexCMD.HELP)
-    fun helpHandler(bot: Bot, event: WholeMessageEvent) {
+    fun helpHandler(bot: Bot, event: AnyMessageEvent) {
         val msg = """
             使用教程: https://mikuac.com/archives/675
             GitHub: https://github.com/MisakaTAT/Yuri-Kotlin

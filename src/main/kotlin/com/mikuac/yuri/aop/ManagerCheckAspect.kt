@@ -2,7 +2,7 @@ package com.mikuac.yuri.aop
 
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
-import com.mikuac.shiro.dto.event.message.WholeMessageEvent
+import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.utils.CheckUtils
 import org.aspectj.lang.ProceedingJoinPoint
@@ -26,7 +26,7 @@ class ManagerCheckAspect {
     @Around("execution(* com.mikuac.yuri.plugins.passive.*.*Handler(..))")
     fun handler(pjp: ProceedingJoinPoint) {
         pjp.args.forEach { arg ->
-            if (arg is WholeMessageEvent) {
+            if (arg is AnyMessageEvent) {
                 if (check(arg.userId, arg.groupId, false)) pjp.proceed()
                 return
             }

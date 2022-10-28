@@ -7,7 +7,7 @@ import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.dto.event.message.WholeMessageEvent
+import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.utils.MsgSendUtils
 import org.springframework.stereotype.Component
@@ -60,7 +60,7 @@ class BotStatus {
     }
 
     @MessageHandler(cmd = RegexCMD.BOT_STATUS)
-    fun botStatusHandler(bot: Bot, event: WholeMessageEvent) {
+    fun botStatusHandler(bot: Bot, event: AnyMessageEvent) {
         try {
             bot.sendMsg(event, buildMsg(), false)
         } catch (e: Exception) {

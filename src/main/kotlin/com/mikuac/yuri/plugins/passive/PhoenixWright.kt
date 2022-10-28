@@ -4,7 +4,7 @@ import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.dto.event.message.WholeMessageEvent
+import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
@@ -32,7 +32,7 @@ class PhoenixWright {
     }
 
     @MessageHandler(cmd = RegexCMD.PHOENIX_WRIGHT)
-    fun phoenixWrightHandler(bot: Bot, event: WholeMessageEvent, matcher: Matcher) {
+    fun phoenixWrightHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         try {
             bot.sendMsg(event, buildMsg(matcher), false)
         } catch (e: YuriException) {

@@ -3,7 +3,7 @@ package com.mikuac.yuri.plugins.passive
 import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.Shiro
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.dto.event.message.WholeMessageEvent
+import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
@@ -23,12 +23,12 @@ class PicSearch {
     private lateinit var ascii2d: Ascii2d
 
     @MessageHandler(cmd = RegexCMD.SAUCE_NAO_SEARCH)
-    fun picHandler(bot: Bot, event: WholeMessageEvent) {
+    fun picHandler(bot: Bot, event: AnyMessageEvent) {
         SearchModeUtils.setSearchMode(this.javaClass.simpleName, event.userId, event.groupId, bot)
     }
 
     @MessageHandler
-    fun picSearch(bot: Bot, event: WholeMessageEvent) {
+    fun picSearch(bot: Bot, event: AnyMessageEvent) {
         if (!SearchModeUtils.check(this.javaClass.simpleName, event.userId, event.groupId)) return
         // 发送检索结果
         try {
