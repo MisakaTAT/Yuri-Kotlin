@@ -197,14 +197,14 @@ class WordCloud {
         task("今日")
     }
 
-    @Scheduled(cron = "0 0 0 ? * SUN", zone = ZONE)
+    @Scheduled(cron = "0 0 0 ? * MON", zone = ZONE)
     fun taskForWeek() {
         val now = LocalDateTime.now()
-        if (now == now.with(TemporalAdjusters.lastDayOfMonth())) return
+        if (now == now.with(TemporalAdjusters.firstDayOfMonth())) return
         task("本周")
     }
 
-    @Scheduled(cron = "0 0 0 L * ?", zone = ZONE)
+    @Scheduled(cron = "0 0 0 1 * ?", zone = ZONE)
     fun taskForMonth() {
         task("本月")
     }
