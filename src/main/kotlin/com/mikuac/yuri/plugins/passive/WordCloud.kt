@@ -17,8 +17,8 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotContainer
-import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
+import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.entity.WordCloudEntity
@@ -190,21 +190,25 @@ class WordCloud {
         }
     }
 
-    @Scheduled(cron = "0 0 0 * * ?", zone = ZONE)
+    @Scheduled(cron = "0 30 23 * * ?", zone = ZONE)
     fun taskForDay() {
         val now = LocalDateTime.now()
+        // 跳过周日
         if (now.dayOfWeek == DayOfWeek.SUNDAY) return
+        // 跳过每月最后一天
+        if (now == now.with(TemporalAdjusters.firstDayOfMonth())) return
         task("今日")
     }
 
-    @Scheduled(cron = "0 0 0 ? * MON", zone = ZONE)
+    @Scheduled(cron = "0 30 23 ? * MON", zone = ZONE)
     fun taskForWeek() {
         val now = LocalDateTime.now()
+        // 跳过每月最后一天
         if (now == now.with(TemporalAdjusters.firstDayOfMonth())) return
         task("本周")
     }
 
-    @Scheduled(cron = "0 0 0 1 * ?", zone = ZONE)
+    @Scheduled(cron = "0 30 23 L * ?", zone = ZONE)
     fun taskForMonth() {
         task("本月")
     }
