@@ -200,7 +200,7 @@ class WordCloud {
         task("今日")
     }
 
-    @Scheduled(cron = "0 30 23 ? * MON", zone = ZONE)
+    @Scheduled(cron = "0 30 23 ? * SUN", zone = ZONE)
     fun taskForWeek() {
         val now = LocalDateTime.now()
         // 跳过每月最后一天
