@@ -17,7 +17,7 @@ data class BiliVideoApiDto(
         val stat: Stat
     ) {
         data class Owner(
-            val mid: Int,
+            val mid: Long,
             val name: String,
             val face: String
         )

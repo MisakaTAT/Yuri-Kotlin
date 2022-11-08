@@ -33,6 +33,7 @@ class AntiBiliMiniApp {
 
             if (data.code != 0) throw YuriException(data.message)
         } catch (e: Exception) {
+            e.printStackTrace()
             throw YuriException("哔哩哔哩数据获取异常：${e.message}")
         }
         return data
