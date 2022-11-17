@@ -71,5 +71,7 @@ dependencies {
     implementation 'org.sejda.imageio:webp-imageio:0.1.6'
     implementation 'com.kennycason:kumo-core:1.28'
     implementation 'com.huaban:jieba-analysis:1.0.2'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc:2.7.5'
+    implementation 'mysql:mysql-connector-java:8.0.31'
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.7.5'
 }

@@ -9,13 +9,22 @@ data class ConfigDataClass(
         val nickname: String,
         val selfId: Long,
         val enableGroupOnlyWhiteList: Boolean,
-        val proxy: Proxy
+        val proxy: Proxy,
+        val mysql: MySQL
     ) {
         data class Proxy(
             val enable: Boolean,
             val host: String,
             val port: Int,
             val type: String
+        )
+
+        data class MySQL(
+            val enable: Boolean,
+            val url: String,
+            val database: String,
+            val username: String,
+            val password: String
         )
     }
 

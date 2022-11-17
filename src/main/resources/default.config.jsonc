@@ -19,6 +19,19 @@
       "port": 7890,
       // Proxy type: [HTTP|SOCKS4|SOCKS5]
       "type": "HTTP"
+    },
+    // 使用MySQL替代默认的SQLite数据库
+    "mysql": {
+      // 是否启用
+      "enable": false,
+      // 数据库地址
+      "url": "127.0.0.1:3306",
+      // 数据库名
+      "database": "bot",
+      // 用户名
+      "username": "bot",
+      // 密码
+      "password": "password"
     }
   },
   // 插件配置
