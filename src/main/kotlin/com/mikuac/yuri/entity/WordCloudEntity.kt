@@ -4,6 +4,7 @@ import java.time.LocalDate
 import javax.persistence.*
 
 @Entity
+@Table(name = "word_cloud")
 class WordCloudEntity(
 
     @Id
@@ -16,6 +17,7 @@ class WordCloudEntity(
     @Column(nullable = false)
     val groupId: Long,
 
+    @Lob
     @Column(nullable = false)
     val content: String,
 

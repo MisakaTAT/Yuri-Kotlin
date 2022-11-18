@@ -3,6 +3,7 @@ package com.mikuac.yuri.entity
 import javax.persistence.*
 
 @Entity
+@Table(name = "group_blacklist")
 data class GroupBlackListEntity(
 
     @Id

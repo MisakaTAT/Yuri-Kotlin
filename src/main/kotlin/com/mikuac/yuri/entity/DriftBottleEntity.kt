@@ -3,6 +3,7 @@ package com.mikuac.yuri.entity
 import javax.persistence.*
 
 @Entity
+@Table(name = "driftbottle")
 data class DriftBottleEntity(
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +21,7 @@ data class DriftBottleEntity(
     @Column(nullable = false)
     val userName: String,
 
+    @Lob
     @Column(nullable = false)
     val content: String,
 
