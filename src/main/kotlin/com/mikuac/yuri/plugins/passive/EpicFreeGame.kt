@@ -87,7 +87,12 @@ class EpicFreeGame {
                 val gameCorp = game.seller.name
                 val keyImages = game.keyImages.filter { "Thumbnail" == it.type }
                 val vaultClosed = game.keyImages.filter { "VaultClosed" == it.type }
-                val gameThumbnail = if (keyImages.isNotEmpty()) keyImages[0].url else vaultClosed[0].url
+                var gameThumbnail = ""
+                if (keyImages.isNotEmpty()) {
+                    gameThumbnail = keyImages[0].url
+                } else if (vaultClosed.isNotEmpty()) {
+                    gameThumbnail = vaultClosed[0].url
+                }
                 val gamePrice = game.price.totalPrice.fmtPrice.originalPrice
                 try {
                     val gamePromotions = game.promotions.promotionalOffers
@@ -127,6 +132,7 @@ class EpicFreeGame {
             }
             return msgList
         } catch (e: Exception) {
+            e.printStackTrace()
             throw YuriException("数据解析失败")
         }
     }
