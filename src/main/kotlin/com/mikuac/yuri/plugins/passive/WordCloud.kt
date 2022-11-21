@@ -57,9 +57,8 @@ class WordCloud {
 
     @GroupMessageHandler
     fun saveMsg(event: GroupMessageEvent) {
-        repository.save(
-            WordCloudEntity(0, event.userId, event.groupId, event.message, LocalDate.now())
-        )
+        val data = WordCloudEntity(0, event.userId, event.groupId, event.message, LocalDate.now())
+        repository.save(data)
     }
 
     private fun generateWordCloud(text: List<String>): String {

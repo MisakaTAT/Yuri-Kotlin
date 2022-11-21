@@ -1,12 +1,14 @@
 package com.mikuac.yuri.entity
 
+import org.hibernate.annotations.Type
 import javax.persistence.*
 
 @Entity
 @Table(name = "driftbottle")
 data class DriftBottleEntity(
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int,
 
     @Column(nullable = false)
@@ -22,6 +24,7 @@ data class DriftBottleEntity(
     val userName: String,
 
     @Lob
+    @Type(type = "org.hibernate.type.TextType")
     @Column(nullable = false)
     val content: String,
 

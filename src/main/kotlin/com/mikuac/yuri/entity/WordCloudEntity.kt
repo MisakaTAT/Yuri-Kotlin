@@ -1,5 +1,6 @@
 package com.mikuac.yuri.entity
 
+import org.hibernate.annotations.Type
 import java.time.LocalDate
 import javax.persistence.*
 
@@ -18,6 +19,7 @@ class WordCloudEntity(
     val groupId: Long,
 
     @Lob
+    @Type(type = "org.hibernate.type.TextType")
     @Column(nullable = false)
     val content: String,
 
