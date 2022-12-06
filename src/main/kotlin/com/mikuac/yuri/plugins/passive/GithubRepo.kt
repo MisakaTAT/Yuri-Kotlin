@@ -51,10 +51,9 @@ class GithubRepo {
             .text("\n${data.description}")
             .text("\n${data.htmlUrl}")
             .img(
-                OneBotMedia.Builder()
+                OneBotMedia.builder()
                     .file(img)
                     .cache(false)
-                    .build()
             )
             .build()
     }
