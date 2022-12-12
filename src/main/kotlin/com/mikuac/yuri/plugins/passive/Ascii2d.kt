@@ -2,7 +2,7 @@ package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import com.mikuac.shiro.annotation.Shiro
+import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.entity.Ascii2dCacheEntity

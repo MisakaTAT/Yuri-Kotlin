@@ -1,8 +1,8 @@
 package com.mikuac.yuri.aop
 
+import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
-import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.utils.CheckUtils
 import org.aspectj.lang.ProceedingJoinPoint

@@ -2,7 +2,7 @@ package com.mikuac.yuri.plugins.initiative
 
 import cn.hutool.core.util.RandomUtil
 import com.mikuac.shiro.annotation.GroupMessageHandler
-import com.mikuac.shiro.annotation.Shiro
+import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.config.Config

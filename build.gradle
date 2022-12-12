@@ -50,7 +50,7 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter:2.7.5'
     implementation 'org.jetbrains.kotlin:kotlin-reflect:1.7.22'
-    implementation 'com.mikuac:shiro:1.4.2'
+    implementation 'com.mikuac:shiro:1.4.3'
     implementation 'net.jodah:expiringmap:0.5.10'
     implementation 'cn.hutool:hutool-core:5.8.10'
     implementation 'cn.hutool:hutool-system:5.8.10'

@@ -2,7 +2,7 @@ package com.mikuac.yuri.plugins.initiative
 
 import com.mikuac.shiro.annotation.GroupDecreaseHandler
 import com.mikuac.shiro.annotation.GroupIncreaseHandler
-import com.mikuac.shiro.annotation.Shiro
+import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot

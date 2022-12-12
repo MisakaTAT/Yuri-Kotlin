@@ -3,7 +3,7 @@ package com.mikuac.yuri.plugins.passive
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.mikuac.shiro.annotation.MessageHandler
-import com.mikuac.shiro.annotation.Shiro
+import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.bean.MsgChainBean
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
