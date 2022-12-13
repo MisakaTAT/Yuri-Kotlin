@@ -3,7 +3,6 @@ package com.mikuac.yuri.plugins.passive
 import cn.hutool.core.date.DateField
 import cn.hutool.core.date.DateUtil
 import com.google.gson.Gson
-import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
@@ -36,17 +35,6 @@ class EpicFreeGame {
         // 检查缓存
         val cache = expiringMap["cache"]
         if (cache != null) return cache
-
-        val variables = JsonObject()
-        variables.addProperty("allowCountries", "CN")
-        variables.addProperty("category", "freegames")
-        variables.addProperty("count", 1000)
-        variables.addProperty("country", "CN")
-        variables.addProperty("locale", "zh-CN")
-        variables.addProperty("sortBy", "effectiveDate")
-        variables.addProperty("sortDir", "asc")
-        variables.addProperty("withPrice", true)
-        variables.addProperty("withPromotions", true)
 
         val headers: HashMap<String, String> = HashMap()
         headers["Referer"] = "https://www.epicgames.com/store/zh-CN/"

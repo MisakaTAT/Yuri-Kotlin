@@ -42,7 +42,8 @@ data class ConfigDataClass(
         val blockChain: BlockChain,
         val githubRepo: GithubRepo,
         val phoenixWright: PhoenixWright,
-        val parseYoutube: ParseYoutube
+        val parseYoutube: ParseYoutube,
+        val chatGPT: ChatGPT
     ) {
         data class WordCloud(
             val cronTaskRate: Int,
@@ -109,6 +110,12 @@ data class ConfigDataClass(
         data class ParseYoutube(
             val proxy: Boolean,
             val apiKey: String
+        )
+
+        data class ChatGPT(
+            val token: String,
+            val model: String,
+            val proxy: Boolean
         )
 
         data class Telegram(

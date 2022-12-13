@@ -190,6 +190,14 @@
       "proxy": true,
       // https://console.cloud.google.com/apis/dashboard
       "apiKey": ""
+    },
+    // ChatGPT
+    "chatGPT": {
+      "token": "",
+      // 模型
+      "model": "",
+      // 是否启用代理
+      "proxy": true
     }
   }
 }
