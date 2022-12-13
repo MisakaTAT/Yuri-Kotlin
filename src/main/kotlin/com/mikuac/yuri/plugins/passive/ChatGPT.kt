@@ -62,10 +62,10 @@ class ChatGPT {
             if (msg.isNullOrBlank()) throw YuriException("请输入正确的问题")
             bot.sendMsg(
                 event,
-                MsgUtils.builder().reply(event.messageId).text("处理中··· 等待时常不会超过1分钟").build(),
+                MsgUtils.builder().reply(event.messageId).text("处理中··· 等待时长不会超过1分钟").build(),
                 false
             )
-            bot.sendMsg(event, MsgUtils.builder().reply(event.messageId).text(request(msg)).build(), false)
+            bot.sendMsg(event, MsgUtils.builder().reply(event.messageId).text(request(msg).trim()).build(), false)
         } catch (e: YuriException) {
             e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
         } catch (e: Exception) {
