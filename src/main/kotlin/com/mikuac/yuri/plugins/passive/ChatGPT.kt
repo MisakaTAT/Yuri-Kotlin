@@ -51,8 +51,11 @@ class ChatGPT {
             e.printStackTrace()
             throw YuriException("ChatGPT 请求异常：${e.message}")
         }
-        if (data.choices.isEmpty() || data.choices[0].text.isBlank()) throw YuriException("好像出现了点小问题，要不再试试？")
-        return data.choices[0].text
+        if (data.choices.isNotEmpty() && data.choices[0].text.isNotBlank()) {
+            return data.choices[0].text
+        } else {
+            throw YuriException("好像出现了点小问题，要不再试试？")
+        }
     }
 
     @MessageHandler(cmd = RegexCMD.CHAT_GPT)
