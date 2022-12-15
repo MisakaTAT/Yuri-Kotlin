@@ -9,13 +9,13 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
-import com.mikuac.yuri.dto.ParseYoutubeDTO
 import com.mikuac.yuri.config.Config
+import com.mikuac.yuri.dto.ParseYoutubeDTO
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.ImageUtils
-import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.NetUtils
 import com.mikuac.yuri.utils.RegexUtils
+import com.mikuac.yuri.utils.SendUtils
 import org.springframework.stereotype.Component
 
 @Shiro
@@ -26,17 +26,13 @@ class ParseYoutube {
 
     private fun request(url: String): ParseYoutubeDTO {
         val data: ParseYoutubeDTO
-        try {
-            val id = RegexUtils.group(regex, 1, url)
-            if (id.isBlank()) throw YuriException("Youtube链接解析失败")
-            val api = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet," +
-                    "statistics&id=${id}&key=${Config.plugins.parseYoutube.apiKey}"
-            val resp = NetUtils.get(api, true)
-            data = Gson().fromJson(resp.body?.string(), ParseYoutubeDTO::class.java)
-            resp.close()
-        } catch (e: Exception) {
-            throw YuriException("Youtube数据获取异常：${e.message}")
-        }
+        val id = RegexUtils.group(regex, 1, url)
+        if (id.isBlank()) throw YuriException("Youtube链接解析失败")
+        val api = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet," +
+                "statistics&id=${id}&key=${Config.plugins.parseYoutube.apiKey}"
+        val resp = NetUtils.get(api, true)
+        data = Gson().fromJson(resp.body?.string(), ParseYoutubeDTO::class.java)
+        resp.close()
         return data
     }
 
@@ -66,9 +62,9 @@ class ParseYoutube {
             if (!regex.matches(event.message)) return
             bot.sendMsg(event, buildMsg(request(event.message)), false)
         } catch (e: YuriException) {
-            e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
+            e.message?.let { SendUtils.reply(event, bot, it) }
         } catch (e: Exception) {
-            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未知错误：${e.message}")
+            SendUtils.reply(event, bot, "未知错误：${e.message}")
             e.printStackTrace()
         }
     }

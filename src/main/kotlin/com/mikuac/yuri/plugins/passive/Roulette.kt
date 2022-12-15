@@ -6,7 +6,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
-import com.mikuac.yuri.utils.MsgSendUtils
+import com.mikuac.yuri.utils.SendUtils
 import lombok.Getter
 import net.jodah.expiringmap.ExpirationPolicy
 import net.jodah.expiringmap.ExpiringMap
@@ -73,7 +73,7 @@ class Roulette {
 
     // 超时回调
     private fun expCallBack(v: GroupRouletteData) {
-        MsgSendUtils.atSend(v.userId(), v.groupId(), v.bot(), "当前群组轮盘对决已超时，如需继续请重新发起~")
+        SendUtils.at(v.userId(), v.groupId(), v.bot(), "当前群组轮盘对决已超时，如需继续请重新发起~")
     }
 
     // 默认为禁言模式
@@ -104,14 +104,14 @@ class Roulette {
             bot.sendGroupMsg(groupId, "轮盘已切换至${rouletteType.OperateName}模式", false)
             return
         }
-        MsgSendUtils.atSend(userId, groupId, bot, "诶呀~ 切换轮盘模式需要管理员权限呢")
+        SendUtils.at(userId, groupId, bot, "诶呀~ 切换轮盘模式需要管理员权限呢")
     }
 
     private fun start(groupId: Long, userId: Long, matcher: Matcher, bot: Bot) {
         if (expiringMap.containsKey(groupId)) return
         // 装弹数
         val bulletCount: Int = matcher.group(1)?.trim()?.toInt() ?: 1
-        if (bulletCount == 6) MsgSendUtils.atSend(
+        if (bulletCount == 6) SendUtils.at(
             userId,
             groupId,
             bot,
@@ -123,7 +123,7 @@ class Roulette {
             Config.plugins.roulette.timeout.toLong(),
             TimeUnit.SECONDS
         )
-        MsgSendUtils.atSend(
+        SendUtils.at(
             userId, groupId, bot,
             defaultQuotations[5].replace(
                 "$1",
@@ -142,7 +142,7 @@ class Roulette {
 
     private fun shot(groupId: Long, userId: Long, userRole: String, botRole: String, bot: Bot) {
         if (!expiringMap.containsKey(groupId)) {
-            MsgSendUtils.atSend(userId, groupId, bot, "当前暂无进行时的轮盘，请发送 开始轮盘 创建对局。")
+            SendUtils.at(userId, groupId, bot, "当前暂无进行时的轮盘，请发送 开始轮盘 创建对局。")
             return
         }
         val data = expiringMap[groupId]!!
@@ -177,7 +177,7 @@ class Roulette {
         } else {
             replyMsg = "${defaultQuotations[(0..4).random()]} (${data.progress + 1}/6)"
         }
-        MsgSendUtils.atSend(userId, groupId, bot, replyMsg)
+        SendUtils.at(userId, groupId, bot, replyMsg)
         data.progress++
     }
 

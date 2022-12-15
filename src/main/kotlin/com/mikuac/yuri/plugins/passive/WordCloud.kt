@@ -25,7 +25,7 @@ import com.mikuac.yuri.entity.WordCloudEntity
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.repository.WordCloudRepository
-import com.mikuac.yuri.utils.MsgSendUtils
+import com.mikuac.yuri.utils.SendUtils
 import org.apache.commons.lang3.StringUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
@@ -162,7 +162,7 @@ class WordCloud {
         try {
             val type = matcher.group(1)
             val range = matcher.group(2)
-            MsgSendUtils.replySend(msgId, event.userId, event.groupId, bot, "数据检索中，请耐心等待～")
+            SendUtils.reply(msgId, event.userId, event.groupId, bot, "数据检索中，请耐心等待～")
             val contents = getWords(event.userId, event.groupId, type, range, false)
             if (contents.isEmpty()) {
                 throw YuriException("唔呣～数据库里没有找到你的发言记录呢")
@@ -170,9 +170,9 @@ class WordCloud {
             val msg = MsgUtils.builder().reply(msgId).img("base64://${generateWordCloud(contents)}").build()
             bot.sendGroupMsg(event.groupId, msg, false)
         } catch (e: YuriException) {
-            e.message?.let { MsgSendUtils.replySend(msgId, event.userId, event.groupId, bot, it) }
+            e.message?.let { SendUtils.reply(msgId, event.userId, event.groupId, bot, it) }
         } catch (e: Exception) {
-            MsgSendUtils.replySend(msgId, event.userId, event.groupId, bot, "未知错误：${e.message}")
+            SendUtils.reply(msgId, event.userId, event.groupId, bot, "未知错误：${e.message}")
             e.printStackTrace()
         }
     }

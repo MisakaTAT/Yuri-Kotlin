@@ -7,13 +7,13 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.OneBotMedia
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
-import com.mikuac.yuri.dto.GithubRepoDTO
 import com.mikuac.yuri.config.Config
+import com.mikuac.yuri.dto.GithubRepoDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.ImageUtils
-import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.NetUtils
+import com.mikuac.yuri.utils.SendUtils
 import org.springframework.stereotype.Component
 import java.util.regex.Matcher
 
@@ -23,15 +23,11 @@ class GithubRepo {
 
     private fun request(repoName: String): GithubRepoDTO {
         val data: GithubRepoDTO
-        try {
-            val api = "https://api.github.com/search/repositories?q=${repoName}"
-            val resp = NetUtils.get(api)
-            data = Gson().fromJson(resp.body?.string(), GithubRepoDTO::class.java)
-            resp.close()
-            if (data.totalCount <= 0) throw YuriException("未找到名为 $repoName 的仓库")
-        } catch (e: Exception) {
-            throw YuriException("GitHub数据获取异常：${e.message}")
-        }
+        val api = "https://api.github.com/search/repositories?q=${repoName}"
+        val resp = NetUtils.get(api)
+        data = Gson().fromJson(resp.body?.string(), GithubRepoDTO::class.java)
+        resp.close()
+        if (data.totalCount <= 0) throw YuriException("未找到名为 $repoName 的仓库")
         return data
     }
 
@@ -63,9 +59,9 @@ class GithubRepo {
         try {
             bot.sendMsg(event, buildMsg(matcher), false)
         } catch (e: YuriException) {
-            e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
+            e.message?.let { SendUtils.reply(event, bot, it) }
         } catch (e: Exception) {
-            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未知错误：${e.message}")
+            SendUtils.reply(event, bot, "未知错误：${e.message}")
             e.printStackTrace()
         }
     }

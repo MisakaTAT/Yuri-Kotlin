@@ -9,12 +9,12 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.annotation.Slf4j
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
-import com.mikuac.yuri.dto.AnimeCrawlerDTO
 import com.mikuac.yuri.config.Config
+import com.mikuac.yuri.dto.AnimeCrawlerDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
-import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.NetUtils
+import com.mikuac.yuri.utils.SendUtils
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.stereotype.Component
@@ -52,15 +52,11 @@ class AnimeCrawler : ApplicationRunner {
 
     private fun request(): AnimeCrawlerDTO {
         val data: AnimeCrawlerDTO
-        try {
-            val api = "https://bangumi.bilibili.com/web_api/timeline_global"
-            val resp = NetUtils.get(api)
-            data = Gson().fromJson(resp.body?.string(), AnimeCrawlerDTO::class.java)
-            resp.close()
-            if (data.code != 0) throw YuriException(data.message)
-        } catch (e: Exception) {
-            throw YuriException("哔哩哔哩数据获取异常：${e.message}")
-        }
+        val api = "https://bangumi.bilibili.com/web_api/timeline_global"
+        val resp = NetUtils.get(api)
+        data = Gson().fromJson(resp.body?.string(), AnimeCrawlerDTO::class.java)
+        resp.close()
+        if (data.code != 0) throw YuriException(data.message)
         return data
     }
 
@@ -191,9 +187,9 @@ class AnimeCrawler : ApplicationRunner {
             }
             bot.sendMsg(event, msg, false)
         } catch (e: YuriException) {
-            e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
+            e.message?.let { SendUtils.reply(event, bot, it) }
         } catch (e: Exception) {
-            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未知错误：${e.message}")
+            SendUtils.reply(event, bot, "未知错误：${e.message}")
             e.printStackTrace()
         }
     }

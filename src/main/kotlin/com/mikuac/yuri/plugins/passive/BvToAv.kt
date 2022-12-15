@@ -5,7 +5,7 @@ import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.enums.RegexCMD
-import com.mikuac.yuri.utils.MsgSendUtils
+import com.mikuac.yuri.utils.SendUtils
 import org.springframework.stereotype.Component
 import java.util.regex.Matcher
 import kotlin.math.pow
@@ -61,7 +61,7 @@ class BvToAv {
         try {
             bot.sendMsg(event, buildMsg(matcher), false)
         } catch (e: Exception) {
-            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "格式非法")
+            SendUtils.reply(event, bot, "格式非法")
             e.printStackTrace()
         }
     }

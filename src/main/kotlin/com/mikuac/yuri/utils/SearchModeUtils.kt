@@ -33,7 +33,7 @@ class SearchModeUtils : BotPlugin() {
 
         // 过期通知
         private fun expCallBack(value: SearchModeBean) {
-            MsgSendUtils.atSend(
+            SendUtils.at(
                 value.userId,
                 value.groupId,
                 value.bot,
@@ -51,13 +51,13 @@ class SearchModeUtils : BotPlugin() {
             val nativeMode: String
             if (isSearchMode(key)) {
                 nativeMode = hashMap[expiringMap[key]?.mode].toString()
-                MsgSendUtils.atSend(userId, groupId, bot, "当前已经处于搜${nativeMode}模式啦，请直接发送需要检索的图片。")
+                SendUtils.at(userId, groupId, bot, "当前已经处于搜${nativeMode}模式啦，请直接发送需要检索的图片。")
                 return
             }
             val timeout = Config.plugins.picSearch.timeout.times(1000L)
             expiringMap.put(key, info, timeout, TimeUnit.MILLISECONDS)
             nativeMode = hashMap[mode].toString()
-            MsgSendUtils.atSend(userId, groupId, bot, "您已进入搜${nativeMode}模式，请发送想要查找的图片。")
+            SendUtils.at(userId, groupId, bot, "您已进入搜${nativeMode}模式，请发送想要查找的图片。")
         }
 
         private fun resetExpiration(userId: Long, groupId: Long) {
@@ -69,7 +69,7 @@ class SearchModeUtils : BotPlugin() {
             val key = userId + groupId
             if (expiringMap[key] == null) return
             expiringMap.remove(key)
-            MsgSendUtils.atSend(userId, groupId, bot, "不客气哟！")
+            SendUtils.at(userId, groupId, bot, "不客气哟！")
         }
 
         fun check(

@@ -8,8 +8,8 @@ import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.dto.NsfwDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
-import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.NetUtils
+import com.mikuac.yuri.utils.SendUtils
 import org.springframework.stereotype.Component
 
 @Shiro
@@ -18,14 +18,10 @@ class Nsfw {
 
     private fun request(img: String): NsfwDTO {
         val data: NsfwDTO
-        try {
-            val api = "https://nsfwtag.azurewebsites.net/api/nsfw?url=${img}"
-            val resp = NetUtils.get(api)
-            data = Gson().fromJson(resp.body?.string(), NsfwDTO::class.java)
-            resp.close()
-        } catch (e: Exception) {
-            throw YuriException("NSFW鉴定失败：${e.message}")
-        }
+        val api = "https://nsfwtag.azurewebsites.net/api/nsfw?url=${img}"
+        val resp = NetUtils.get(api)
+        data = Gson().fromJson(resp.body?.string(), NsfwDTO::class.java)
+        resp.close()
         return data
     }
 
@@ -58,11 +54,11 @@ class Nsfw {
             if (images.size > 1) throw YuriException("一次只能处理一张图片哦～")
             val data = images[0].data["url"]?.let { request(it) }
             if (data != null && data.isEmpty()) throw YuriException("鉴定失败，可能是网络炸惹 QAQ")
-            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, judge(data!![0]))
+            SendUtils.reply(event.messageId, event.userId, event.groupId, bot, judge(data!![0]))
         } catch (e: YuriException) {
-            e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
+            e.message?.let { SendUtils.reply(event, bot, it) }
         } catch (e: Exception) {
-            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未知错误：${e.message}")
+            SendUtils.reply(event, bot, "未知错误：${e.message}")
             e.printStackTrace()
         }
     }

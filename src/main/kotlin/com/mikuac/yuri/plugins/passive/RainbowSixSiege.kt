@@ -10,8 +10,8 @@ import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.FormatUtils
-import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.NetUtils
+import com.mikuac.yuri.utils.SendUtils
 import org.springframework.stereotype.Component
 import java.util.regex.Matcher
 
@@ -22,18 +22,14 @@ class RainbowSixSiege {
     private fun request(username: String): RainbowSixSiegeDTO {
         if (username.isEmpty()) throw YuriException("用户名不合法，请检查输入是否正确。")
         val data: RainbowSixSiegeDTO
-        try {
-            val resp = NetUtils.get(
-                "https://www.r6s.cn/Stats?username=${username}",
-                mapOf(Pair("referer", "no-referer"))
-            )
-            data = Gson().fromJson(resp.body?.string(), RainbowSixSiegeDTO::class.java)
-            resp.close()
-            if (data.status != 200) throw YuriException("服务器可能爆炸惹，请稍后重试～")
-            return data
-        } catch (e: Exception) {
-            throw YuriException("R6S数据获取异常：${e.message}")
-        }
+        val resp = NetUtils.get(
+            "https://www.r6s.cn/Stats?username=${username}",
+            mapOf(Pair("referer", "no-referer"))
+        )
+        data = Gson().fromJson(resp.body?.string(), RainbowSixSiegeDTO::class.java)
+        resp.close()
+        if (data.status != 200) throw YuriException("服务器可能爆炸惹，请稍后重试～")
+        return data
     }
 
     private fun ratioComputed(a: Int, b: Int): String {
@@ -101,11 +97,11 @@ class RainbowSixSiege {
             val data = request(username.toString().trim())
             bot.sendMsg(event, buildMsg(data), false)
         } catch (e: IndexOutOfBoundsException) {
-            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未查询到此ID游戏数据")
+            SendUtils.reply(event, bot, "未查询到此ID游戏数据")
         } catch (e: YuriException) {
-            e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
+            e.message?.let { SendUtils.reply(event, bot, it) }
         } catch (e: Exception) {
-            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未知错误：${e.message}")
+            SendUtils.reply(event, bot, "未知错误：${e.message}")
             e.printStackTrace()
         }
     }

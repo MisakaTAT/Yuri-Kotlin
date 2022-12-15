@@ -16,7 +16,7 @@ import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.repository.WhatAnimeCacheRepository
 import com.mikuac.yuri.utils.DateUtils
-import com.mikuac.yuri.utils.MsgSendUtils
+import com.mikuac.yuri.utils.SendUtils
 import com.mikuac.yuri.utils.NetUtils
 import com.mikuac.yuri.utils.SearchModeUtils
 import org.springframework.beans.factory.annotation.Autowired
@@ -144,9 +144,9 @@ class WhatAnime {
             // 发送预览视频
             if (Config.plugins.picSearch.animePreviewVideo) bot.sendMsg(event, msg.second, false)
         } catch (e: YuriException) {
-            e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
+            e.message?.let { SendUtils.reply(event, bot, it) }
         } catch (e: Exception) {
-            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未知错误：${e.message}")
+            SendUtils.reply(event, bot, "未知错误：${e.message}")
             e.printStackTrace()
         }
     }

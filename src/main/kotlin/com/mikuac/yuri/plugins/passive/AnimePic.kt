@@ -7,12 +7,12 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.annotation.Slf4j
-import com.mikuac.yuri.dto.AnimePicDTO
 import com.mikuac.yuri.config.Config
+import com.mikuac.yuri.dto.AnimePicDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
-import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.NetUtils
+import com.mikuac.yuri.utils.SendUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -34,17 +34,13 @@ class AnimePic {
 
     private fun request(r18: Boolean): AnimePicDTO.Data {
         val data: AnimePicDTO
-        try {
-            var api = "https://api.lolicon.app/setu/v2"
-            if (r18) api = "$api?r18=1"
-            val resp = NetUtils.get(api)
-            data = Gson().fromJson(resp.body?.string(), AnimePicDTO::class.java)
-            resp.close()
-            if (data.error.isNotEmpty()) throw YuriException(data.error)
-            if (data.data.isEmpty()) throw YuriException("列表为空")
-        } catch (e: Exception) {
-            throw YuriException("色图数据获取异常：${e.message}")
-        }
+        var api = "https://api.lolicon.app/setu/v2"
+        if (r18) api = "$api?r18=1"
+        val resp = NetUtils.get(api)
+        data = Gson().fromJson(resp.body?.string(), AnimePicDTO::class.java)
+        resp.close()
+        if (data.error.isNotEmpty()) throw YuriException(data.error)
+        if (data.data.isEmpty()) throw YuriException("列表为空")
         return data.data[0]
     }
 
@@ -97,9 +93,9 @@ class AnimePic {
             val picMsgId = bot.sendMsg(event, buildPicMsg(msg.second), false).data?.messageId
             if (picMsgId != null) recallMsgPic(picMsgId, bot)
         } catch (e: YuriException) {
-            e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
+            e.message?.let { SendUtils.reply(event, bot, it) }
         } catch (e: Exception) {
-            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未知错误：${e.message}")
+            SendUtils.reply(event, bot, "未知错误：${e.message}")
             e.printStackTrace()
         }
     }

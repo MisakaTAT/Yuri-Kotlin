@@ -9,8 +9,8 @@ import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.dto.HitokotoDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
-import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.NetUtils
+import com.mikuac.yuri.utils.SendUtils
 import org.springframework.stereotype.Component
 import java.util.*
 
@@ -39,15 +39,11 @@ class Hitokoto {
 
     private fun request(): HitokotoDTO {
         val data: HitokotoDTO
-        try {
-            val type = types[Random().nextInt(types.size)]
-            val api = "https://v1.hitokoto.cn?c=${type}"
-            val resp = NetUtils.get(api)
-            data = Gson().fromJson(resp.body?.string(), HitokotoDTO::class.java)
-            resp.close()
-        } catch (e: Exception) {
-            throw YuriException("一言数据获取异常：${e.message}")
-        }
+        val type = types[Random().nextInt(types.size)]
+        val api = "https://v1.hitokoto.cn?c=${type}"
+        val resp = NetUtils.get(api)
+        data = Gson().fromJson(resp.body?.string(), HitokotoDTO::class.java)
+        resp.close()
         return data
     }
 
@@ -63,9 +59,9 @@ class Hitokoto {
                 .build()
             bot.sendMsg(event, msg, false)
         } catch (e: YuriException) {
-            e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
+            e.message?.let { SendUtils.reply(event, bot, it) }
         } catch (e: Exception) {
-            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未知错误：${e.message}")
+            SendUtils.reply(event, bot, "未知错误：${e.message}")
             e.printStackTrace()
         }
     }

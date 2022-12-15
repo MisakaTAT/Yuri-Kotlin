@@ -11,8 +11,8 @@ import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.dto.ChatGPTDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
-import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.NetUtils
+import com.mikuac.yuri.utils.SendUtils
 import org.springframework.stereotype.Component
 import java.util.regex.Matcher
 
@@ -33,7 +33,7 @@ class ChatGPT {
 
         val params = JsonObject()
         params.addProperty("model", Config.plugins.chatGPT.model)
-        params.addProperty("prompt", prompt)
+        params.addProperty("prompt", "$prompt。")
         params.addProperty("temperature", 0.9)
         params.addProperty("max_tokens", 4000)
 
@@ -55,7 +55,7 @@ class ChatGPT {
         try {
             val prompt = matcher.group(1)
             if (prompt.isNullOrBlank()) return
-            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "少女祈祷中···")
+            SendUtils.reply(event, bot, "少女祈祷中···")
             val resp = request(prompt)
             if (resp.size > 1) {
                 val contents = ArrayList<String>()
@@ -66,9 +66,11 @@ class ChatGPT {
                 bot.sendForwardMsg(event, msg)
                 return
             }
-            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, resp[0].text.trim())
+            SendUtils.reply(event, bot, resp[0].text.trim())
+        } catch (e: YuriException) {
+            e.message?.let { SendUtils.reply(event, bot, it) }
         } catch (e: Exception) {
-            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未知错误：${e.message}")
+            SendUtils.reply(event, bot, "未知错误：${e.message}")
             e.printStackTrace()
         }
     }

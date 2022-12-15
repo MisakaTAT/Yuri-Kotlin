@@ -5,12 +5,12 @@ import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
-import com.mikuac.yuri.dto.BlockChainDTO
 import com.mikuac.yuri.config.Config
+import com.mikuac.yuri.dto.BlockChainDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
-import com.mikuac.yuri.utils.MsgSendUtils
 import com.mikuac.yuri.utils.NetUtils
+import com.mikuac.yuri.utils.SendUtils
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -23,15 +23,11 @@ class BlockChain {
 
     private fun request(symbol: String): BlockChainDTO {
         val data: BlockChainDTO
-        try {
-            val api = "https://api.huobi.pro/market/history/kline?period=1day&size=1&symbol=${symbol}usdt"
-            val resp = NetUtils.get(api, Config.plugins.blockChain.proxy)
-            data = Gson().fromJson(resp.body?.string(), BlockChainDTO::class.java)
-            resp.close()
-            if ("ok" != data.status) throw YuriException("数据获取失败")
-        } catch (e: Exception) {
-            throw YuriException("火币数据获取异常：${e.message}")
-        }
+        val api = "https://api.huobi.pro/market/history/kline?period=1day&size=1&symbol=${symbol}usdt"
+        val resp = NetUtils.get(api, Config.plugins.blockChain.proxy)
+        data = Gson().fromJson(resp.body?.string(), BlockChainDTO::class.java)
+        resp.close()
+        if ("ok" != data.status) throw YuriException("数据获取失败")
         return data
     }
 
@@ -59,9 +55,9 @@ class BlockChain {
         try {
             bot.sendMsg(event, buildMsg(matcher), false)
         } catch (e: YuriException) {
-            e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
+            e.message?.let { SendUtils.reply(event, bot, it) }
         } catch (e: Exception) {
-            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未知错误：${e.message}")
+            SendUtils.reply(event, bot, "未知错误：${e.message}")
             e.printStackTrace()
         }
     }
