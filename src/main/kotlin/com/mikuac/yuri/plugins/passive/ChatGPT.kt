@@ -55,7 +55,6 @@ class ChatGPT {
         try {
             val prompt = matcher.group(1)
             if (prompt.isNullOrBlank()) return
-            SendUtils.reply(event, bot, "少女祈祷中···")
             val resp = request(prompt)
             if (resp.size > 1) {
                 val contents = ArrayList<String>()
