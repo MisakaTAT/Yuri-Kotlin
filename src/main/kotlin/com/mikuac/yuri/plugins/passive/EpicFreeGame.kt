@@ -10,7 +10,7 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
-import com.mikuac.yuri.bean.dto.EpicDto
+import com.mikuac.yuri.dto.EpicDTO
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
@@ -25,13 +25,13 @@ import java.util.concurrent.TimeUnit
 @Component
 class EpicFreeGame {
 
-    private val expiringMap: ExpiringMap<String, EpicDto> = ExpiringMap.builder()
+    private val expiringMap: ExpiringMap<String, EpicDTO> = ExpiringMap.builder()
         .variableExpiration()
         .expirationPolicy(ExpirationPolicy.CREATED)
         .expiration(Config.plugins.epic.cacheTime.times(1000L), TimeUnit.MILLISECONDS)
         .build()
 
-    private fun request(): EpicDto {
+    private fun request(): EpicDTO {
         // 检查缓存
         val cache = expiringMap["cache"]
         if (cache != null) return cache
@@ -42,7 +42,7 @@ class EpicFreeGame {
         headers["User-Agent"] =
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36"
 
-        val data: EpicDto
+        val data: EpicDTO
         try {
             val api =
                 "https://store-site-backend-static-ipv4.ak.epicgames.com/freeGamesPromotions?locale=zh-CN&country=CN&allowCountries=CN"
@@ -51,7 +51,7 @@ class EpicFreeGame {
             resp.close()
             val elements = jsonObject.asJsonObject["data"].asJsonObject["Catalog"].asJsonObject["searchStore"]
                 .asJsonObject["elements"].asJsonArray
-            data = Gson().fromJson(elements, EpicDto::class.java)
+            data = Gson().fromJson(elements, EpicDTO::class.java)
             if (data.isEmpty()) throw YuriException("游戏列表为空")
             expiringMap["cache"] = data
         } catch (e: Exception) {

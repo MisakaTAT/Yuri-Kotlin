@@ -9,7 +9,7 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
-import com.mikuac.yuri.bean.dto.ParseYoutubeDto
+import com.mikuac.yuri.dto.ParseYoutubeDTO
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.ImageUtils
@@ -24,15 +24,15 @@ class ParseYoutube {
 
     private val regex = "^(?:https?://)?(?:www.)?(?:youtube.com|youtu.be)/(?:watch\\?v=)([^#&?]*).*\$".toRegex()
 
-    private fun request(url: String): ParseYoutubeDto {
-        val data: ParseYoutubeDto
+    private fun request(url: String): ParseYoutubeDTO {
+        val data: ParseYoutubeDTO
         try {
             val id = RegexUtils.group(regex, 1, url)
             if (id.isBlank()) throw YuriException("Youtube链接解析失败")
             val api = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet," +
                     "statistics&id=${id}&key=${Config.plugins.parseYoutube.apiKey}"
             val resp = NetUtils.get(api, true)
-            data = Gson().fromJson(resp.body?.string(), ParseYoutubeDto::class.java)
+            data = Gson().fromJson(resp.body?.string(), ParseYoutubeDTO::class.java)
             resp.close()
         } catch (e: Exception) {
             throw YuriException("Youtube数据获取异常：${e.message}")
@@ -40,9 +40,9 @@ class ParseYoutube {
         return data
     }
 
-    private fun buildMsg(parseYoutubeDto: ParseYoutubeDto): String {
-        if (parseYoutubeDto.items.isEmpty()) throw YuriException("数据获取失败")
-        val data = parseYoutubeDto.items[0]
+    private fun buildMsg(parseYoutubeDTO: ParseYoutubeDTO): String {
+        if (parseYoutubeDTO.items.isEmpty()) throw YuriException("数据获取失败")
+        val data = parseYoutubeDTO.items[0]
         val img = ImageUtils.formatPNG(
             data.snippet.thumbnails.maxres.url,
             Config.plugins.githubRepo.proxy

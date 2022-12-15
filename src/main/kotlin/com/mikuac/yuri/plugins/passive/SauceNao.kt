@@ -2,7 +2,7 @@ package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
 import com.mikuac.shiro.common.utils.MsgUtils
-import com.mikuac.yuri.bean.dto.SauceNaoDto
+import com.mikuac.yuri.dto.SauceNaoDTO
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.entity.SauceNaoCacheEntity
 import com.mikuac.yuri.exception.YuriException
@@ -18,13 +18,13 @@ class SauceNao {
     private lateinit var repository: SauceNaoCacheRepository
 
     @Synchronized
-    private fun request(imgUrl: String): SauceNaoDto {
-        val data: SauceNaoDto
+    private fun request(imgUrl: String): SauceNaoDTO {
+        val data: SauceNaoDTO
         try {
             val key = Config.plugins.picSearch.sauceNaoKey
             val api = "https://saucenao.com/search.php?api_key=${key}&output_type=2&numres=3&db=999&url=${imgUrl}"
             val resp = NetUtils.get(api, Config.plugins.picSearch.proxy)
-            data = Gson().fromJson(resp.body?.string(), SauceNaoDto::class.java)
+            data = Gson().fromJson(resp.body?.string(), SauceNaoDTO::class.java)
             resp.close()
             if (data.header.longRemaining <= 0) throw YuriException("今日的搜索配额已耗尽啦")
             if (data.header.shortRemaining <= 0) throw YuriException("短时间内搜索配额已耗尽")

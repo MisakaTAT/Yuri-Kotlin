@@ -1,6 +1,6 @@
-package com.mikuac.yuri.bean.dto
+package com.mikuac.yuri.dto
 
-data class ParseYoutubeDto(
+data class ParseYoutubeDTO(
     val items: List<Item>,
 ) {
     data class Item(

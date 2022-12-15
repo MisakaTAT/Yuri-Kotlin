@@ -1,8 +1,8 @@
-package com.mikuac.yuri.bean.dto
+package com.mikuac.yuri.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class GithubRepoDto(
+data class GithubRepoDTO(
     @SerializedName("incomplete_results")
     val incompleteResults: Boolean,
     @SerializedName("total_count")

@@ -1,8 +1,8 @@
-package com.mikuac.yuri.bean.dto
+package com.mikuac.yuri.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class BiliVideoApiDto(
+data class BiliVideoApiDTO(
     val code: Int,
     val data: Data,
     val message: String,

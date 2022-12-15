@@ -1,6 +1,6 @@
 import com.google.gson.annotations.SerializedName
 
-data class RainbowSixSiegeDto(
+data class RainbowSixSiegeDTO(
     val status: Int,
     val username: String,
     @SerializedName("Basicstat")

@@ -8,8 +8,8 @@ import com.mikuac.shiro.bean.MsgChainBean
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
-import com.mikuac.yuri.bean.dto.WhatAnimeBasicDto
-import com.mikuac.yuri.bean.dto.WhatAnimeDto
+import com.mikuac.yuri.dto.WhatAnimeBasicDTO
+import com.mikuac.yuri.dto.WhatAnimeDTO
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.entity.WhatAnimeCacheEntity
 import com.mikuac.yuri.enums.RegexCMD
@@ -62,15 +62,15 @@ class WhatAnime {
     """
 
     @Synchronized
-    private fun request(imgUrl: String): Pair<WhatAnimeBasicDto, WhatAnimeDto> {
-        val data: Pair<WhatAnimeBasicDto, WhatAnimeDto>
+    private fun request(imgUrl: String): Pair<WhatAnimeBasicDTO, WhatAnimeDTO> {
+        val data: Pair<WhatAnimeBasicDTO, WhatAnimeDTO>
         try {
             // 获取基本信息
             val basicResult = NetUtils.get(
                 "https://api.trace.moe/search?cutBorders&url=${imgUrl}",
                 Config.plugins.picSearch.proxy
             )
-            val basicData = Gson().fromJson(basicResult.body?.string(), WhatAnimeBasicDto::class.java)
+            val basicData = Gson().fromJson(basicResult.body?.string(), WhatAnimeBasicDTO::class.java)
             basicResult.close()
             if (basicData.error != "") throw YuriException(basicData.error)
             if (basicData.result.isEmpty()) throw YuriException("未找到匹配结果")
@@ -86,7 +86,7 @@ class WhatAnime {
                 reqBody.toString(),
                 Config.plugins.picSearch.proxy
             )
-            val aniListData = Gson().fromJson(aniListResult.body?.string(), WhatAnimeDto::class.java)
+            val aniListData = Gson().fromJson(aniListResult.body?.string(), WhatAnimeDTO::class.java)
             aniListResult.close()
             data = Pair(basicData, aniListData)
         } catch (e: Exception) {

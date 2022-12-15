@@ -193,9 +193,10 @@
     },
     // ChatGPT
     "chatGPT": {
+      // 令牌
       "token": "",
       // 模型
-      "model": "",
+      "model": "text-davinci-003",
       // 是否启用代理
       "proxy": true
     }

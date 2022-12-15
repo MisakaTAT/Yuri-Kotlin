@@ -1,8 +1,8 @@
-package com.mikuac.yuri.bean.dto
+package com.mikuac.yuri.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class WhatAnimeBasicDto(
+data class WhatAnimeBasicDTO(
     val error: String,
     val frameCount: Int,
     val result: List<Result>

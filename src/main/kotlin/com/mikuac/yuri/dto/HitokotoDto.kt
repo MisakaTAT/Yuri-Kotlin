@@ -1,6 +1,6 @@
-package com.mikuac.yuri.bean.dto
+package com.mikuac.yuri.dto
 
-data class HitokotoDto(
+data class HitokotoDTO(
     val hitokoto: String,
     val from: String,
     val type: String,

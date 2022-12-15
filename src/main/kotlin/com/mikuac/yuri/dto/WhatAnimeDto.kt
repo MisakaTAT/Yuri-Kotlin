@@ -1,8 +1,8 @@
-package com.mikuac.yuri.bean.dto
+package com.mikuac.yuri.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class WhatAnimeDto(
+data class WhatAnimeDTO(
     val data: Data
 ) {
     data class Data(

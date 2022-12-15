@@ -1,6 +1,6 @@
-package com.mikuac.yuri.bean.dto
+package com.mikuac.yuri.dto
 
-class BlockChainDto(
+class BlockChainDTO(
     val ch: String,
     val status: String,
     val ts: String,

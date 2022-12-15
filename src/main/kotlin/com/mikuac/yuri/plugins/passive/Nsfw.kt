@@ -5,7 +5,7 @@ import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
-import com.mikuac.yuri.bean.dto.NsfwDto
+import com.mikuac.yuri.dto.NsfwDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
@@ -16,12 +16,12 @@ import org.springframework.stereotype.Component
 @Component
 class Nsfw {
 
-    private fun request(img: String): NsfwDto {
-        val data: NsfwDto
+    private fun request(img: String): NsfwDTO {
+        val data: NsfwDTO
         try {
             val api = "https://nsfwtag.azurewebsites.net/api/nsfw?url=${img}"
             val resp = NetUtils.get(api)
-            data = Gson().fromJson(resp.body?.string(), NsfwDto::class.java)
+            data = Gson().fromJson(resp.body?.string(), NsfwDTO::class.java)
             resp.close()
         } catch (e: Exception) {
             throw YuriException("NSFW鉴定失败：${e.message}")
@@ -29,7 +29,7 @@ class Nsfw {
         return data
     }
 
-    private fun judge(p: NsfwDto.Item): String {
+    private fun judge(p: NsfwDTO.Item): String {
         if (p.neutral > 0.3) {
             return "就这？"
         }

@@ -5,7 +5,7 @@ import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
-import com.mikuac.yuri.bean.dto.BlockChainDto
+import com.mikuac.yuri.dto.BlockChainDTO
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
@@ -21,12 +21,12 @@ import java.util.regex.Matcher
 @Component
 class BlockChain {
 
-    private fun request(symbol: String): BlockChainDto {
-        val data: BlockChainDto
+    private fun request(symbol: String): BlockChainDTO {
+        val data: BlockChainDTO
         try {
             val api = "https://api.huobi.pro/market/history/kline?period=1day&size=1&symbol=${symbol}usdt"
             val resp = NetUtils.get(api, Config.plugins.blockChain.proxy)
-            data = Gson().fromJson(resp.body?.string(), BlockChainDto::class.java)
+            data = Gson().fromJson(resp.body?.string(), BlockChainDTO::class.java)
             resp.close()
             if ("ok" != data.status) throw YuriException("数据获取失败")
         } catch (e: Exception) {

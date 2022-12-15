@@ -1,7 +1,7 @@
-package com.mikuac.yuri.bean.dto
+package com.mikuac.yuri.dto
 
-class EpicDto : ArrayList<EpicDto.EpicDtoItem>() {
-    data class EpicDtoItem(
+class EpicDTO : ArrayList<EpicDTO.EpicDTOItem>() {
+    data class EpicDTOItem(
         val customAttributes: List<CustomAttribute>,
         val description: String,
         val effectiveDate: String,

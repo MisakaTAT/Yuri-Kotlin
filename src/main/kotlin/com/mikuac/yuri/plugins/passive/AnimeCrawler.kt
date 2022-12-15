@@ -9,7 +9,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.annotation.Slf4j
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
-import com.mikuac.yuri.bean.dto.AnimeCrawlerDto
+import com.mikuac.yuri.dto.AnimeCrawlerDTO
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
@@ -50,12 +50,12 @@ class AnimeCrawler : ApplicationRunner {
 
     private val font = Font.createFont(Font.TRUETYPE_FONT, this.javaClass.getResourceAsStream("/font/chinese_font.ttf"))
 
-    private fun request(): AnimeCrawlerDto {
-        val data: AnimeCrawlerDto
+    private fun request(): AnimeCrawlerDTO {
+        val data: AnimeCrawlerDTO
         try {
             val api = "https://bangumi.bilibili.com/web_api/timeline_global"
             val resp = NetUtils.get(api)
-            data = Gson().fromJson(resp.body?.string(), AnimeCrawlerDto::class.java)
+            data = Gson().fromJson(resp.body?.string(), AnimeCrawlerDTO::class.java)
             resp.close()
             if (data.code != 0) throw YuriException(data.message)
         } catch (e: Exception) {
@@ -84,7 +84,7 @@ class AnimeCrawler : ApplicationRunner {
         return "今日暂无番剧放送"
     }
 
-    private fun drawImage(seasons: List<AnimeCrawlerDto.Result.Season>): String {
+    private fun drawImage(seasons: List<AnimeCrawlerDTO.Result.Season>): String {
         val hBorderWidth = 18
         val previewHeight = 600
         val oneAnimeHeight = previewHeight + 2 * hBorderWidth

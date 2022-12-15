@@ -1,6 +1,6 @@
-package com.mikuac.yuri.bean.dto
+package com.mikuac.yuri.dto
 
-data class AnimePicDto(
+data class AnimePicDTO(
     val data: List<Data>,
     val error: String
 ) {

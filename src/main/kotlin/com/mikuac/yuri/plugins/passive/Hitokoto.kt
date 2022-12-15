@@ -6,7 +6,7 @@ import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
-import com.mikuac.yuri.bean.dto.HitokotoDto
+import com.mikuac.yuri.dto.HitokotoDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
@@ -37,13 +37,13 @@ class Hitokoto {
 
     val types = arrayOf("a", "b", "c", "d", "h", "i", "j")
 
-    private fun request(): HitokotoDto {
-        val data: HitokotoDto
+    private fun request(): HitokotoDTO {
+        val data: HitokotoDTO
         try {
             val type = types[Random().nextInt(types.size)]
             val api = "https://v1.hitokoto.cn?c=${type}"
             val resp = NetUtils.get(api)
-            data = Gson().fromJson(resp.body?.string(), HitokotoDto::class.java)
+            data = Gson().fromJson(resp.body?.string(), HitokotoDTO::class.java)
             resp.close()
         } catch (e: Exception) {
             throw YuriException("一言数据获取异常：${e.message}")

@@ -1,6 +1,6 @@
-package com.mikuac.yuri.bean.dto
+package com.mikuac.yuri.dto
 
-class NsfwDto : ArrayList<NsfwDto.Item>() {
+class NsfwDTO : ArrayList<NsfwDTO.Item>() {
     data class Item(
         val drawings: Double,
         val hentai: Double,

@@ -1,15 +1,14 @@
 package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
-import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
-import com.mikuac.shiro.common.utils.MsgUtils
+import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
-import com.mikuac.yuri.bean.dto.ChatGPTDto
 import com.mikuac.yuri.config.Config
+import com.mikuac.yuri.dto.ChatGPTDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.MsgSendUtils
@@ -24,53 +23,50 @@ class ChatGPT {
     private val headers = object : HashMap<String, String>() {
         init {
             put("Content-Type", "application/json; charset=utf-8")
-            put("Authorization", "Bearer ${Config.plugins.chatGPT.token}")
         }
     }
 
-    private fun request(prompt: String): String {
+    private fun request(prompt: String): List<ChatGPTDTO.Result.Choice> {
+        val config = Config.plugins.chatGPT
+        if (config.token.isBlank() || config.model.isBlank()) throw YuriException("未正确配置 OpenAI 令牌或模型")
+        headers["Authorization"] = "Bearer ${config.token}"
+
         val params = JsonObject()
         params.addProperty("model", Config.plugins.chatGPT.model)
         params.addProperty("prompt", prompt)
         params.addProperty("temperature", 0.9)
         params.addProperty("max_tokens", 4000)
-        params.addProperty("top_p", 1)
-        params.addProperty("frequency_penalty", 0.0)
-        params.addProperty("presence_penalty", 0.6)
-        val stop = JsonArray()
-        stop.add(" Human:")
-        stop.add(" AI:")
-        params.add("stop", stop)
+
+        val data: ChatGPTDTO.Result
+        val error: ChatGPTDTO.Error
         val api = "https://api.openai.com/v1/completions"
-        val data: ChatGPTDto
-        try {
-            val resp = NetUtils.post(api, headers, params.toString(), Config.plugins.chatGPT.proxy, 60)
-            data = Gson().fromJson(resp.body?.string(), ChatGPTDto::class.java)
+        val resp = NetUtils.post(api, headers, params.toString(), config.proxy, 60)
+        if (resp.code == 400) {
+            error = Gson().fromJson(resp.body?.string(), ChatGPTDTO.Error::class.java)
             resp.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            throw YuriException("ChatGPT 请求异常：${e.message}")
+            throw YuriException(error.error.message)
         }
-        if (data.choices.isNotEmpty() && data.choices[0].text.isNotBlank()) {
-            return data.choices[0].text
-        } else {
-            throw YuriException("好像出现了点小问题，要不再试试？")
-        }
+        data = Gson().fromJson(resp.body?.string(), ChatGPTDTO.Result::class.java)
+        return data.choices
     }
 
     @MessageHandler(cmd = RegexCMD.CHAT_GPT)
     fun chatGPTHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         try {
-            val msg = matcher.group(1)
-            if (msg.isNullOrBlank()) throw YuriException("请输入正确的问题")
-            bot.sendMsg(
-                event,
-                MsgUtils.builder().reply(event.messageId).text("处理中··· 等待时长不会超过1分钟").build(),
-                false
-            )
-            bot.sendMsg(event, MsgUtils.builder().reply(event.messageId).text(request(msg).trim()).build(), false)
-        } catch (e: YuriException) {
-            e.message?.let { MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, it) }
+            val prompt = matcher.group(1)
+            if (prompt.isNullOrBlank()) return
+            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "少女祈祷中···")
+            val resp = request(prompt)
+            if (resp.size > 1) {
+                val contents = ArrayList<String>()
+                resp.forEach {
+                    contents.add(it.text.trim())
+                }
+                val msg = ShiroUtils.generateForwardMsg(Config.base.selfId, Config.base.nickname, contents)
+                bot.sendForwardMsg(event, msg)
+                return
+            }
+            MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, resp[0].text.trim())
         } catch (e: Exception) {
             MsgSendUtils.replySend(event.messageId, event.userId, event.groupId, bot, "未知错误：${e.message}")
             e.printStackTrace()

@@ -1,8 +1,8 @@
-package com.mikuac.yuri.bean.dto
+package com.mikuac.yuri.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class AnimeCrawlerDto(
+data class AnimeCrawlerDTO(
     val code: Int,
     val message: String,
     val result: List<Result>

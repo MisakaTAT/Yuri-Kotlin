@@ -7,7 +7,7 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.annotation.Slf4j
-import com.mikuac.yuri.bean.dto.AnimePicDto
+import com.mikuac.yuri.dto.AnimePicDTO
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
@@ -32,13 +32,13 @@ class AnimePic {
         .expiration(Config.plugins.animePic.cd.times(1000L), TimeUnit.MILLISECONDS)
         .build()
 
-    private fun request(r18: Boolean): AnimePicDto.Data {
-        val data: AnimePicDto
+    private fun request(r18: Boolean): AnimePicDTO.Data {
+        val data: AnimePicDTO
         try {
             var api = "https://api.lolicon.app/setu/v2"
             if (r18) api = "$api?r18=1"
             val resp = NetUtils.get(api)
-            data = Gson().fromJson(resp.body?.string(), AnimePicDto::class.java)
+            data = Gson().fromJson(resp.body?.string(), AnimePicDTO::class.java)
             resp.close()
             if (data.error.isNotEmpty()) throw YuriException(data.error)
             if (data.data.isEmpty()) throw YuriException("列表为空")

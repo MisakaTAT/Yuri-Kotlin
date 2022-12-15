@@ -7,7 +7,7 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.OneBotMedia
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
-import com.mikuac.yuri.bean.dto.GithubRepoDto
+import com.mikuac.yuri.dto.GithubRepoDTO
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
@@ -21,12 +21,12 @@ import java.util.regex.Matcher
 @Component
 class GithubRepo {
 
-    private fun request(repoName: String): GithubRepoDto {
-        val data: GithubRepoDto
+    private fun request(repoName: String): GithubRepoDTO {
+        val data: GithubRepoDTO
         try {
             val api = "https://api.github.com/search/repositories?q=${repoName}"
             val resp = NetUtils.get(api)
-            data = Gson().fromJson(resp.body?.string(), GithubRepoDto::class.java)
+            data = Gson().fromJson(resp.body?.string(), GithubRepoDTO::class.java)
             resp.close()
             if (data.totalCount <= 0) throw YuriException("未找到名为 $repoName 的仓库")
         } catch (e: Exception) {

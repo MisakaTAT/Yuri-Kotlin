@@ -1,6 +1,6 @@
 package com.mikuac.yuri.plugins.passive
 
-import RainbowSixSiegeDto
+import RainbowSixSiegeDTO
 import com.google.gson.Gson
 import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
@@ -19,15 +19,15 @@ import java.util.regex.Matcher
 @Component
 class RainbowSixSiege {
 
-    private fun request(username: String): RainbowSixSiegeDto {
+    private fun request(username: String): RainbowSixSiegeDTO {
         if (username.isEmpty()) throw YuriException("用户名不合法，请检查输入是否正确。")
-        val data: RainbowSixSiegeDto
+        val data: RainbowSixSiegeDTO
         try {
             val resp = NetUtils.get(
                 "https://www.r6s.cn/Stats?username=${username}",
                 mapOf(Pair("referer", "no-referer"))
             )
-            data = Gson().fromJson(resp.body?.string(), RainbowSixSiegeDto::class.java)
+            data = Gson().fromJson(resp.body?.string(), RainbowSixSiegeDTO::class.java)
             resp.close()
             if (data.status != 200) throw YuriException("服务器可能爆炸惹，请稍后重试～")
             return data
@@ -40,7 +40,7 @@ class RainbowSixSiege {
         return FormatUtils.getNoMoreThanTwoDigits(a.toDouble() / b.toDouble())
     }
 
-    private fun buildMsg(data: RainbowSixSiegeDto): String {
+    private fun buildMsg(data: RainbowSixSiegeDTO): String {
         val basicStat = data.basicStat.filter { "apac" == it.region }[0]
         val statGeneral = data.statGeneral[0]
         val ranked = data.statCR.filter { "ranked" == it.model }[0]
