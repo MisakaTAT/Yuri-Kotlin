@@ -34,8 +34,15 @@ class GroupAddRequest : BotPlugin() {
         val reqType = matcher.group(2)
         val flag = matcher.group(3)
         when (type) {
-            "同意加群" -> bot.setGroupAddRequest(flag, reqType, true, "")
-            "拒绝加群" -> bot.setGroupAddRequest(flag, reqType, false, "请求被拒")
+            "同意加群" -> {
+                bot.setGroupAddRequest(flag, reqType, true, "")
+                bot.sendPrivateMsg(event.userId, "已同意加群申请", false)
+            }
+
+            "拒绝加群" -> {
+                bot.setGroupAddRequest(flag, reqType, false, "请求被拒")
+                bot.sendPrivateMsg(event.userId, "已拒绝加群申请", false)
+            }
         }
     }
 
