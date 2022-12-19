@@ -1,7 +1,7 @@
 package com.mikuac.yuri.utils
 
 import com.mikuac.shiro.annotation.MessageHandler
-import com.mikuac.shiro.bean.MsgChainBean
+import com.mikuac.shiro.bo.ArrayMsg
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
@@ -85,7 +85,7 @@ class SearchModeUtils : BotPlugin() {
             return true
         }
 
-        fun getImgUrl(userId: Long, groupId: Long, arrMsg: List<MsgChainBean>): String? {
+        fun getImgUrl(userId: Long, groupId: Long, arrMsg: List<ArrayMsg>): String? {
             val images = arrMsg.filter { "image" == it.type }
             if (images.isEmpty()) return null
             val imgUrl = images[0].data["url"] ?: return null

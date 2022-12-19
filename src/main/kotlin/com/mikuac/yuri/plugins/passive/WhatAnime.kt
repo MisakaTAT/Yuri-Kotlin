@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
-import com.mikuac.shiro.bean.MsgChainBean
+import com.mikuac.shiro.bo.ArrayMsg
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
@@ -95,7 +95,7 @@ class WhatAnime {
         return data
     }
 
-    private fun buildMsg(userId: Long, groupId: Long, arrMsg: List<MsgChainBean>): Pair<String, String>? {
+    private fun buildMsg(userId: Long, groupId: Long, arrMsg: List<ArrayMsg>): Pair<String, String>? {
         val imgUrl = SearchModeUtils.getImgUrl(userId, groupId, arrMsg) ?: return null
         // 查缓存
         val imgMd5 = imgUrl.split("-").last()
