@@ -1,5 +1,7 @@
 package com.mikuac.yuri.config
 
+import com.mikuac.yuri.plugins.passive.SendLike
+
 data class ConfigDataClass(
     val base: Base,
     val plugins: Plugins
@@ -43,7 +45,8 @@ data class ConfigDataClass(
         val githubRepo: GithubRepo,
         val phoenixWright: PhoenixWright,
         val parseYoutube: ParseYoutube,
-        val chatGPT: ChatGPT
+        val chatGPT: ChatGPT,
+        val sendLike: SendLike
     ) {
         data class WordCloud(
             val cronTaskRate: Int,
@@ -116,6 +119,10 @@ data class ConfigDataClass(
             val token: String,
             val model: String,
             val proxy: Boolean
+        )
+
+        data class SendLike(
+            val maxTimes: Int
         )
 
         data class Telegram(

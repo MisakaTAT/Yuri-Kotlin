@@ -199,6 +199,11 @@
       "model": "text-davinci-003",
       // 是否启用代理
       "proxy": true
+    },
+    // 点赞插件设置
+    "sendLike": {
+      // 最大可点赞次数（超级会员为 20次/天）
+      "maxTimes": 10,
     }
   }
 }
