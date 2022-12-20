@@ -25,13 +25,13 @@ class SendLike {
             val userId = event.userId
             val count = status.getOrDefault(userId, 0)
             val currentTimes = maxTimes - count
-            if (currentTimes >= maxTimes) throw YuriException("您已达到当日最大点赞次数")
+            if (currentTimes > maxTimes) throw YuriException("您已达到当日最大点赞次数")
             val times = matcher.group(1).toInt()
             if (currentTimes < times) throw YuriException("今日可用点赞数不足，剩余：${currentTimes}")
             if (times <= 0 || times > 20) throw YuriException("点赞次数低于最小值或超过最大值")
             bot.sendLike(event.userId, times)
             bot.sendGroupMsg(event.groupId, MsgUtils.builder().at(event.userId).text("点赞完成啦").build(), false)
-            status[userId] = count + 1
+            status[userId] = count + times
         } catch (e: YuriException) {
             e.message?.let { SendUtils.reply(event, bot, it) }
         } catch (e: Exception) {
