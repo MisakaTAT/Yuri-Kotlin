@@ -40,7 +40,7 @@ class SendLike {
             if (currentTimes < times) throw YuriException("今日可用点赞数不足、剩余${currentTimes}次")
             if (times <= 0 || times > 20) throw YuriException("点赞次数低于最小值或超过最大值")
             bot.sendLike(event.userId, times)
-            bot.sendGroupMsg(event.groupId, MsgUtils.builder().at(event.userId).text("点赞完成啦").build(), false)
+            bot.sendGroupMsg(event.groupId, MsgUtils.builder().reply(event.messageId).text("点赞完成啦").build(), false)
             status[userId] = count + times
         } catch (e: YuriException) {
             e.message?.let { SendUtils.reply(event, bot, it) }
