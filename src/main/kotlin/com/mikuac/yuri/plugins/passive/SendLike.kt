@@ -9,6 +9,7 @@ import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.SendUtils
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.util.regex.Matcher
 
@@ -16,7 +17,16 @@ import java.util.regex.Matcher
 @Component
 class SendLike {
 
+    companion object {
+        private const val ZONE = "Asia/Shanghai"
+    }
+
     private val status: HashMap<Long, Int> = HashMap()
+
+    @Scheduled(cron = "0 5 00 * * ?", zone = ZONE)
+    fun taskForDay() {
+        status.clear()
+    }
 
     @GroupMessageHandler(cmd = RegexCMD.SEND_LIKE)
     fun sendLikeHandler(bot: Bot, event: GroupMessageEvent, matcher: Matcher) {
