@@ -31,13 +31,13 @@ class SendLike {
     @GroupMessageHandler(cmd = RegexCMD.SEND_LIKE)
     fun sendLikeHandler(bot: Bot, event: GroupMessageEvent, matcher: Matcher) {
         try {
-            val maxTimes = Config.plugins.sendLike.maxTimes
             val userId = event.userId
+            val maxTimes = Config.plugins.sendLike.maxTimes
             val count = status.getOrDefault(userId, 0)
             val currentTimes = maxTimes - count
             if (currentTimes > maxTimes) throw YuriException("您已达到当日最大点赞次数")
-            val times = matcher.group(1).toInt()
-            if (currentTimes < times) throw YuriException("今日可用点赞数不足，剩余：${currentTimes}")
+            val times = matcher.group(1).toIntOrNull() ?: throw YuriException("爬")
+            if (currentTimes < times) throw YuriException("今日可用点赞数不足、剩余${currentTimes}次")
             if (times <= 0 || times > 20) throw YuriException("点赞次数低于最小值或超过最大值")
             bot.sendLike(event.userId, times)
             bot.sendGroupMsg(event.groupId, MsgUtils.builder().at(event.userId).text("点赞完成啦").build(), false)
