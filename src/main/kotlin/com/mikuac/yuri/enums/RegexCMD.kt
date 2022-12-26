@@ -31,6 +31,7 @@ class RegexCMD {
         const val GROUP_ADD_REQ = "^(同意加群|拒绝加群)\\s(add|invite)\\s([0-9]+)\$"
         const val CHAT_GPT = "^(?i)chatgpt\\s([\\s\\S]+)\$"
         const val SEND_LIKE = "^赞我([0-9]+)次\$"
+        const val CLEAR_SEND_LIKE = "^重置点赞(.*)\$"
     }
 
 }

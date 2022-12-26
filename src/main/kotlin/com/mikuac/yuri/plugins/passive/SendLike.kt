@@ -28,6 +28,18 @@ class SendLike {
         status.clear()
     }
 
+    @GroupMessageHandler(cmd = RegexCMD.CLEAR_SEND_LIKE)
+    fun clearSendLikeStatus(bot: Bot, event: GroupMessageEvent) {
+        if (event.userId !in Config.base.adminList) {
+            bot.sendGroupMsg(event.groupId, "此操作需要管理员权限", false)
+            return
+        }
+        event.arrayMsg.filter { "at" == it.type }.forEach {
+            status[it.data["qq"]!!.toLong()] = 0
+            bot.sendGroupMsg(event.groupId, "重置成功", false)
+        }
+    }
+
     @GroupMessageHandler(cmd = RegexCMD.SEND_LIKE)
     fun sendLikeHandler(bot: Bot, event: GroupMessageEvent, matcher: Matcher) {
         try {
