@@ -69,7 +69,7 @@ class EpicFreeGame {
             for (game in games) {
                 val gameName = game.title
                 val gameCorp = game.seller.name
-                val keyImages = game.keyImages.filter { "Thumbnail" == it.type }
+                val keyImages = game.keyImages.filter { "DieselStoreFrontWide" == it.type }
                 val vaultClosed = game.keyImages.filter { "VaultClosed" == it.type }
                 var gameThumbnail = ""
                 if (keyImages.isNotEmpty()) {
@@ -98,7 +98,7 @@ class EpicFreeGame {
                         val developerName = game.customAttributes.filter { it.key == "developerName" }
                         val developer = if (developerName.isNotEmpty()) developerName[0].value else gameCorp
                         val endDate = formatDate(game.promotions.promotionalOffers[0].promotionalOffers[0].endDate)
-                        val gamePage = "https://www.epicgames.com/store/zh-CN/p/${game.urlSlug}"
+                        val gamePage = "https://www.epicgames.com/store/zh-CN/p/${game.productSlug}"
 
                         val msg = MsgUtils.builder()
                             .img(gameThumbnail)
