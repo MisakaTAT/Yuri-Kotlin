@@ -102,6 +102,8 @@ public class MessageForward extends TelegramLongPollingBot {
                 case PRIVATE -> msg.text("\nTG私聊：" + fromUser);
                 case CHANNEL -> msg.text("\nTG频道：" + chat.getTitle());
                 case GROUP, SUPER_GROUP -> msg.text("\nTG群组：" + chat.getTitle());
+                default -> {
+                }
             }
         }
 
@@ -133,6 +135,8 @@ public class MessageForward extends TelegramLongPollingBot {
             case GROUP, SUPER_GROUP -> {
                 Supplier<Stream<RuleItem>> target = () -> rules.getGroup().stream().filter(it -> title.equals(it.getSource()));
                 handler(target, msg);
+            }
+            default -> {
             }
         }
 
