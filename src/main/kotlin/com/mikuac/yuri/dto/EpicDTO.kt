@@ -12,8 +12,8 @@ class EpicDTO : ArrayList<EpicDTO.EpicDTOItem>() {
         val seller: Seller,
         val title: String,
         val url: Any,
-        val productSlug: String,
-        val urlSlug: String
+        val productSlug: String?,
+        val urlSlug: String?
     ) {
         data class CustomAttribute(
             val key: String,
