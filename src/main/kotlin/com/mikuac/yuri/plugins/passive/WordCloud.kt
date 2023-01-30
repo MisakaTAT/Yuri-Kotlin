@@ -106,11 +106,9 @@ class WordCloud {
         userId: Long,
         groupId: Long,
         type: String,
-        range: String,
-        cronTask: Boolean
+        range: String
     ): List<String> {
-        var now = LocalDate.now()
-        if (cronTask) now = now.plusDays(-1)
+        val now = LocalDate.now()
         val startOfWeek = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
         val endOfWeek = now.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
         val startOfMonth = now.with(TemporalAdjusters.firstDayOfMonth())
@@ -140,10 +138,10 @@ class WordCloud {
         return listOf()
     }
 
-    private fun getWords(userId: Long, groupId: Long, type: String, range: String, cronTask: Boolean): List<String> {
+    private fun getWords(userId: Long, groupId: Long, type: String, range: String): List<String> {
         val filterRule = StringUtils.join(Config.plugins.wordCloud.filterRule, "|").toRegex()
         val contents = ArrayList<String>()
-        getWordsForRange(userId, groupId, type, range, cronTask).forEach { raw ->
+        getWordsForRange(userId, groupId, type, range).forEach { raw ->
             contents.addAll(
                 ShiroUtils
                     .stringToMsgChain(raw)
@@ -163,7 +161,7 @@ class WordCloud {
             val type = matcher.group(1)
             val range = matcher.group(2)
             SendUtils.reply(msgId, event.userId, event.groupId, bot, "数据检索中，请耐心等待～")
-            val contents = getWords(event.userId, event.groupId, type, range, false)
+            val contents = getWords(event.userId, event.groupId, type, range)
             if (contents.isEmpty()) {
                 throw YuriException("唔呣～数据库里没有找到你的发言记录呢")
             }
@@ -222,7 +220,7 @@ class WordCloud {
         bot.groupList.data.forEach {
             sleep(cronTaskRate)
             bot.sendGroupMsg(it.groupId, "嗨嗨嗨，摸鱼的一天结束啦，让我来看看群友${range}聊了些什么～", false)
-            val contents = getWords(0L, it.groupId, "本群", range, true)
+            val contents = getWords(0L, it.groupId, "本群", range)
             if (contents.isEmpty()) {
                 bot.sendGroupMsg(it.groupId, "唔呣～ 居然一条记录都没有，难道你们不聊天的嘛？？", false)
                 return@forEach
