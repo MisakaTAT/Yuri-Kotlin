@@ -54,7 +54,7 @@ dependencies {
     api("org.sejda.imageio:webp-imageio:0.1.6")
     api("com.kennycason:kumo-core:1.28")
     api("com.huaban:jieba-analysis:1.0.2")
-    api("mysql:mysql-connector-java:8.0.31")
+    api("mysql:mysql-connector-java:8.0.32")
 
     api("org.jetbrains.kotlin:kotlin-reflect:1.8.0")
     api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0")
