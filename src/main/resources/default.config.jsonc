@@ -20,10 +20,8 @@
       // Proxy type: [HTTP|SOCKS4|SOCKS5]
       "type": "HTTP"
     },
-    // 使用MySQL替代默认的SQLite数据库
+    // 数据库
     "mysql": {
-      // 是否启用
-      "enable": false,
       // 数据库地址
       "url": "127.0.0.1:3306",
       // 数据库名
