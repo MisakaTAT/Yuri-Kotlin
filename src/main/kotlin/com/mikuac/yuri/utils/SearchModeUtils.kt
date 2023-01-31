@@ -1,10 +1,11 @@
 package com.mikuac.yuri.utils
 
-import com.mikuac.shiro.annotation.MessageHandler
+import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.bo.ArrayMsg
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
+import com.mikuac.shiro.enums.MsgTypeEnum
 import com.mikuac.yuri.bean.SearchModeBean
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
@@ -16,7 +17,7 @@ import java.util.concurrent.TimeUnit
 @Component
 class SearchModeUtils : BotPlugin() {
 
-    @MessageHandler(cmd = RegexCMD.UNSET_SEARCH_MODE)
+    @AnyMessageHandler(cmd = RegexCMD.UNSET_SEARCH_MODE)
     fun unsetSearchMode(bot: Bot, event: AnyMessageEvent) {
         remove(event.userId, event.groupId, bot)
     }
@@ -86,7 +87,7 @@ class SearchModeUtils : BotPlugin() {
         }
 
         fun getImgUrl(userId: Long, groupId: Long, arrMsg: List<ArrayMsg>): String? {
-            val images = arrMsg.filter { "image" == it.type }
+            val images = arrMsg.filter { it.type == MsgTypeEnum.image }
             if (images.isEmpty()) return null
             val imgUrl = images[0].data["url"] ?: return null
             // 重新设置过期时间

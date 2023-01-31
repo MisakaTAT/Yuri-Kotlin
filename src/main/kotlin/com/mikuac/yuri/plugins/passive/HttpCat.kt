@@ -1,6 +1,6 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.mikuac.shiro.annotation.MessageHandler
+import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
@@ -20,7 +20,7 @@ class HttpCat {
         return MsgUtils.builder().img("https://http.cat/${statusCode}").build()
     }
 
-    @MessageHandler(cmd = RegexCMD.HTTP_CAT)
+    @AnyMessageHandler(cmd = RegexCMD.HTTP_CAT)
     fun httpCatHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         try {
             val msg = buildMsg(matcher)

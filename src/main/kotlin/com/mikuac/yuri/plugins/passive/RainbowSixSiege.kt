@@ -2,7 +2,7 @@ package com.mikuac.yuri.plugins.passive
 
 import RainbowSixSiegeDTO
 import com.google.gson.Gson
-import com.mikuac.shiro.annotation.MessageHandler
+import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
@@ -90,7 +90,7 @@ class RainbowSixSiege {
             .build()
     }
 
-    @MessageHandler(cmd = RegexCMD.R6S)
+    @AnyMessageHandler(cmd = RegexCMD.R6S)
     fun r6sHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         try {
             val username = matcher.group(1) ?: YuriException("用户名获取失败")

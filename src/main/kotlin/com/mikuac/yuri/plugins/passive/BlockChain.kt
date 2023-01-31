@@ -1,7 +1,7 @@
 package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
-import com.mikuac.shiro.annotation.MessageHandler
+import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
@@ -50,7 +50,7 @@ class BlockChain {
         """.trimIndent()
     }
 
-    @MessageHandler(cmd = RegexCMD.BLOCK_CHAIN)
+    @AnyMessageHandler(cmd = RegexCMD.BLOCK_CHAIN)
     fun blockChainHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         try {
             bot.sendMsg(event, buildMsg(matcher), false)

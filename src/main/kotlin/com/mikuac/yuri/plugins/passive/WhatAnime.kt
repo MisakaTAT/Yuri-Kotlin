@@ -2,23 +2,23 @@ package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import com.mikuac.shiro.annotation.MessageHandler
+import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.bo.ArrayMsg
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
+import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.dto.WhatAnimeBasicDTO
 import com.mikuac.yuri.dto.WhatAnimeDTO
-import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.entity.WhatAnimeCacheEntity
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.repository.WhatAnimeCacheRepository
 import com.mikuac.yuri.utils.DateUtils
-import com.mikuac.yuri.utils.SendUtils
 import com.mikuac.yuri.utils.NetUtils
 import com.mikuac.yuri.utils.SearchModeUtils
+import com.mikuac.yuri.utils.SendUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -129,12 +129,12 @@ class WhatAnime {
         return Pair(infoMsg, videoMsg)
     }
 
-    @MessageHandler(cmd = RegexCMD.WHAT_ANIME_SEARCH)
+    @AnyMessageHandler(cmd = RegexCMD.WHAT_ANIME_SEARCH)
     fun whatAnimeHandler(bot: Bot, event: AnyMessageEvent) {
         SearchModeUtils.setSearchMode(this.javaClass.simpleName, event.userId, event.groupId, bot)
     }
 
-    @MessageHandler
+    @AnyMessageHandler
     fun whatAnimeSearch(bot: Bot, event: AnyMessageEvent) {
         if (!SearchModeUtils.check(this.javaClass.simpleName, event.userId, event.groupId)) return
         // 发送检索结果

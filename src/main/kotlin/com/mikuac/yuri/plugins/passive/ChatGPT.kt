@@ -2,7 +2,7 @@ package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import com.mikuac.shiro.annotation.MessageHandler
+import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
@@ -50,7 +50,7 @@ class ChatGPT {
         return data.choices
     }
 
-    @MessageHandler(cmd = RegexCMD.CHAT_GPT)
+    @AnyMessageHandler(cmd = RegexCMD.CHAT_GPT)
     fun chatGPTHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         try {
             val prompt = matcher.group(1)

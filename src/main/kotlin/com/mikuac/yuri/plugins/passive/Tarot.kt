@@ -1,7 +1,7 @@
 package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
-import com.mikuac.shiro.annotation.MessageHandler
+import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
@@ -56,7 +56,7 @@ class Tarot : ApplicationRunner {
             .build()
     }
 
-    @MessageHandler(cmd = RegexCMD.TAROT)
+    @AnyMessageHandler(cmd = RegexCMD.TAROT)
     fun tarotHandler(bot: Bot, event: AnyMessageEvent) {
         try {
             val userId = event.userId

@@ -1,6 +1,6 @@
 package com.mikuac.yuri.entity
 
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "user_blacklist")

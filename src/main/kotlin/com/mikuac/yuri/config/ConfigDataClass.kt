@@ -22,7 +22,6 @@ data class ConfigDataClass(
         )
 
         data class MySQL(
-            val enable: Boolean,
             val url: String,
             val database: String,
             val username: String,

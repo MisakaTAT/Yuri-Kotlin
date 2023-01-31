@@ -1,10 +1,11 @@
 package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
-import com.mikuac.shiro.annotation.MessageHandler
+import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
+import com.mikuac.shiro.enums.MsgTypeEnum
 import com.mikuac.yuri.dto.NsfwDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
@@ -46,10 +47,10 @@ class Nsfw {
         return c
     }
 
-    @MessageHandler(cmd = RegexCMD.NSFW)
+    @AnyMessageHandler(cmd = RegexCMD.NSFW)
     fun nsfwHandler(event: AnyMessageEvent, bot: Bot) {
         try {
-            val images = event.arrayMsg.filter { it.type == "image" }
+            val images = event.arrayMsg.filter { it.type == MsgTypeEnum.image }
             if (images.isEmpty()) throw YuriException("没有发现需要鉴定的图片")
             if (images.size > 1) throw YuriException("一次只能处理一张图片哦～")
             val data = images[0].data["url"]?.let { request(it) }

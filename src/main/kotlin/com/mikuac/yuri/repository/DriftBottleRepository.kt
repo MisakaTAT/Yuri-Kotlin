@@ -1,9 +1,9 @@
 package com.mikuac.yuri.repository
 
 import com.mikuac.yuri.entity.DriftBottleEntity
+import jakarta.transaction.Transactional
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Component
-import javax.transaction.Transactional
 
 @Component
 interface DriftBottleRepository : JpaRepository<DriftBottleEntity, Int> {

@@ -3,7 +3,7 @@ package com.mikuac.yuri.plugins.passive
 import cn.hutool.core.io.FileUtil
 import cn.hutool.system.SystemUtil
 import cn.hutool.system.oshi.OshiUtil
-import com.mikuac.shiro.annotation.MessageHandler
+import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
@@ -59,7 +59,7 @@ class BotStatus {
             .build()
     }
 
-    @MessageHandler(cmd = RegexCMD.BOT_STATUS)
+    @AnyMessageHandler(cmd = RegexCMD.BOT_STATUS)
     fun botStatusHandler(bot: Bot, event: AnyMessageEvent) {
         try {
             bot.sendMsg(event, buildMsg(), false)

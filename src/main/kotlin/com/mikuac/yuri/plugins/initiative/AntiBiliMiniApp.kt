@@ -2,12 +2,13 @@ package com.mikuac.yuri.plugins.initiative
 
 import com.google.gson.Gson
 import com.google.gson.JsonParser
-import com.mikuac.shiro.annotation.MessageHandler
+import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
+import com.mikuac.shiro.enums.MsgTypeEnum
 import com.mikuac.yuri.dto.BiliVideoApiDTO
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.NetUtils
@@ -48,12 +49,12 @@ class AntiBiliMiniApp {
             .build()
     }
 
-    @MessageHandler
+    @AnyMessageHandler
     fun handler(bot: Bot, event: AnyMessageEvent) {
         try {
             val msg = event.message
             if (!msg.contains("com.tencent.miniapp_01") || !msg.contains("哔哩哔哩")) return
-            val json = event.arrayMsg.filter { it.type == "json" }
+            val json = event.arrayMsg.filter { it.type == MsgTypeEnum.json }
             if (json.isNotEmpty()) {
                 bot.sendMsg(event, json[0].data["data"]?.let { buildMsg(it) }, false)
             }

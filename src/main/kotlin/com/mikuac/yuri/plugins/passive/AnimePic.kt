@@ -1,7 +1,7 @@
 package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
-import com.mikuac.shiro.annotation.MessageHandler
+import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
@@ -83,7 +83,7 @@ class AnimePic {
         return Pair(buildTextMsg.first, buildTextMsg.second)
     }
 
-    @MessageHandler(cmd = RegexCMD.ANIME_PIC)
+    @AnyMessageHandler(cmd = RegexCMD.ANIME_PIC)
     fun animePicHandler(bot: Bot, event: AnyMessageEvent) {
         try {
             val msg = buildMsg(event.message, event.userId, event.groupId)

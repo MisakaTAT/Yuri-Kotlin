@@ -1,14 +1,14 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.mikuac.shiro.annotation.MessageHandler
+import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
-import com.mikuac.yuri.utils.SendUtils
 import com.mikuac.yuri.utils.SearchModeUtils
+import com.mikuac.yuri.utils.SendUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -22,12 +22,12 @@ class PicSearch {
     @Autowired
     private lateinit var ascii2d: Ascii2d
 
-    @MessageHandler(cmd = RegexCMD.SAUCE_NAO_SEARCH)
+    @AnyMessageHandler(cmd = RegexCMD.SAUCE_NAO_SEARCH)
     fun picHandler(bot: Bot, event: AnyMessageEvent) {
         SearchModeUtils.setSearchMode(this.javaClass.simpleName, event.userId, event.groupId, bot)
     }
 
-    @MessageHandler
+    @AnyMessageHandler
     fun picSearch(bot: Bot, event: AnyMessageEvent) {
         if (!SearchModeUtils.check(this.javaClass.simpleName, event.userId, event.groupId)) return
         // 发送检索结果

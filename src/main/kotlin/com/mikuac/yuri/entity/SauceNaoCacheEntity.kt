@@ -1,7 +1,6 @@
 package com.mikuac.yuri.entity
 
-import org.hibernate.annotations.Type
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "saucenao_cache")
@@ -15,7 +14,6 @@ data class SauceNaoCacheEntity(
     val md5: String,
 
     @Lob
-    @Type(type = "org.hibernate.type.TextType")
     @Column(nullable = false, unique = false)
     val infoResult: String
 

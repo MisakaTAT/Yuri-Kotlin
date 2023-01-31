@@ -5,6 +5,7 @@ import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
+import com.mikuac.shiro.enums.MsgTypeEnum
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
@@ -34,7 +35,7 @@ class SendLike {
             bot.sendGroupMsg(event.groupId, "此操作需要管理员权限", false)
             return
         }
-        event.arrayMsg.filter { "at" == it.type }.forEach {
+        event.arrayMsg.filter { it.type == MsgTypeEnum.at }.forEach {
             status[it.data["qq"]!!.toLong()] = 0
             bot.sendGroupMsg(event.groupId, "重置成功", false)
         }

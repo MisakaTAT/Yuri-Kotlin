@@ -6,6 +6,7 @@ import cn.hutool.core.io.watch.watchers.DelayWatcher
 import com.google.gson.Gson
 import com.mikuac.yuri.annotation.Slf4j
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
+import jakarta.annotation.PostConstruct
 import org.apache.commons.io.FileUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.ExitCodeGenerator
@@ -17,7 +18,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.WatchEvent
-import javax.annotation.PostConstruct
 import kotlin.system.exitProcess
 
 @Slf4j

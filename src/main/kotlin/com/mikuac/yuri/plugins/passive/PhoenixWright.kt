@@ -1,6 +1,6 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.mikuac.shiro.annotation.MessageHandler
+import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
@@ -31,7 +31,7 @@ class PhoenixWright {
         return MsgUtils.builder().img(img).build()
     }
 
-    @MessageHandler(cmd = RegexCMD.PHOENIX_WRIGHT)
+    @AnyMessageHandler(cmd = RegexCMD.PHOENIX_WRIGHT)
     fun phoenixWrightHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         try {
             bot.sendMsg(event, buildMsg(matcher), false)

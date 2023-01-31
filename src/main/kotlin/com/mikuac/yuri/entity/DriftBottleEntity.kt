@@ -1,7 +1,6 @@
 package com.mikuac.yuri.entity
 
-import org.hibernate.annotations.Type
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "driftbottle")
@@ -24,7 +23,6 @@ data class DriftBottleEntity(
     val userName: String,
 
     @Lob
-    @Type(type = "org.hibernate.type.TextType")
     @Column(nullable = false)
     val content: String,
 

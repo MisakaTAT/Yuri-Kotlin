@@ -4,7 +4,7 @@
 version: 2
 updates:
   # Maintain dependencies for Maven dependencies
-  - package-ecosystem: maven
+  - package-ecosystem: gradle
     directory: "/"
     schedule:
       interval: daily

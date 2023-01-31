@@ -10,8 +10,8 @@ import com.kennycason.kumo.image.AngleGenerator
 import com.kennycason.kumo.nlp.FrequencyAnalyzer
 import com.kennycason.kumo.nlp.tokenizer.api.WordTokenizer
 import com.kennycason.kumo.palette.ColorPalette
+import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.GroupMessageHandler
-import com.mikuac.shiro.annotation.MessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
@@ -19,6 +19,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotContainer
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
+import com.mikuac.shiro.enums.MsgTypeEnum
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.entity.WordCloudEntity
@@ -144,8 +145,8 @@ class WordCloud {
         getWordsForRange(userId, groupId, type, range).forEach { raw ->
             contents.addAll(
                 ShiroUtils
-                    .stringToMsgChain(raw)
-                    .filter { it.type == "text" }
+                    .rawToArrayMsg(raw)
+                    .filter { it.type == MsgTypeEnum.text }
                     .map { it.data["text"]!!.trim() }
                     .filter { !it.contains(filterRule) }
                     .toList()
@@ -175,7 +176,7 @@ class WordCloud {
         }
     }
 
-    @MessageHandler(cmd = RegexCMD.WORD_CLOUD_CRON)
+    @AnyMessageHandler(cmd = RegexCMD.WORD_CLOUD_CRON)
     fun wordCloudCronHandler(event: AnyMessageEvent, bot: Bot, matcher: Matcher) {
         if (event.userId !in Config.base.adminList) {
             bot.sendMsg(event, "此操作需要管理员权限", false)

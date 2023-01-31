@@ -6,6 +6,7 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
+import com.mikuac.shiro.enums.MsgTypeEnum
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.SendUtils
@@ -66,7 +67,7 @@ class ThrowUser {
     }
 
     private fun buildMsg(event: GroupMessageEvent): String {
-        val atList = event.arrayMsg.filter { "at" == it.type }
+        val atList = event.arrayMsg.filter { it.type == MsgTypeEnum.at }
         if (atList.isEmpty()) throw YuriException("请 @ 一名群成员")
         val atUserId = atList[0].data["qq"]!!
         if ("all" == atUserId) throw YuriException("哼哼～ 没想到你个笨蛋还想把所有人都丢出去")
