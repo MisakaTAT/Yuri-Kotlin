@@ -3,7 +3,7 @@
 group = "com.mikuac"
 
 plugins {
-    kotlin("jvm") version "1.8.0"
+    kotlin("jvm") version "1.8.10"
     kotlin("plugin.jpa") version "1.8.0"
     kotlin("plugin.spring") version "1.8.0"
     kotlin("plugin.allopen") version "1.8.0"
