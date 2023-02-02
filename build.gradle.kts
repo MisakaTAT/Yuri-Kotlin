@@ -6,7 +6,7 @@ plugins {
     kotlin("jvm") version "1.8.0"
     kotlin("plugin.jpa") version "1.8.10"
     kotlin("plugin.spring") version "1.8.0"
-    kotlin("plugin.allopen") version "1.8.0"
+    kotlin("plugin.allopen") version "1.8.10"
 
     id("io.freefair.lombok") version "6.6.1"
     // id("org.graalvm.buildtools.native") version "0.9.19"
