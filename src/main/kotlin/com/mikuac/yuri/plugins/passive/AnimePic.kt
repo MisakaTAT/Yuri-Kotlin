@@ -90,7 +90,7 @@ class AnimePic {
             bot.sendMsg(event, msg.first, false)
             val cdTime = Config.plugins.animePic.cd.times(1000L)
             expiringMap.put(event.groupId + event.userId, event.userId, cdTime, TimeUnit.MILLISECONDS)
-            val picMsgId = bot.sendMsg(event, buildPicMsg(msg.second), false).data?.messageId
+            val picMsgId = bot.sendMsg(event, buildPicMsg(msg.second), false)?.data?.messageId
             if (picMsgId != null) recallMsgPic(picMsgId, bot)
         } catch (e: YuriException) {
             e.message?.let { SendUtils.reply(event, bot, it) }
