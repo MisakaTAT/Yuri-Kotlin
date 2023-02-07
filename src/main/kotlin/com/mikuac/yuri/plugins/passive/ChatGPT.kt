@@ -26,7 +26,7 @@ class ChatGPT {
         }
     }
 
-    private fun request(prompt: String): List<ChatGPTDTO.Result.Choice> {
+    private fun request(prompt: String): List<ChatGPTDTO.Result.Choice>? {
         val config = Config.plugins.chatGPT
         if (config.token.isBlank() || config.model.isBlank()) throw YuriException("未正确配置 OpenAI 令牌或模型")
         headers["Authorization"] = "Bearer ${config.token}"
@@ -55,7 +55,7 @@ class ChatGPT {
         try {
             val prompt = matcher.group(1)
             if (prompt.isNullOrBlank()) return
-            val resp = request(prompt)
+            val resp = request(prompt) ?: throw YuriException("未知错误")
             if (resp.size > 1) {
                 val contents = ArrayList<String>()
                 resp.forEach {

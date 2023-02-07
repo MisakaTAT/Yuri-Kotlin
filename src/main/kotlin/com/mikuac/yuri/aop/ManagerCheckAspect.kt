@@ -27,8 +27,7 @@ class ManagerCheckAspect {
     fun handler(pjp: ProceedingJoinPoint) {
         pjp.args.forEach { arg ->
             if (arg is AnyMessageEvent) {
-                val groupId = arg.groupId ?: 0L
-                if (check(arg.userId, groupId, false)) pjp.proceed()
+                if (check(arg.userId, arg.groupId ?: 0L, false)) pjp.proceed()
                 return
             }
             if (arg is GroupMessageEvent) {

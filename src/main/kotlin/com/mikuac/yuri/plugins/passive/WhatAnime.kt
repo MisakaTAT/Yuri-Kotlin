@@ -131,12 +131,12 @@ class WhatAnime {
 
     @AnyMessageHandler(cmd = RegexCMD.WHAT_ANIME_SEARCH)
     fun whatAnimeHandler(bot: Bot, event: AnyMessageEvent) {
-        SearchModeUtils.setSearchMode(this.javaClass.simpleName, event.userId, event.groupId, bot)
+        SearchModeUtils.setSearchMode(this.javaClass.simpleName, event.userId, event.groupId ?: 0L, bot)
     }
 
     @AnyMessageHandler
     fun whatAnimeSearch(bot: Bot, event: AnyMessageEvent) {
-        if (!SearchModeUtils.check(this.javaClass.simpleName, event.userId, event.groupId)) return
+        if (!SearchModeUtils.check(this.javaClass.simpleName, event.userId, event.groupId ?: 0L)) return
         // 发送检索结果
         try {
             val msg = buildMsg(event.userId, event.groupId, event.arrayMsg) ?: return

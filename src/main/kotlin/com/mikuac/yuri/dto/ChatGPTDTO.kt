@@ -6,7 +6,7 @@ data class ChatGPTDTO(
 ) {
 
     data class Result(
-        val choices: List<Choice>
+        val choices: List<Choice>?
     ) {
         data class Choice(
             val text: String
