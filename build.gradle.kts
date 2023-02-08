@@ -56,7 +56,7 @@ dependencies {
     api("com.huaban:jieba-analysis:1.0.2")
     api("mysql:mysql-connector-java:8.0.32")
 
-    api("org.jetbrains.kotlin:kotlin-reflect:1.8.0")
+    api("org.jetbrains.kotlin:kotlin-reflect:1.8.10")
     api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 }
