@@ -1,12 +1,11 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.google.gson.Gson
+import com.alibaba.fastjson2.to
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
-import com.mikuac.yuri.dto.BlockChainDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.NetUtils
@@ -21,11 +20,25 @@ import java.util.regex.Matcher
 @Component
 class BlockChain {
 
-    private fun request(symbol: String): BlockChainDTO {
-        val data: BlockChainDTO
+    class BlockChain(
+        val status: String,
+        val ts: String,
+        val data: List<Ticker>
+    ) {
+        data class Ticker(
+            val open: Double,
+            val close: Double,
+            val low: Double,
+            val high: Double,
+            val amount: Double,
+        )
+    }
+
+    private fun request(symbol: String): BlockChain {
+        val data: BlockChain
         val api = "https://api.huobi.pro/market/history/kline?period=1day&size=1&symbol=${symbol}usdt"
         val resp = NetUtils.get(api, Config.plugins.blockChain.proxy)
-        data = Gson().fromJson(resp.body?.string(), BlockChainDTO::class.java)
+        data = resp.body?.string().to<BlockChain>()
         resp.close()
         if ("ok" != data.status) throw YuriException("数据获取失败")
         return data

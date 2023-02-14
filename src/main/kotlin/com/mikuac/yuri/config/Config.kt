@@ -3,7 +3,7 @@ package com.mikuac.yuri.config
 import cn.hutool.core.io.watch.SimpleWatcher
 import cn.hutool.core.io.watch.WatchMonitor
 import cn.hutool.core.io.watch.watchers.DelayWatcher
-import com.google.gson.Gson
+import com.alibaba.fastjson2.to
 import com.mikuac.yuri.annotation.Slf4j
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import jakarta.annotation.PostConstruct
@@ -56,7 +56,16 @@ class Config {
         }
 
         val reader = Files.newBufferedReader(Paths.get(configFileName))
-        val config = Gson().fromJson(reader, ConfigDataClass::class.java)
+        val json = StringBuffer()
+
+        reader.forEachLine {
+            if (!it.trim().startsWith("/")) {
+                json.append(it)
+            }
+        }
+
+        val config = json.toString().to<ConfigDataClass>()
+
         base = config.base
         plugins = config.plugins
 

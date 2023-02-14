@@ -1,6 +1,7 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.google.gson.Gson
+import com.alibaba.fastjson2.annotation.JSONField
+import com.alibaba.fastjson2.to
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
@@ -8,7 +9,6 @@ import com.mikuac.shiro.common.utils.OneBotMedia
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
-import com.mikuac.yuri.dto.GithubRepoDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.ImageUtils
@@ -21,11 +21,38 @@ import java.util.regex.Matcher
 @Component
 class GithubRepo {
 
-    private fun request(repoName: String): GithubRepoDTO {
-        val data: GithubRepoDTO
+    data class GithubRepo(
+        @JSONField(name = "total_count")
+        val totalCount: Int,
+        val items: List<Items>
+    ) {
+        data class Items(
+            val description: String,
+            val language: String,
+            val license: License? = null,
+            @JSONField(name = "full_name")
+            val fullName: String,
+            @JSONField(name = "html_url")
+            val htmlUrl: String,
+            @JSONField(name = "forks_count")
+            val forks: Int,
+            @JSONField(name = "stargazers_count")
+            val stars: Int,
+            @JSONField(name = "default_branch")
+            val defaultBranch: String,
+        ) {
+            data class License(
+                @JSONField(name = "spdx_id")
+                val spdxId: String? = null
+            )
+        }
+    }
+
+    private fun request(repoName: String): GithubRepo {
+        val data: GithubRepo
         val api = "https://api.github.com/search/repositories?q=${repoName}"
         val resp = NetUtils.get(api)
-        data = Gson().fromJson(resp.body?.string(), GithubRepoDTO::class.java)
+        data = resp.body?.string().to<GithubRepo>()
         resp.close()
         if (data.totalCount <= 0) throw YuriException("未找到名为 $repoName 的仓库")
         return data

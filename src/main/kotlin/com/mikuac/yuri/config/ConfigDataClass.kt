@@ -1,7 +1,5 @@
 package com.mikuac.yuri.config
 
-import com.mikuac.yuri.plugins.passive.SendLike
-
 data class ConfigDataClass(
     val base: Base,
     val plugins: Plugins

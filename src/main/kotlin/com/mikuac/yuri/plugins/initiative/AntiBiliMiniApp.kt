@@ -1,7 +1,7 @@
 package com.mikuac.yuri.plugins.initiative
 
-import com.google.gson.Gson
-import com.google.gson.JsonParser
+import com.alibaba.fastjson2.JSONObject
+import com.alibaba.fastjson2.to
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
@@ -9,7 +9,6 @@ import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.shiro.enums.MsgTypeEnum
-import com.mikuac.yuri.dto.BiliVideoApiDTO
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.NetUtils
 import com.mikuac.yuri.utils.RegexUtils
@@ -20,22 +19,50 @@ import org.springframework.stereotype.Component
 @Component
 class AntiBiliMiniApp {
 
-    private fun request(shortURL: String): BiliVideoApiDTO {
-        val data: BiliVideoApiDTO
+    data class AntiBiliMiniApp(
+        val code: Int,
+        val data: Data,
+        val message: String,
+    ) {
+        data class Data(
+            val bvid: String,
+            val pic: String,
+            val title: String,
+            val owner: Owner,
+            val stat: Stat
+        ) {
+            data class Owner(
+                val name: String,
+            )
+
+            data class Stat(
+                val aid: Int,
+                val view: Int,
+                val danmaku: Int,
+                val reply: Int,
+                val coin: Int,
+                val share: Int,
+                val like: Int
+            )
+        }
+    }
+
+    private fun request(shortURL: String): AntiBiliMiniApp {
+        val data: AntiBiliMiniApp
         val urlResp = NetUtils.get(shortURL)
         val bid = RegexUtils.group(Regex("(?<=video/)(.*)(?=/\\?)"), 1, urlResp.request.url.toString())
         urlResp.close()
         val api = "https://api.bilibili.com/x/web-interface/view?bvid=${bid}"
         val resp = NetUtils.get(api)
-        data = Gson().fromJson(resp.body?.string(), BiliVideoApiDTO::class.java)
+        data = resp.body?.string().to<AntiBiliMiniApp>()
         resp.close()
         if (data.code != 0) throw YuriException(data.message)
         return data
     }
 
     private fun buildMsg(json: String): String {
-        val jsonObject = JsonParser.parseString(json)
-        val shortURL = jsonObject.asJsonObject["meta"].asJsonObject["detail_1"].asJsonObject["qqdocurl"].asString
+        val jsonObject = JSONObject.parseObject(json)
+        val shortURL = jsonObject.getJSONObject("meta").getJSONObject("detail_1").getString("qqdocurl")
         val data = request(shortURL).data
         return MsgUtils.builder()
             .img(data.pic)

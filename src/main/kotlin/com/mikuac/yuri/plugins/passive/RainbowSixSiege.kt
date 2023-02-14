@@ -1,7 +1,7 @@
 package com.mikuac.yuri.plugins.passive
 
-import RainbowSixSiegeDTO
-import com.google.gson.Gson
+import com.alibaba.fastjson2.annotation.JSONField
+import com.alibaba.fastjson2.to
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
@@ -19,14 +19,95 @@ import java.util.regex.Matcher
 @Component
 class RainbowSixSiege {
 
-    private fun request(username: String): RainbowSixSiegeDTO {
+    data class RainbowSixSiege(
+        val status: Int,
+        val username: String,
+        @JSONField(name = "Basicstat")
+        val basicStat: List<BasicStat>,
+        @JSONField(name = "StatGeneral")
+        val statGeneral: List<StatGeneral>,
+        @JSONField(name = "StatBHS")
+        val statBHS: List<StatBHS>,
+        @JSONField(name = "StatCR")
+        val statCR: List<StatCR>,
+    ) {
+        data class BasicStat(
+            val abandons: Int,
+            val deaths: Int,
+            val id: String,
+            val kills: Int,
+            @JSONField(name = "last_match_mmr_change")
+            val lastMatchMmrChange: Int,
+            val level: Int,
+            val losses: Int,
+            @JSONField(name = "max_mmr")
+            val maxMmr: Double,
+            @JSONField(name = "max_rank")
+            val maxRank: Int,
+            val mmr: Double,
+            val platform: String,
+            val rank: Int,
+            val region: String,
+            val season: Int,
+            @JSONField(name = "skill_mean")
+            val skillMean: Double,
+            @JSONField(name = "skill_stdev")
+            val skillStDev: Double,
+            @JSONField(name = "top_rank_position")
+            val topRankPosition: Int,
+            @JSONField(name = "updated_at")
+            val updatedAt: String,
+            val wins: Int
+        )
+
+        data class StatGeneral(
+            val bulletsFired: Int,
+            val bulletsHit: Int,
+            val deaths: Int,
+            val headshot: Int,
+            val id: String,
+            val killAssists: Int,
+            val kills: Int,
+            val lost: Int,
+            val meleeKills: Int,
+            val penetrationKills: Int,
+            val played: Int,
+            val revives: Int,
+            val timePlayed: Int,
+            val won: Int
+        )
+
+        data class StatCR(
+            val deaths: Int,
+            val id: String,
+            val kills: Int,
+            val lost: Int,
+            val mmr: Double,
+            val model: String,
+            val played: Int,
+            val timePlayed: Int,
+            val won: Int
+        )
+
+        data class StatBHS(
+            @JSONField(name = "bestscore")
+            val bestScore: Int,
+            val id: String,
+            val lost: Int,
+            val model: String,
+            val played: Int,
+            val won: Int
+        )
+    }
+
+    private fun request(username: String): RainbowSixSiege {
         if (username.isEmpty()) throw YuriException("用户名不合法，请检查输入是否正确。")
-        val data: RainbowSixSiegeDTO
+        val data: RainbowSixSiege
         val resp = NetUtils.get(
             "https://www.r6s.cn/Stats?username=${username}",
             mapOf(Pair("referer", "no-referer"))
         )
-        data = Gson().fromJson(resp.body?.string(), RainbowSixSiegeDTO::class.java)
+        data = resp.body?.string().to<RainbowSixSiege>()
         resp.close()
         if (data.status != 200) throw YuriException("服务器可能爆炸惹，请稍后重试～")
         return data
@@ -36,7 +117,7 @@ class RainbowSixSiege {
         return FormatUtils.getNoMoreThanTwoDigits(a.toDouble() / b.toDouble())
     }
 
-    private fun buildMsg(data: RainbowSixSiegeDTO): String {
+    private fun buildMsg(data: RainbowSixSiege): String {
         val basicStat = data.basicStat.filter { "apac" == it.region }[0]
         val statGeneral = data.statGeneral[0]
         val ranked = data.statCR.filter { "ranked" == it.model }[0]

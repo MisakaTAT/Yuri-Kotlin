@@ -6,7 +6,6 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.shiro.enums.MsgTypeEnum
-import com.mikuac.yuri.bean.SearchModeBean
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import net.jodah.expiringmap.ExpirationPolicy
@@ -17,6 +16,13 @@ import java.util.concurrent.TimeUnit
 @Component
 class SearchModeUtils : BotPlugin() {
 
+    data class SearchMode(
+        val userId: Long,
+        val groupId: Long,
+        val mode: String,
+        val bot: Bot
+    )
+
     @AnyMessageHandler(cmd = RegexCMD.UNSET_SEARCH_MODE)
     fun unsetSearchMode(bot: Bot, event: AnyMessageEvent) {
         remove(event.userId, event.groupId, bot)
@@ -26,14 +32,14 @@ class SearchModeUtils : BotPlugin() {
 
         private val hashMap = hashMapOf("WhatAnime" to "番", "PicSearch" to "图")
 
-        private val expiringMap: ExpiringMap<Long, SearchModeBean> = ExpiringMap.builder()
+        private val expiringMap: ExpiringMap<Long, SearchMode> = ExpiringMap.builder()
             .variableExpiration()
             .expirationPolicy(ExpirationPolicy.CREATED)
-            .asyncExpirationListener { _: Long, value: SearchModeBean -> expCallBack(value) }
+            .asyncExpirationListener { _: Long, value: SearchMode -> expCallBack(value) }
             .build()
 
         // 过期通知
-        private fun expCallBack(value: SearchModeBean) {
+        private fun expCallBack(value: SearchMode) {
             SendUtils.at(
                 value.userId,
                 value.groupId,
@@ -48,7 +54,7 @@ class SearchModeUtils : BotPlugin() {
 
         fun setSearchMode(mode: String, userId: Long, groupId: Long, bot: Bot) {
             val key = userId + groupId
-            val info = SearchModeBean(userId = userId, groupId = groupId, mode = mode, bot)
+            val info = SearchMode(userId = userId, groupId = groupId, mode = mode, bot)
             val nativeMode: String
             if (isSearchMode(key)) {
                 nativeMode = hashMap[expiringMap[key]?.mode].toString()

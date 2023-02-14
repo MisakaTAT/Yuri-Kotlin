@@ -1,7 +1,6 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.google.gson.Gson
-import com.google.gson.JsonObject
+import com.alibaba.fastjson2.JSONObject
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.yuri.config.Config
@@ -26,10 +25,10 @@ class Ascii2d {
         // 查缓存
         val cache = repository.findByMd5(imgMd5)
         if (cache.isPresent) {
-            val json = Gson().fromJson(cache.get().infoResult, HashMap::class.java)
+            val json = JSONObject.parse(cache.get().infoResult)
             return Pair(
-                "${json["color"].toString()}\n[Tips] 该结果为数据库缓存",
-                "${json["bovw"].toString()}\n[Tips] 该结果为数据库缓存"
+                "${json["color"]}\n[Tips] 该结果为数据库缓存",
+                "${json["bovw"]}\n[Tips] 该结果为数据库缓存"
             )
         }
 
@@ -41,9 +40,9 @@ class Ascii2d {
         try {
             val colorSearchResult = request(0, colorUrl, proxy)
             val bovwSearchResult = request(1, colorUrl.replace("/color/", "/bovw/"), proxy)
-            val json = JsonObject()
-            json.addProperty("color", colorSearchResult)
-            json.addProperty("bovw", bovwSearchResult)
+            val json = JSONObject()
+            json["color"] = colorSearchResult
+            json["bovw"] = bovwSearchResult
             repository.save(Ascii2dCacheEntity(0, imgMd5, json.toString()))
             return Pair(colorSearchResult, bovwSearchResult)
         } catch (e: IndexOutOfBoundsException) {

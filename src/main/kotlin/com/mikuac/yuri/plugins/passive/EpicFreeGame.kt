@@ -2,8 +2,8 @@ package com.mikuac.yuri.plugins.passive
 
 import cn.hutool.core.date.DateField
 import cn.hutool.core.date.DateUtil
-import com.google.gson.Gson
-import com.google.gson.JsonParser
+import com.alibaba.fastjson2.JSONObject
+import com.alibaba.fastjson2.to
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
@@ -11,7 +11,6 @@ import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
-import com.mikuac.yuri.dto.EpicDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.NetUtils
@@ -25,13 +24,77 @@ import java.util.concurrent.TimeUnit
 @Component
 class EpicFreeGame {
 
-    private val expiringMap: ExpiringMap<String, EpicDTO> = ExpiringMap.builder()
+    class EpicFreeGame : ArrayList<EpicFreeGame.Item>() {
+        data class Item(
+            val customAttributes: List<CustomAttribute>,
+            val description: String,
+            val effectiveDate: String,
+            val id: String,
+            val keyImages: List<KeyImage>,
+            val price: Price,
+            val promotions: Promotions,
+            val seller: Seller,
+            val title: String,
+            val url: Any,
+            val productSlug: String?,
+            val urlSlug: String?
+        ) {
+            data class CustomAttribute(
+                val key: String,
+                val value: String
+            )
+
+            data class KeyImage(
+                val type: String,
+                val url: String
+            )
+
+            data class Price(
+                val totalPrice: TotalPrice
+            ) {
+                data class TotalPrice(
+                    val fmtPrice: FmtPrice,
+                ) {
+                    data class FmtPrice(
+                        val originalPrice: String
+                    )
+                }
+
+            }
+
+            data class Promotions(
+                val promotionalOffers: List<PromotionalOffers>,
+                val upcomingPromotionalOffers: List<UpcomingPromotionalOffer>
+            ) {
+                data class PromotionalOffers(
+                    val promotionalOffers: List<PromotionalOffer>
+                )
+
+                data class UpcomingPromotionalOffer(
+                    val promotionalOffers: List<PromotionalOffer>
+                )
+
+                data class PromotionalOffer(
+                    val startDate: String,
+                    val endDate: String
+                )
+            }
+
+            data class Seller(
+                val id: String,
+                val name: String
+            )
+
+        }
+    }
+
+    private val expiringMap: ExpiringMap<String, EpicFreeGame> = ExpiringMap.builder()
         .variableExpiration()
         .expirationPolicy(ExpirationPolicy.CREATED)
         .expiration(Config.plugins.epic.cacheTime.times(1000L), TimeUnit.MILLISECONDS)
         .build()
 
-    private fun request(): EpicDTO {
+    private fun request(): EpicFreeGame {
         // 检查缓存
         val cache = expiringMap["cache"]
         if (cache != null) return cache
@@ -42,15 +105,15 @@ class EpicFreeGame {
         headers["User-Agent"] =
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36"
 
-        val data: EpicDTO
+        val data: EpicFreeGame
         val api =
             "https://store-site-backend-static-ipv4.ak.epicgames.com/freeGamesPromotions?locale=zh-CN&country=CN&allowCountries=CN"
         val resp = NetUtils.get(api, headers)
-        val jsonObject = JsonParser.parseString(resp.body?.string())
+        val jsonObject = JSONObject.parseObject(resp.body?.string())
         resp.close()
-        val elements = jsonObject.asJsonObject["data"].asJsonObject["Catalog"].asJsonObject["searchStore"]
-            .asJsonObject["elements"].asJsonArray
-        data = Gson().fromJson(elements, EpicDTO::class.java)
+        val elements = jsonObject.getJSONObject("data").getJSONObject("Catalog").getJSONObject("searchStore")
+            .getString("elements")
+        data = elements.to<EpicFreeGame>()
         if (data.isEmpty()) throw YuriException("游戏列表为空")
         expiringMap["cache"] = data
         return data

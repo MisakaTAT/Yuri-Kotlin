@@ -1,6 +1,6 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.google.gson.Gson
+import com.alibaba.fastjson2.to
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
@@ -8,7 +8,6 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.annotation.Slf4j
 import com.mikuac.yuri.config.Config
-import com.mikuac.yuri.dto.AnimePicDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.NetUtils
@@ -26,18 +25,35 @@ import java.util.concurrent.TimeUnit
 @Component
 class AnimePic {
 
+    data class AnimePic(
+        val data: List<Data>,
+        val error: String
+    ) {
+        data class Data(
+            val author: String,
+            val pid: Int,
+            val title: String,
+            val uid: Int,
+            val urls: Urls,
+        )
+
+        data class Urls(
+            val original: String
+        )
+    }
+
     private val expiringMap: ExpiringMap<Long, Long> = ExpiringMap.builder()
         .variableExpiration()
         .expirationPolicy(ExpirationPolicy.CREATED)
         .expiration(Config.plugins.animePic.cd.times(1000L), TimeUnit.MILLISECONDS)
         .build()
 
-    private fun request(r18: Boolean): AnimePicDTO.Data {
-        val data: AnimePicDTO
+    private fun request(r18: Boolean): AnimePic.Data {
+        val data: AnimePic
         var api = "https://api.lolicon.app/setu/v2"
         if (r18) api = "$api?r18=1"
         val resp = NetUtils.get(api)
-        data = Gson().fromJson(resp.body?.string(), AnimePicDTO::class.java)
+        data = resp.body?.string().to<AnimePic>()
         resp.close()
         if (data.error.isNotEmpty()) throw YuriException(data.error)
         if (data.data.isEmpty()) throw YuriException("列表为空")

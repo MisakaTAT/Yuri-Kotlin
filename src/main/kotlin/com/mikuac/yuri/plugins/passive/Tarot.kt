@@ -1,12 +1,12 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.google.gson.Gson
+import com.alibaba.fastjson2.to
+import com.alibaba.fastjson2.toJSONString
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
-import com.mikuac.yuri.bean.TarotDataBean
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
@@ -27,6 +27,17 @@ import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 @Component
 class Tarot : ApplicationRunner {
 
+    data class Tarot(
+        val tarot: List<Tarot>,
+    ) {
+        data class Tarot(
+            val name: String,
+            val positive: String,
+            val negative: String,
+            val imageName: String
+        )
+    }
+
     private val expiringMap: ExpiringMap<Long, Boolean> = ExpiringMap.builder()
         .variableExpiration()
         .expirationPolicy(ExpirationPolicy.CREATED)
@@ -34,7 +45,7 @@ class Tarot : ApplicationRunner {
         .build()
 
     companion object {
-        lateinit var data: TarotDataBean
+        lateinit var data: Tarot
     }
 
     override fun run(args: ApplicationArguments?) {
@@ -42,7 +53,7 @@ class Tarot : ApplicationRunner {
         val stream = javaClass.classLoader.getResourceAsStream("tarot.yaml")!!
         val bufferedReader = BufferedReader(InputStreamReader(stream, "UTF-8"))
         val map: HashMap<String, JvmType.Object> = yaml.load(bufferedReader)
-        data = Gson().fromJson(Gson().toJson(map), TarotDataBean::class.java)
+        data = map.toJSONString().to<Tarot>()
     }
 
     private fun buildMsg(msgId: Int): String {

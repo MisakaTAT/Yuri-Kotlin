@@ -1,14 +1,13 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.google.gson.Gson
-import com.google.gson.JsonObject
+import com.alibaba.fastjson2.JSONObject
+import com.alibaba.fastjson2.to
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
-import com.mikuac.yuri.dto.ChatGPTDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.NetUtils
@@ -20,33 +19,56 @@ import java.util.regex.Matcher
 @Component
 class ChatGPT {
 
+    data class ChatGPT(
+        val result: Result,
+        val error: Error
+    ) {
+
+        data class Result(
+            val choices: List<Choice>?
+        ) {
+            data class Choice(
+                val text: String
+            )
+        }
+
+        data class Error(
+            val error: Error
+        ) {
+            data class Error(
+                val message: String
+            )
+        }
+
+    }
+
     private val headers = object : HashMap<String, String>() {
         init {
             put("Content-Type", "application/json; charset=utf-8")
         }
     }
 
-    private fun request(prompt: String): List<ChatGPTDTO.Result.Choice>? {
+    private fun request(prompt: String): List<ChatGPT.Result.Choice>? {
         val config = Config.plugins.chatGPT
         if (config.token.isBlank() || config.model.isBlank()) throw YuriException("未正确配置 OpenAI 令牌或模型")
         headers["Authorization"] = "Bearer ${config.token}"
 
-        val params = JsonObject()
-        params.addProperty("model", Config.plugins.chatGPT.model)
-        params.addProperty("prompt", "$prompt。")
-        params.addProperty("temperature", 0.9)
-        params.addProperty("max_tokens", 4000)
+        val params = JSONObject()
+        params["model"] = Config.plugins.chatGPT.model
+        params["prompt"] = "$prompt。"
+        params["temperature"] = 0.9
+        params["max_tokens"] = 4000
 
-        val data: ChatGPTDTO.Result
-        val error: ChatGPTDTO.Error
+        val data: ChatGPT.Result
+        val error: ChatGPT.Error
         val api = "https://api.openai.com/v1/completions"
         val resp = NetUtils.post(api, headers, params.toString(), config.proxy, 60)
         if (resp.code == 400) {
-            error = Gson().fromJson(resp.body?.string(), ChatGPTDTO.Error::class.java)
+            error = resp.body?.string().to<ChatGPT.Error>()
             resp.close()
             throw YuriException(error.error.message)
         }
-        data = Gson().fromJson(resp.body?.string(), ChatGPTDTO.Result::class.java)
+        data = resp.body?.string().to<ChatGPT.Result>()
         return data.choices
     }
 
