@@ -24,18 +24,19 @@ import java.util.concurrent.TimeUnit
 @Component
 class EpicFreeGame {
 
-    class EpicFreeGame : ArrayList<EpicFreeGame.Item>() {
-        data class Item(
+    data class EpicFreeGame(
+        val elements: List<Elements>
+    ) {
+        data class Elements(
             val customAttributes: List<CustomAttribute>,
             val description: String,
             val effectiveDate: String,
             val id: String,
             val keyImages: List<KeyImage>,
             val price: Price,
-            val promotions: Promotions,
+            val promotions: Promotions?,
             val seller: Seller,
             val title: String,
-            val url: Any,
             val productSlug: String?,
             val urlSlug: String?
         ) {
@@ -111,10 +112,9 @@ class EpicFreeGame {
         val resp = NetUtils.get(api, headers)
         val jsonObject = JSONObject.parseObject(resp.body?.string())
         resp.close()
-        val elements = jsonObject.getJSONObject("data").getJSONObject("Catalog").getJSONObject("searchStore")
-            .getString("elements")
+        val elements = jsonObject.getJSONObject("data").getJSONObject("Catalog").getString("searchStore")
         data = elements.to<EpicFreeGame>()
-        if (data.isEmpty()) throw YuriException("游戏列表为空")
+        if (data.elements.isEmpty()) throw YuriException("游戏列表为空")
         expiringMap["cache"] = data
         return data
     }
@@ -127,7 +127,7 @@ class EpicFreeGame {
 
     private fun buildMsg(): ArrayList<String> {
         try {
-            val games = request()
+            val games = request().elements
             val msgList = ArrayList<String>()
             for (game in games) {
                 val gameName = game.title
@@ -136,8 +136,9 @@ class EpicFreeGame {
                 if (game.keyImages.isNotEmpty()) gameThumbnail = game.keyImages[0].url
                 val gamePrice = game.price.totalPrice.fmtPrice.originalPrice
                 try {
-                    val gamePromotions = game.promotions.promotionalOffers
-                    val upcomingPromotions = game.promotions.upcomingPromotionalOffers
+                    val promotions = game.promotions ?: throw YuriException()
+                    val gamePromotions = promotions.promotionalOffers
+                    val upcomingPromotions = promotions.upcomingPromotionalOffers
                     if (gamePromotions.isEmpty() && upcomingPromotions.isNotEmpty()) {
                         // Promotion is not active yet, but will be active soon.
                         val promotionData = upcomingPromotions[0].promotionalOffers[0]
