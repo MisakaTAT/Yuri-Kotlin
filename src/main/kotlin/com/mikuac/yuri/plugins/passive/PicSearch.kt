@@ -24,12 +24,12 @@ class PicSearch {
 
     @AnyMessageHandler(cmd = RegexCMD.SAUCE_NAO_SEARCH)
     fun picHandler(bot: Bot, event: AnyMessageEvent) {
-        SearchModeUtils.setSearchMode(this.javaClass.simpleName, event.userId, event.groupId, bot)
+        SearchModeUtils.setSearchMode(this.javaClass.simpleName, event.userId, event.groupId ?: 0L, bot)
     }
 
     @AnyMessageHandler
     fun picSearch(bot: Bot, event: AnyMessageEvent) {
-        if (!SearchModeUtils.check(this.javaClass.simpleName, event.userId, event.groupId)) return
+        if (!SearchModeUtils.check(this.javaClass.simpleName, event.userId, event.groupId ?: 0L)) return
         // 发送检索结果
         try {
             val imgUrl = SearchModeUtils.getImgUrl(event.userId, event.groupId, event.arrayMsg)
