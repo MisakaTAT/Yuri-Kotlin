@@ -8,7 +8,7 @@ plugins {
     kotlin("plugin.spring") version "1.8.0"
     kotlin("plugin.allopen") version "1.8.10"
 
-    id("io.freefair.lombok") version "6.6.1"
+    id("io.freefair.lombok") version "6.6.2"
     // id("org.graalvm.buildtools.native") version "0.9.19"
     id("org.springframework.boot") version "3.0.2"
     id("io.spring.dependency-management") version "1.1.0"
