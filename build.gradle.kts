@@ -42,7 +42,7 @@ dependencies {
 
     api("com.mikuac:shiro:2.0.2")
     api("net.jodah:expiringmap:0.5.10")
-    api("cn.hutool:hutool-core:5.8.11")
+    api("cn.hutool:hutool-core:5.8.12")
     api("cn.hutool:hutool-system:5.8.11")
     api("com.alibaba.fastjson2:fastjson2-kotlin:2.0.23")
     api("net.coobird:thumbnailator:0.4.19")
