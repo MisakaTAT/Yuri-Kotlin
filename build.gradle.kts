@@ -44,7 +44,7 @@ dependencies {
     api("net.jodah:expiringmap:0.5.10")
     api("cn.hutool:hutool-core:5.8.12")
     api("cn.hutool:hutool-system:5.8.11")
-    api("com.alibaba.fastjson2:fastjson2-kotlin:2.0.23")
+    api("com.alibaba.fastjson2:fastjson2-kotlin:2.0.24")
     api("net.coobird:thumbnailator:0.4.19")
     api("com.github.oshi:oshi-core:6.4.0")
     api("com.google.guava:guava:31.1-jre")
