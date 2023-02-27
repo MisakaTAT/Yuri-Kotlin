@@ -40,7 +40,7 @@ dependencies {
     api("org.springframework.boot:spring-boot-starter-data-jpa")
     api("org.springframework.boot:spring-boot-starter-validation")
 
-    api("com.mikuac:shiro:2.0.0")
+    api("com.mikuac:shiro:2.0.2")
     api("net.jodah:expiringmap:0.5.10")
     api("cn.hutool:hutool-core:5.8.11")
     api("cn.hutool:hutool-system:5.8.11")
