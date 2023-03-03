@@ -194,7 +194,7 @@ class WordCloud {
         // 跳过周日
         if (now.dayOfWeek == DayOfWeek.SUNDAY) return
         // 跳过每月最后一天
-        if (now == now.with(TemporalAdjusters.firstDayOfMonth())) return
+        if (now == now.with(TemporalAdjusters.lastDayOfMonth())) return
         task("今日")
     }
 
@@ -202,7 +202,7 @@ class WordCloud {
     fun taskForWeek() {
         val now = LocalDateTime.now()
         // 跳过每月最后一天
-        if (now == now.with(TemporalAdjusters.firstDayOfMonth())) return
+        if (now == now.with(TemporalAdjusters.lastDayOfMonth())) return
         task("本周")
     }
 
