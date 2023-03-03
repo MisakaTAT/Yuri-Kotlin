@@ -1,6 +1,6 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.alibaba.fastjson2.to
+import com.google.gson.Gson
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
@@ -38,7 +38,7 @@ class BlockChain {
         val data: BlockChain
         val api = "https://api.huobi.pro/market/history/kline?period=1day&size=1&symbol=${symbol}usdt"
         val resp = NetUtils.get(api, Config.plugins.blockChain.proxy)
-        data = resp.body?.string().to<BlockChain>()
+        data = Gson().fromJson(resp.body?.string(), BlockChain::class.java)
         resp.close()
         if ("ok" != data.status) throw YuriException("数据获取失败")
         return data

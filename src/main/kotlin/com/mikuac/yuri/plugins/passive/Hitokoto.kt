@@ -1,6 +1,6 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.alibaba.fastjson2.to
+import com.google.gson.Gson
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
@@ -47,7 +47,7 @@ class Hitokoto {
         val type = types[Random().nextInt(types.size)]
         val api = "https://v1.hitokoto.cn?c=${type}"
         val resp = NetUtils.get(api)
-        data = resp.body?.string().to<Hitokoto>()
+        data = Gson().fromJson(resp.body?.string(), Hitokoto::class.java)
         resp.close()
         return data
     }

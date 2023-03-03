@@ -1,6 +1,7 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.alibaba.fastjson2.JSONObject
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.yuri.config.Config
@@ -25,10 +26,9 @@ class Ascii2d {
         // 查缓存
         val cache = repository.findByMd5(imgMd5)
         if (cache.isPresent) {
-            val json = JSONObject.parse(cache.get().infoResult)
+            val json = Gson().fromJson(cache.get().infoResult, HashMap::class.java)
             return Pair(
-                "${json["color"]}\n[Tips] 该结果为数据库缓存",
-                "${json["bovw"]}\n[Tips] 该结果为数据库缓存"
+                "${json["color"]}\n[Tips] 该结果为数据库缓存", "${json["bovw"]}\n[Tips] 该结果为数据库缓存"
             )
         }
 
@@ -40,9 +40,9 @@ class Ascii2d {
         try {
             val colorSearchResult = request(0, colorUrl, proxy)
             val bovwSearchResult = request(1, colorUrl.replace("/color/", "/bovw/"), proxy)
-            val json = JSONObject()
-            json["color"] = colorSearchResult
-            json["bovw"] = bovwSearchResult
+            val json = JsonObject()
+            json.addProperty("color", colorSearchResult)
+            json.addProperty("bovw", bovwSearchResult)
             repository.save(Ascii2dCacheEntity(0, imgMd5, json.toString()))
             return Pair(colorSearchResult, bovwSearchResult)
         } catch (e: IndexOutOfBoundsException) {
@@ -67,13 +67,9 @@ class Ascii2d {
         val link = itemBox.select("div.detail-box > h6 > a")[0]
         val author = itemBox.select("div.detail-box > h6 > a")[1]
 
-        return MsgUtils.builder()
-            .img(thumbnail.attr("abs:src"))
-            .text("\n标题：${link.text()}")
-            .text("\n作者：${author.text()}")
-            .text("\n链接：${link.attr("abs:href")}")
-            .text("\n数据来源：Ascii2d ${if (type == 0) "色合検索" else "特徴検索"}")
-            .build()
+        return MsgUtils.builder().img(thumbnail.attr("abs:src")).text("\n标题：${link.text()}")
+            .text("\n作者：${author.text()}").text("\n链接：${link.attr("abs:href")}")
+            .text("\n数据来源：Ascii2d ${if (type == 0) "色合検索" else "特徴検索"}").build()
     }
 
 }

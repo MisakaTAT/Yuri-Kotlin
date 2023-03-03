@@ -1,8 +1,8 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.alibaba.fastjson2.annotation.JSONField
-import com.alibaba.fastjson2.to
 import com.google.common.util.concurrent.RateLimiter
+import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
@@ -41,16 +41,16 @@ class AnimeCrawler : ApplicationRunner {
         val result: List<Result>
     ) {
         data class Result(
-            @JSONField(name = "day_of_week")
+            @SerializedName("day_of_week")
             val dayOfWeek: Int,
-            @JSONField(name = "is_today")
+            @SerializedName("is_today")
             val isToday: Int,
             val seasons: List<Season>
         ) {
             data class Season(
                 val cover: String,
                 val delay: Int,
-                @JSONField(name = "pub_time")
+                @SerializedName("pub_time")
                 val pubTime: String,
                 val title: String,
             )
@@ -76,7 +76,7 @@ class AnimeCrawler : ApplicationRunner {
         val data: AnimeCrawler
         val api = "https://bangumi.bilibili.com/web_api/timeline_global"
         val resp = NetUtils.get(api)
-        data = resp.body?.string().to<AnimeCrawler>()
+        data = Gson().fromJson(resp.body?.string(), AnimeCrawler::class.java)
         resp.close()
         if (data.code != 0) throw YuriException(data.message)
         return data

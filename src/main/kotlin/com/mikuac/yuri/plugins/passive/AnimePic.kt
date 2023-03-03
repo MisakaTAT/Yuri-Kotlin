@@ -1,6 +1,6 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.alibaba.fastjson2.to
+import com.google.gson.Gson
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
@@ -53,7 +53,7 @@ class AnimePic {
         var api = "https://api.lolicon.app/setu/v2"
         if (r18) api = "$api?r18=1"
         val resp = NetUtils.get(api)
-        data = resp.body?.string().to<AnimePic>()
+        data = Gson().fromJson(resp.body?.string(), AnimePic::class.java)
         resp.close()
         if (data.error.isNotEmpty()) throw YuriException(data.error)
         if (data.data.isEmpty()) throw YuriException("列表为空")

@@ -1,93 +1,68 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.alibaba.fastjson2.JSONObject
-import com.alibaba.fastjson2.to
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
-import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
-import com.mikuac.yuri.utils.NetUtils
 import com.mikuac.yuri.utils.SendUtils
+import com.theokanning.openai.OpenAiApi
+import com.theokanning.openai.completion.chat.ChatCompletionRequest
+import com.theokanning.openai.completion.chat.ChatCompletionResult
+import com.theokanning.openai.completion.chat.ChatMessage
+import com.theokanning.openai.completion.chat.ChatMessageRole
+import com.theokanning.openai.service.OpenAiService
+import com.theokanning.openai.service.OpenAiService.*
 import org.springframework.stereotype.Component
+import java.net.InetSocketAddress
+import java.net.Proxy
+import java.time.Duration
 import java.util.regex.Matcher
 
 @Shiro
 @Component
 class ChatGPT {
 
-    data class ChatGPT(
-        val result: Result,
-        val error: Error
-    ) {
-
-        data class Result(
-            val choices: List<Choice>?
-        ) {
-            data class Choice(
-                val text: String
-            )
-        }
-
-        data class Error(
-            val error: Error
-        ) {
-            data class Error(
-                val message: String
-            )
-        }
-
-    }
-
-    private val headers = object : HashMap<String, String>() {
-        init {
-            put("Content-Type", "application/json; charset=utf-8")
-        }
-    }
-
-    private fun request(prompt: String): List<ChatGPT.Result.Choice>? {
+    private fun callChatCompletion(content: String): ChatCompletionResult? {
+        val proxy = Config.base.proxy
         val config = Config.plugins.chatGPT
         if (config.token.isBlank() || config.model.isBlank()) throw YuriException("未正确配置 OpenAI 令牌或模型")
-        headers["Authorization"] = "Bearer ${config.token}"
-
-        val params = JSONObject()
-        params["model"] = Config.plugins.chatGPT.model
-        params["prompt"] = "$prompt。"
-        params["temperature"] = 0.9
-        params["max_tokens"] = 4000
-
-        val data: ChatGPT.Result
-        val error: ChatGPT.Error
-        val api = "https://api.openai.com/v1/completions"
-        val resp = NetUtils.post(api, headers, params.toString(), config.proxy, 60)
-        if (resp.code == 400) {
-            error = resp.body?.string().to<ChatGPT.Error>()
-            resp.close()
-            throw YuriException(error.error.message)
+        var service = OpenAiService(config.token)
+        if (config.proxy) {
+            val mapper = defaultObjectMapper()
+            val client = defaultClient(config.token, Duration.ofSeconds(10))
+                .newBuilder()
+                .proxy(Proxy(Proxy.Type.valueOf(proxy.type), InetSocketAddress(proxy.host, proxy.port)))
+                .build()
+            val retrofit = defaultRetrofit(client, mapper)
+            val api = retrofit.create(OpenAiApi::class.java)
+            service = OpenAiService(api)
         }
-        data = resp.body?.string().to<ChatGPT.Result>()
-        return data.choices
+        val messages = ArrayList<ChatMessage>()
+        if (config.messages.isNotEmpty()) {
+            config.messages.forEach {
+                messages.add(ChatMessage(ChatMessageRole.valueOf(it.role).value(), it.content.trim()))
+            }
+        }
+        messages.add(ChatMessage(ChatMessageRole.USER.value(), content.trim()))
+        val chatCompletionRequest = ChatCompletionRequest.builder()
+            .model(config.model)
+            .messages(messages)
+            .build()
+        return service.createChatCompletion(chatCompletionRequest)
     }
 
     @AnyMessageHandler(cmd = RegexCMD.CHAT_GPT)
     fun chatGPTHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         try {
-            val prompt = matcher.group(1)
-            if (prompt.isNullOrBlank()) return
-            val resp = request(prompt) ?: throw YuriException("未知错误")
-            if (resp.size > 1) {
-                val contents = ArrayList<String>()
-                resp.forEach {
-                    contents.add(it.text.trim())
-                }
-                val msg = ShiroUtils.generateForwardMsg(Config.base.selfId, Config.base.nickname, contents)
-                bot.sendForwardMsg(event, msg)
-                return
+            val content = matcher.group(1)
+            if (content.isNullOrBlank()) return
+            val choices = callChatCompletion(content)?.choices ?: throw YuriException("ChatGPT 返回为空")
+            if (choices.isNotEmpty()) {
+                SendUtils.reply(event, bot, choices[0].message.content.trim())
             }
-            SendUtils.reply(event, bot, resp[0].text.trim())
         } catch (e: YuriException) {
             e.message?.let { SendUtils.reply(event, bot, it) }
         } catch (e: Exception) {

@@ -2,7 +2,7 @@ package com.mikuac.yuri.plugins.initiative
 
 import cn.hutool.core.date.DatePattern
 import cn.hutool.core.date.LocalDateTimeUtil
-import com.alibaba.fastjson2.to
+import com.google.gson.Gson
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
@@ -61,7 +61,7 @@ class ParseYoutube {
         val api = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet," +
                 "statistics&id=${id}&key=${Config.plugins.parseYoutube.apiKey}"
         val resp = NetUtils.get(api, true)
-        data = resp.body?.string().to<ParseYoutube>()
+        data = Gson().fromJson(resp.body?.string(), ParseYoutube::class.java)
         resp.close()
         return data
     }

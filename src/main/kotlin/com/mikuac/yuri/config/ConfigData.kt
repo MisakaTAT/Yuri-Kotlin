@@ -1,6 +1,6 @@
 package com.mikuac.yuri.config
 
-data class ConfigDataClass(
+data class ConfigData(
     val base: Base,
     val plugins: Plugins
 ) {
@@ -114,9 +114,15 @@ data class ConfigDataClass(
 
         data class ChatGPT(
             val token: String,
+            val messages: List<ChatMessage>,
             val model: String,
             val proxy: Boolean
-        )
+        ) {
+            data class ChatMessage(
+                val role: String,
+                val content: String,
+            )
+        }
 
         data class SendLike(
             val maxTimes: Int

@@ -1,7 +1,7 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.alibaba.fastjson2.annotation.JSONField
-import com.alibaba.fastjson2.to
+import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.entity.SauceNaoCacheEntity
@@ -19,9 +19,9 @@ class SauceNao {
         val results: List<Result>
     ) {
         data class Header(
-            @JSONField(name = "long_remaining")
+            @SerializedName("long_remaining")
             var longRemaining: Int,
-            @JSONField(name = "short_remaining")
+            @SerializedName("short_remaining")
             val shortRemaining: Int,
         )
 
@@ -30,30 +30,30 @@ class SauceNao {
             val header: Header
         ) {
             data class Data(
-                @JSONField(name = "ext_urls")
+                @SerializedName("ext_urls")
                 val extUrls: List<String>,
-                @JSONField(name = "member_id")
+                @SerializedName("member_id")
                 val authorId: Long,
-                @JSONField(name = "member_name")
+                @SerializedName("member_name")
                 val authorName: String,
-                @JSONField(name = "pixiv_id")
+                @SerializedName("pixiv_id")
                 val pixivId: Long,
                 val title: String,
                 val source: String,
-                @JSONField(name = "eng_name")
+                @SerializedName("eng_name")
                 val engName: String,
-                @JSONField(name = "jp_name")
+                @SerializedName("jp_name")
                 val jpName: String,
-                @JSONField(name = "tweet_id")
+                @SerializedName("tweet_id")
                 val tweetId: String,
-                @JSONField(name = "twitter_user_id")
+                @SerializedName("twitter_user_id")
                 val twitterUserId: String,
-                @JSONField(name = "twitter_user_handle")
+                @SerializedName("twitter_user_handle")
                 val twitterUserHandle: String
             )
 
             data class Header(
-                @JSONField(name = "index_id")
+                @SerializedName("index_id")
                 val indexId: Int,
                 val similarity: String,
                 val thumbnail: String
@@ -71,7 +71,7 @@ class SauceNao {
             val key = Config.plugins.picSearch.sauceNaoKey
             val api = "https://saucenao.com/search.php?api_key=${key}&output_type=2&numres=3&db=999&url=${imgUrl}"
             val resp = NetUtils.get(api, Config.plugins.picSearch.proxy)
-            data = resp.body?.string().to<SauceNao>()
+            data = Gson().fromJson(resp.body?.string(), SauceNao::class.java)
             resp.close()
             if (data.header.longRemaining <= 0) throw YuriException("今日的搜索配额已耗尽啦")
             if (data.header.shortRemaining <= 0) throw YuriException("短时间内搜索配额已耗尽")

@@ -1,7 +1,7 @@
 package com.mikuac.yuri.plugins.initiative
 
-import com.alibaba.fastjson2.JSONObject
-import com.alibaba.fastjson2.to
+import com.google.gson.Gson
+import com.google.gson.JsonParser
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
@@ -54,15 +54,15 @@ class AntiBiliMiniApp {
         urlResp.close()
         val api = "https://api.bilibili.com/x/web-interface/view?bvid=${bid}"
         val resp = NetUtils.get(api)
-        data = resp.body?.string().to<AntiBiliMiniApp>()
+        data = Gson().fromJson(resp.body?.string(), AntiBiliMiniApp::class.java)
         resp.close()
         if (data.code != 0) throw YuriException(data.message)
         return data
     }
 
     private fun buildMsg(json: String): String {
-        val jsonObject = JSONObject.parseObject(json)
-        val shortURL = jsonObject.getJSONObject("meta").getJSONObject("detail_1").getString("qqdocurl")
+        val jsonObject = JsonParser.parseString(json)
+        val shortURL = jsonObject.asJsonObject["meta"].asJsonObject["detail_1"].asJsonObject["qqdocurl"].asString
         val data = request(shortURL).data
         return MsgUtils.builder()
             .img(data.pic)

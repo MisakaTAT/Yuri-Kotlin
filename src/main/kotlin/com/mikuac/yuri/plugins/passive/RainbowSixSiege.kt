@@ -1,7 +1,7 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.alibaba.fastjson2.annotation.JSONField
-import com.alibaba.fastjson2.to
+import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
@@ -22,13 +22,13 @@ class RainbowSixSiege {
     data class RainbowSixSiege(
         val status: Int,
         val username: String,
-        @JSONField(name = "Basicstat")
+        @SerializedName("Basicstat")
         val basicStat: List<BasicStat>,
-        @JSONField(name = "StatGeneral")
+        @SerializedName("StatGeneral")
         val statGeneral: List<StatGeneral>,
-        @JSONField(name = "StatBHS")
+        @SerializedName("StatBHS")
         val statBHS: List<StatBHS>,
-        @JSONField(name = "StatCR")
+        @SerializedName("StatCR")
         val statCR: List<StatCR>,
     ) {
         data class BasicStat(
@@ -36,26 +36,26 @@ class RainbowSixSiege {
             val deaths: Int,
             val id: String,
             val kills: Int,
-            @JSONField(name = "last_match_mmr_change")
+            @SerializedName("last_match_mmr_change")
             val lastMatchMmrChange: Int,
             val level: Int,
             val losses: Int,
-            @JSONField(name = "max_mmr")
+            @SerializedName("max_mmr")
             val maxMmr: Double,
-            @JSONField(name = "max_rank")
+            @SerializedName("max_rank")
             val maxRank: Int,
             val mmr: Double,
             val platform: String,
             val rank: Int,
             val region: String,
             val season: Int,
-            @JSONField(name = "skill_mean")
+            @SerializedName("skill_mean")
             val skillMean: Double,
-            @JSONField(name = "skill_stdev")
+            @SerializedName("skill_stdev")
             val skillStDev: Double,
-            @JSONField(name = "top_rank_position")
+            @SerializedName("top_rank_position")
             val topRankPosition: Int,
-            @JSONField(name = "updated_at")
+            @SerializedName("updated_at")
             val updatedAt: String,
             val wins: Int
         )
@@ -90,7 +90,7 @@ class RainbowSixSiege {
         )
 
         data class StatBHS(
-            @JSONField(name = "bestscore")
+            @SerializedName("bestscore")
             val bestScore: Int,
             val id: String,
             val lost: Int,
@@ -107,7 +107,7 @@ class RainbowSixSiege {
             "https://www.r6s.cn/Stats?username=${username}",
             mapOf(Pair("referer", "no-referer"))
         )
-        data = resp.body?.string().to<RainbowSixSiege>()
+        data = Gson().fromJson(resp.body?.string(), RainbowSixSiege::class.java)
         resp.close()
         if (data.status != 200) throw YuriException("服务器可能爆炸惹，请稍后重试～")
         return data

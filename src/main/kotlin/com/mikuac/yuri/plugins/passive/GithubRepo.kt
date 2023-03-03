@@ -1,7 +1,7 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.alibaba.fastjson2.annotation.JSONField
-import com.alibaba.fastjson2.to
+import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
@@ -22,7 +22,7 @@ import java.util.regex.Matcher
 class GithubRepo {
 
     data class GithubRepo(
-        @JSONField(name = "total_count")
+        @SerializedName("total_count")
         val totalCount: Int,
         val items: List<Items>
     ) {
@@ -30,19 +30,19 @@ class GithubRepo {
             val description: String,
             val language: String,
             val license: License? = null,
-            @JSONField(name = "full_name")
+            @SerializedName("full_name")
             val fullName: String,
-            @JSONField(name = "html_url")
+            @SerializedName("html_url")
             val htmlUrl: String,
-            @JSONField(name = "forks_count")
+            @SerializedName("forks_count")
             val forks: Int,
-            @JSONField(name = "stargazers_count")
+            @SerializedName("stargazers_count")
             val stars: Int,
-            @JSONField(name = "default_branch")
+            @SerializedName("default_branch")
             val defaultBranch: String,
         ) {
             data class License(
-                @JSONField(name = "spdx_id")
+                @SerializedName("spdx_id")
                 val spdxId: String? = null
             )
         }
@@ -52,7 +52,7 @@ class GithubRepo {
         val data: GithubRepo
         val api = "https://api.github.com/search/repositories?q=${repoName}"
         val resp = NetUtils.get(api)
-        data = resp.body?.string().to<GithubRepo>()
+        data = Gson().fromJson(resp.body?.string(), GithubRepo::class.java)
         resp.close()
         if (data.totalCount <= 0) throw YuriException("未找到名为 $repoName 的仓库")
         return data

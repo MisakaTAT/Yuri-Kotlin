@@ -1,6 +1,6 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.alibaba.fastjson2.to
+import com.google.gson.Gson
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
@@ -30,7 +30,7 @@ class Nsfw {
         val data: Nsfw
         val api = "https://nsfwtag.azurewebsites.net/api/nsfw?url=${img}"
         val resp = NetUtils.get(api)
-        data = resp.body?.string().to<Nsfw>()
+        data = Gson().fromJson(resp.body?.string(), Nsfw::class.java)
         resp.close()
         return data
     }

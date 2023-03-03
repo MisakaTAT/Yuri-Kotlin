@@ -2,8 +2,8 @@ package com.mikuac.yuri.plugins.passive
 
 import cn.hutool.core.date.DateField
 import cn.hutool.core.date.DateUtil
-import com.alibaba.fastjson2.JSONObject
-import com.alibaba.fastjson2.to
+import com.google.gson.Gson
+import com.google.gson.JsonParser
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
@@ -30,16 +30,22 @@ class EpicFreeGame {
         data class Elements(
             val customAttributes: List<CustomAttribute>,
             val description: String,
-            val effectiveDate: String,
-            val id: String,
+            val catalogNs: CatalogNs,
             val keyImages: List<KeyImage>,
             val price: Price,
             val promotions: Promotions?,
             val seller: Seller,
             val title: String,
-            val productSlug: String?,
-            val urlSlug: String?
         ) {
+
+            data class CatalogNs(
+                val mappings: List<Mapping>
+            )
+
+            data class Mapping(
+                val pageSlug: String,
+            )
+
             data class CustomAttribute(
                 val key: String,
                 val value: String
@@ -60,7 +66,6 @@ class EpicFreeGame {
                         val originalPrice: String
                     )
                 }
-
             }
 
             data class Promotions(
@@ -82,18 +87,15 @@ class EpicFreeGame {
             }
 
             data class Seller(
-                val id: String,
                 val name: String
             )
 
         }
     }
 
-    private val expiringMap: ExpiringMap<String, EpicFreeGame> = ExpiringMap.builder()
-        .variableExpiration()
-        .expirationPolicy(ExpirationPolicy.CREATED)
-        .expiration(Config.plugins.epic.cacheTime.times(1000L), TimeUnit.MILLISECONDS)
-        .build()
+    private val expiringMap: ExpiringMap<String, EpicFreeGame> =
+        ExpiringMap.builder().variableExpiration().expirationPolicy(ExpirationPolicy.CREATED)
+            .expiration(Config.plugins.epic.cacheTime.times(1000L), TimeUnit.MILLISECONDS).build()
 
     private fun request(): EpicFreeGame {
         // 检查缓存
@@ -110,10 +112,13 @@ class EpicFreeGame {
         val api =
             "https://store-site-backend-static-ipv4.ak.epicgames.com/freeGamesPromotions?locale=zh-CN&country=CN&allowCountries=CN"
         val resp = NetUtils.get(api, headers)
-        val jsonObject = JSONObject.parseObject(resp.body?.string())
+        val jsonObject = JsonParser.parseString(resp.body?.string())
         resp.close()
-        val elements = jsonObject.getJSONObject("data").getJSONObject("Catalog").getString("searchStore")
-        data = elements.to<EpicFreeGame>()
+        val elements = jsonObject
+            .asJsonObject["data"]
+            .asJsonObject["Catalog"]
+            .asJsonObject["searchStore"]
+        data = Gson().fromJson(elements, EpicFreeGame::class.java)
         if (data.elements.isEmpty()) throw YuriException("游戏列表为空")
         expiringMap["cache"] = data
         return data
@@ -144,8 +149,7 @@ class EpicFreeGame {
                         val promotionData = upcomingPromotions[0].promotionalOffers[0]
                         val startDate = formatDate(promotionData.startDate)
                         val endDate = formatDate(promotionData.endDate)
-                        val msg = MsgUtils.builder()
-                            .img(gameThumbnail)
+                        val msg = MsgUtils.builder().img(gameThumbnail)
                             .text("\n$gameName ($gamePrice) 即将在 $startDate 推出免费游玩，预计截止时间为 $endDate，该游戏由 $gameCorp 发行。")
                             .build()
                         msgList.add(msg)
@@ -156,19 +160,12 @@ class EpicFreeGame {
                         val developerName = game.customAttributes.filter { it.key == "developerName" }
                         val developer = if (developerName.isNotEmpty()) developerName[0].value else gameCorp
                         val endDate = formatDate(game.promotions.promotionalOffers[0].promotionalOffers[0].endDate)
+                        val gamePage = "https://store.epicgames.com/fr/p/${game.catalogNs.mappings[0].pageSlug}"
 
-                        var slug = game.urlSlug
-                        if (slug.isNullOrBlank()) slug = game.productSlug
-                        val gamePage = "https://www.epicgames.com/store/zh-CN/p/${slug}"
-
-                        val msg = MsgUtils.builder()
-                            .img(gameThumbnail)
-                            .text("\n$gameName ($gamePrice) 当前免费，${endDate}截止。")
-                            .text("\n\n${gameDesc}")
+                        val msg = MsgUtils.builder().img(gameThumbnail)
+                            .text("\n$gameName ($gamePrice) 当前免费，${endDate}截止。").text("\n\n${gameDesc}")
                             .text("\n\n该游戏由 $developer 制作，并由 $publisher 发行。")
-                            .text("\n\n感兴趣的小伙伴可以点击下方链接免费领取啦～")
-                            .text("\n${gamePage}")
-                            .build()
+                            .text("\n\n感兴趣的小伙伴可以点击下方链接免费领取啦～").text("\n${gamePage}").build()
                         msgList.add(msg)
                     }
                 } catch (e: Exception) {
@@ -177,6 +174,7 @@ class EpicFreeGame {
             }
             return msgList
         } catch (e: Exception) {
+            e.printStackTrace()
             throw YuriException("数据解析失败")
         }
     }

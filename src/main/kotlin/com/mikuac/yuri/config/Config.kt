@@ -3,7 +3,7 @@ package com.mikuac.yuri.config
 import cn.hutool.core.io.watch.SimpleWatcher
 import cn.hutool.core.io.watch.WatchMonitor
 import cn.hutool.core.io.watch.watchers.DelayWatcher
-import com.alibaba.fastjson2.to
+import com.google.gson.Gson
 import com.mikuac.yuri.annotation.Slf4j
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import jakarta.annotation.PostConstruct
@@ -31,8 +31,8 @@ class Config {
     private val defaultConfigFileName = "default.config.jsonc"
 
     companion object {
-        lateinit var base: ConfigDataClass.Base
-        lateinit var plugins: ConfigDataClass.Plugins
+        lateinit var base: ConfigData.Base
+        lateinit var plugins: ConfigData.Plugins
     }
 
     @Autowired
@@ -54,21 +54,10 @@ class Config {
             log.error("配置文件生成失败")
             e.printStackTrace()
         }
-
         val reader = Files.newBufferedReader(Paths.get(configFileName))
-        val json = StringBuffer()
-
-        reader.forEachLine {
-            if (!it.trim().startsWith("/")) {
-                json.append(it)
-            }
-        }
-
-        val config = json.toString().to<ConfigDataClass>()
-
+        val config = Gson().fromJson(reader, ConfigData::class.java)
         base = config.base
         plugins = config.plugins
-
         if (!isReload) log.info("配置文件初始化完毕")
     }
 

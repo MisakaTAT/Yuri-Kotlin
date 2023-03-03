@@ -1,7 +1,6 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.alibaba.fastjson2.to
-import com.alibaba.fastjson2.toJSONString
+import com.google.gson.Gson
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
@@ -53,7 +52,7 @@ class Tarot : ApplicationRunner {
         val stream = javaClass.classLoader.getResourceAsStream("tarot.yaml")!!
         val bufferedReader = BufferedReader(InputStreamReader(stream, "UTF-8"))
         val map: HashMap<String, JvmType.Object> = yaml.load(bufferedReader)
-        data = map.toJSONString().to<Tarot>()
+        data = Gson().fromJson(Gson().toJson(map), Tarot::class.java)
     }
 
     private fun buildMsg(msgId: Int): String {

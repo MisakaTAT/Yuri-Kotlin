@@ -44,7 +44,6 @@ dependencies {
     api("net.jodah:expiringmap:0.5.10")
     api("cn.hutool:hutool-core:5.8.12")
     api("cn.hutool:hutool-system:5.8.11")
-    api("com.alibaba.fastjson2:fastjson2-kotlin:2.0.23")
     api("net.coobird:thumbnailator:0.4.19")
     api("com.github.oshi:oshi-core:6.4.0")
     api("com.google.guava:guava:31.1-jre")
@@ -55,6 +54,8 @@ dependencies {
     api("com.kennycason:kumo-core:1.28")
     api("com.huaban:jieba-analysis:1.0.2")
     api("mysql:mysql-connector-java:8.0.32")
+    api("com.theokanning.openai-gpt3-java:service:0.11.0")
+    api("com.google.code.gson:gson:2.10.1")
 
     api("org.jetbrains.kotlin:kotlin-reflect:1.8.10")
     api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10")

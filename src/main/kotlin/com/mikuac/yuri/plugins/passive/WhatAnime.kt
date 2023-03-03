@@ -1,8 +1,8 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.alibaba.fastjson2.JSONObject
-import com.alibaba.fastjson2.annotation.JSONField
-import com.alibaba.fastjson2.to
+import com.google.gson.Gson
+import com.google.gson.JsonObject
+import com.google.gson.annotations.SerializedName
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.bo.ArrayMsg
@@ -30,7 +30,7 @@ class WhatAnime {
         val result: List<Result>
     ) {
         data class Result(
-            @JSONField(name = "anilist")
+            @SerializedName("anilist")
             val aniList: Long,
             val episode: Any,
             val from: Double,
@@ -43,7 +43,7 @@ class WhatAnime {
         val data: Data
     ) {
         data class Data(
-            @JSONField(name = "Media")
+            @SerializedName("Media")
             val media: Media
         ) {
             data class Media(
@@ -125,23 +125,23 @@ class WhatAnime {
                 "https://api.trace.moe/search?cutBorders&url=${imgUrl}",
                 Config.plugins.picSearch.proxy
             )
-            val basicData = basicResult.body?.string().to<WhatAnimeBasic>()
+            val basicData = Gson().fromJson(basicResult.body?.string(), WhatAnimeBasic::class.java)
             basicResult.close()
             if (basicData.error != "") throw YuriException(basicData.error)
             if (basicData.result.isEmpty()) throw YuriException("未找到匹配结果")
             val animeId = basicData.result[0].aniList
             // 获取详细信息
-            val variables = JSONObject()
-            variables["id"] = animeId
-            val reqBody = JSONObject()
-            reqBody["query"] = graphqlQuery
-            reqBody["variables"] = variables
+            val variables = JsonObject()
+            variables.addProperty("id", animeId)
+            val reqBody = JsonObject()
+            reqBody.addProperty("query", graphqlQuery)
+            reqBody.add("variables", variables)
             val aniListResult = NetUtils.post(
                 "https://trace.moe/anilist/",
                 reqBody.toString(),
                 Config.plugins.picSearch.proxy
             )
-            val aniListData = aniListResult.body?.string().to<WhatAnime>()
+            val aniListData = Gson().fromJson(aniListResult.body?.string(), WhatAnime::class.java)
             aniListResult.close()
             data = Pair(basicData, aniListData)
         } catch (e: Exception) {

@@ -4,7 +4,7 @@ import com.mikuac.shiro.common.utils.MsgUtils;
 import com.mikuac.shiro.core.Bot;
 import com.mikuac.shiro.core.BotContainer;
 import com.mikuac.yuri.config.Config;
-import com.mikuac.yuri.config.ConfigDataClass.Plugins.Telegram.Rules.RuleItem;
+import com.mikuac.yuri.config.ConfigData.Plugins.Telegram.Rules.RuleItem;
 import com.mikuac.yuri.utils.BeanUtils;
 import com.mikuac.yuri.utils.ImageUtils;
 import com.mikuac.yuri.utils.TelegramUtils;
