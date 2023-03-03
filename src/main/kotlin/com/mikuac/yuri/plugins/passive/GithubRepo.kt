@@ -51,7 +51,7 @@ class GithubRepo {
     private fun request(repoName: String): GithubRepo {
         val data: GithubRepo
         val api = "https://api.github.com/search/repositories?q=${repoName}"
-        val resp = NetUtils.get(api)
+        val resp = NetUtils.get(api, Config.plugins.githubRepo.proxy)
         data = Gson().fromJson(resp.body?.string(), GithubRepo::class.java)
         resp.close()
         if (data.totalCount <= 0) throw YuriException("未找到名为 $repoName 的仓库")
