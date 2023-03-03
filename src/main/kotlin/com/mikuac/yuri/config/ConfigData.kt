@@ -113,6 +113,7 @@ data class ConfigData(
         )
 
         data class ChatGPT(
+            val timeout: Int,
             val token: String,
             val messages: List<ChatMessage>,
             val model: String,

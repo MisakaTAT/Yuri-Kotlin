@@ -191,6 +191,8 @@
     },
     // ChatGPT
     "chatGPT": {
+      // 超时（秒）
+      "timeout": 30,
       // 令牌
       "token": "",
       // 模型

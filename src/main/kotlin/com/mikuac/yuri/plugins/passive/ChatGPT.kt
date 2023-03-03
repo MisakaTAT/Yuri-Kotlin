@@ -30,10 +30,10 @@ class ChatGPT {
         val proxy = Config.base.proxy
         val config = Config.plugins.chatGPT
         if (config.token.isBlank() || config.model.isBlank()) throw YuriException("未正确配置 OpenAI 令牌或模型")
-        var service = OpenAiService(config.token)
+        var service = OpenAiService(config.token, Duration.ofSeconds(config.timeout.toLong()))
         if (config.proxy) {
             val mapper = defaultObjectMapper()
-            val client = defaultClient(config.token, Duration.ofSeconds(10))
+            val client = defaultClient(config.token, Duration.ofSeconds(config.timeout.toLong()))
                 .newBuilder()
                 .proxy(Proxy(Proxy.Type.valueOf(proxy.type), InetSocketAddress(proxy.host, proxy.port)))
                 .build()
