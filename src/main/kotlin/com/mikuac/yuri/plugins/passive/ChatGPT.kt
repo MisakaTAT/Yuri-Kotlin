@@ -43,7 +43,7 @@ class ChatGPT {
         val messages = ArrayList<ChatMessage>()
         if (config.messages.isNotEmpty()) {
             config.messages.forEach {
-                messages.add(ChatMessage(ChatMessageRole.valueOf(it.role).value(), it.content.trim()))
+                messages.add(ChatMessage(ChatMessageRole.valueOf(it.role.uppercase()).value(), it.content.trim()))
             }
         }
         messages.add(ChatMessage(ChatMessageRole.USER.value(), content.trim()))
