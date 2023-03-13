@@ -16,12 +16,12 @@ import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.core.BotContainer
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.enums.MsgTypeEnum
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import com.mikuac.yuri.config.Config
+import com.mikuac.yuri.ctx.Ctx
 import com.mikuac.yuri.entity.WordCloudEntity
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
@@ -54,7 +54,7 @@ class WordCloud {
     private lateinit var repository: WordCloudRepository
 
     @Autowired
-    private lateinit var botContainer: BotContainer
+    private lateinit var ctx: Ctx
 
     @GroupMessageHandler
     fun saveMsg(event: GroupMessageEvent) {
@@ -104,10 +104,7 @@ class WordCloud {
     }
 
     private fun getWordsForRange(
-        userId: Long,
-        groupId: Long,
-        type: String,
-        range: String
+        userId: Long, groupId: Long, type: String, range: String
     ): List<String> {
         val now = LocalDate.now()
         val startOfWeek = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
@@ -143,14 +140,8 @@ class WordCloud {
         val filterRule = StringUtils.join(Config.plugins.wordCloud.filterRule, "|").toRegex()
         val contents = ArrayList<String>()
         getWordsForRange(userId, groupId, type, range).forEach { raw ->
-            contents.addAll(
-                ShiroUtils
-                    .rawToArrayMsg(raw)
-                    .filter { it.type == MsgTypeEnum.text }
-                    .map { it.data["text"]!!.trim() }
-                    .filter { !it.contains(filterRule) }
-                    .toList()
-            )
+            contents.addAll(ShiroUtils.rawToArrayMsg(raw).filter { it.type == MsgTypeEnum.text }
+                .map { it.data["text"]!!.trim() }.filter { !it.contains(filterRule) }.toList())
         }
         return contents
     }
@@ -212,11 +203,7 @@ class WordCloud {
     }
 
     private fun task(range: String) {
-        val bot = botContainer.robots[Config.base.selfId]
-        if (bot == null) {
-            log.error("词云插件定时任务执行失败 未获取到 Bot 对象")
-            return
-        }
+        val bot = ctx.bot()
         val cronTaskRate = Config.plugins.wordCloud.cronTaskRate.times(1000L)
         bot.groupList.data.forEach {
             sleep(cronTaskRate)

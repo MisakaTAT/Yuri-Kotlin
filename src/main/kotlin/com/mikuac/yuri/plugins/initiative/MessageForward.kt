@@ -90,7 +90,7 @@ class MessageForward(opts: DefaultBotOptions, token: String) : TelegramLongPolli
             }
         }
 
-        send(chat.type, msg.build(), fromUser, chat.title)
+        send(chat.type, msg.build(), fromUser ?: "", chat.title ?: "")
     }
 
     private fun send(type: String, msg: String, fromUser: String, title: String) {
