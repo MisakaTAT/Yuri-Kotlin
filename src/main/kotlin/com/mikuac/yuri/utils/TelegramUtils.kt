@@ -6,7 +6,6 @@ import com.mikuac.yuri.config.Config
 
 object TelegramUtils {
 
-    @JvmStatic
     fun getFile(fileId: String): String? {
         val baseURL = "https://api.telegram.org"
         val botToken = Config.plugins.telegram.botToken
