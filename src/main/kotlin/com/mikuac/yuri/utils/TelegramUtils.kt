@@ -6,9 +6,11 @@ import com.mikuac.yuri.config.Config
 
 object TelegramUtils {
 
+    private val cfg = Config.plugins.telegram
+
     fun getFile(fileId: String): String? {
         val baseURL = "https://api.telegram.org"
-        val botToken = Config.plugins.telegram.botToken
+        val botToken = cfg.botToken
         val api = "${baseURL}/bot${botToken}/getFile?file_id=${fileId}"
         val resp = NetUtils.get(api, true)
         val data = Gson().fromJson(resp.body?.string(), Result::class.java)

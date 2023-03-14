@@ -2,7 +2,6 @@ package com.mikuac.yuri.plugins.passive
 
 import com.google.common.util.concurrent.RateLimiter
 import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
@@ -11,6 +10,7 @@ import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.annotation.Slf4j
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import com.mikuac.yuri.config.Config
+import com.mikuac.yuri.dto.AnimeCrawlerDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.NetUtils
@@ -35,48 +35,24 @@ import javax.imageio.ImageIO
 @Suppress("UnstableApiUsage")
 class AnimeCrawler : ApplicationRunner {
 
-    data class AnimeCrawler(
-        val code: Int,
-        val message: String,
-        val result: List<Result>
-    ) {
-        data class Result(
-            @SerializedName("day_of_week")
-            val dayOfWeek: Int,
-            @SerializedName("is_today")
-            val isToday: Int,
-            val seasons: List<Season>
-        ) {
-            data class Season(
-                val cover: String,
-                val delay: Int,
-                @SerializedName("pub_time")
-                val pubTime: String,
-                val title: String,
-            )
-        }
-    }
-
     private lateinit var rateLimiter: RateLimiter
 
-    private val enableLimiter = Config.plugins.animeCrawler.rateLimiter
-
-    private val permitsPerMinute = Config.plugins.animeCrawler.permitsPerMinute.toDouble()
+    private val cfg = Config.plugins.animeCrawler
 
     override fun run(args: ApplicationArguments?) {
-        if (enableLimiter) {
-            rateLimiter = RateLimiter.create(permitsPerMinute / 60)
+        if (cfg.rateLimiter) {
+            rateLimiter = RateLimiter.create(cfg.permitsPerMinute.toDouble() / 60)
             log.info("${this.javaClass.simpleName} 已开启调用限速")
         }
     }
 
     private val font = Font.createFont(Font.TRUETYPE_FONT, this.javaClass.getResourceAsStream("/font/chinese_font.ttf"))
 
-    private fun request(): AnimeCrawler {
-        val data: AnimeCrawler
+    private fun request(): AnimeCrawlerDTO {
+        val data: AnimeCrawlerDTO
         val api = "https://bangumi.bilibili.com/web_api/timeline_global"
         val resp = NetUtils.get(api)
-        data = Gson().fromJson(resp.body?.string(), AnimeCrawler::class.java)
+        data = Gson().fromJson(resp.body?.string(), AnimeCrawlerDTO::class.java)
         resp.close()
         if (data.code != 0) throw YuriException(data.message)
         return data
@@ -102,7 +78,7 @@ class AnimeCrawler : ApplicationRunner {
         return "今日暂无番剧放送"
     }
 
-    private fun drawImage(seasons: List<AnimeCrawler.Result.Season>): String {
+    private fun drawImage(seasons: List<AnimeCrawlerDTO.Result.Season>): String {
         val hBorderWidth = 18
         val previewHeight = 600
         val oneAnimeHeight = previewHeight + 2 * hBorderWidth
@@ -201,11 +177,9 @@ class AnimeCrawler : ApplicationRunner {
     @AnyMessageHandler(cmd = RegexCMD.ANIME_CRAWLER)
     fun animeCrawlerHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         try {
-            if (enableLimiter && !rateLimiter.tryAcquire()) throw YuriException("主人开启了调用限速QAQ，稍后再试试吧～")
+            if (cfg.rateLimiter && !rateLimiter.tryAcquire()) throw YuriException("主人开启了调用限速QAQ，稍后再试试吧～")
             var msg: String = buildMsg(matcher)
-            if (msg.startsWith("base64://")) {
-                msg = MsgUtils.builder().img(msg).build()
-            }
+            if (msg.startsWith("base64://")) msg = MsgUtils.builder().img(msg).build()
             bot.sendMsg(event, msg, false)
         } catch (e: YuriException) {
             e.message?.let { SendUtils.reply(event, bot, it) }

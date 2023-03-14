@@ -1,9 +1,9 @@
 package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.yuri.config.Config
+import com.mikuac.yuri.dto.SauceDTO
 import com.mikuac.yuri.entity.SauceNaoCacheEntity
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.repository.SauceNaoCacheRepository
@@ -14,64 +14,17 @@ import org.springframework.stereotype.Component
 @Component
 class SauceNao {
 
-    data class SauceNao(
-        val header: Header,
-        val results: List<Result>
-    ) {
-        data class Header(
-            @SerializedName("long_remaining")
-            var longRemaining: Int,
-            @SerializedName("short_remaining")
-            val shortRemaining: Int,
-        )
-
-        data class Result(
-            val data: Data,
-            val header: Header
-        ) {
-            data class Data(
-                @SerializedName("ext_urls")
-                val extUrls: List<String>,
-                @SerializedName("member_id")
-                val authorId: Long,
-                @SerializedName("member_name")
-                val authorName: String,
-                @SerializedName("pixiv_id")
-                val pixivId: Long,
-                val title: String,
-                val source: String,
-                @SerializedName("eng_name")
-                val engName: String,
-                @SerializedName("jp_name")
-                val jpName: String,
-                @SerializedName("tweet_id")
-                val tweetId: String,
-                @SerializedName("twitter_user_id")
-                val twitterUserId: String,
-                @SerializedName("twitter_user_handle")
-                val twitterUserHandle: String
-            )
-
-            data class Header(
-                @SerializedName("index_id")
-                val indexId: Int,
-                val similarity: String,
-                val thumbnail: String
-            )
-        }
-    }
-
     @Autowired
     private lateinit var repository: SauceNaoCacheRepository
 
     @Synchronized
-    private fun request(imgUrl: String): SauceNao {
-        val data: SauceNao
+    private fun request(imgUrl: String): SauceDTO {
+        val data: SauceDTO
         try {
             val key = Config.plugins.picSearch.sauceNaoKey
             val api = "https://saucenao.com/search.php?api_key=${key}&output_type=2&numres=3&db=999&url=${imgUrl}"
             val resp = NetUtils.get(api, Config.plugins.picSearch.proxy)
-            data = Gson().fromJson(resp.body?.string(), SauceNao::class.java)
+            data = Gson().fromJson(resp.body?.string(), SauceDTO::class.java)
             resp.close()
             if (data.header.longRemaining <= 0) throw YuriException("今日的搜索配额已耗尽啦")
             if (data.header.shortRemaining <= 0) throw YuriException("短时间内搜索配额已耗尽")

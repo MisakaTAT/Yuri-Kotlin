@@ -15,10 +15,12 @@ import java.util.concurrent.TimeUnit
 @Component
 class Repeat {
 
+    private val cfg = Config.plugins.repeat
+
     private val expiringMap: ExpiringMap<Long, String> = ExpiringMap.builder()
         .variableExpiration()
         .expirationPolicy(ExpirationPolicy.CREATED)
-        .expiration(Config.plugins.repeat.waitTime.times(1000L), TimeUnit.MILLISECONDS)
+        .expiration(cfg.waitTime.times(1000L), TimeUnit.MILLISECONDS)
         .build()
 
     private val lastMsgMap: HashMap<Long, String> = HashMap()
@@ -47,9 +49,9 @@ class Repeat {
             lastMsgMap[groupId] = msg
             lastUserMap[groupId] = userId
             msgCountMap[groupId] = ++count
-            if (count == RandomUtil.randomInt(Config.plugins.repeat.thresholdValue)) {
+            if (count == RandomUtil.randomInt(cfg.thresholdValue)) {
                 bot.sendGroupMsg(groupId, msg, false)
-                val waitTime = Config.plugins.repeat.waitTime.times(1000L)
+                val waitTime = cfg.waitTime.times(1000L)
                 expiringMap.put(groupId, msg, waitTime, TimeUnit.MILLISECONDS)
                 msgCountMap[groupId] = 0
             }

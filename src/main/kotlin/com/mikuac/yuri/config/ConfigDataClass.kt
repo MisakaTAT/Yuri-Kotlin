@@ -1,8 +1,7 @@
 package com.mikuac.yuri.config
 
-data class ConfigData(
-    val base: Base,
-    val plugins: Plugins
+data class ConfigDataClass(
+    val base: Base, val plugins: Plugins
 ) {
     data class Base(
         val adminList: List<Long>,
@@ -13,17 +12,11 @@ data class ConfigData(
         val mysql: MySQL
     ) {
         data class Proxy(
-            val enable: Boolean,
-            val host: String,
-            val port: Int,
-            val type: String
+            val enable: Boolean, val host: String, val port: Int, val type: String
         )
 
         data class MySQL(
-            val url: String,
-            val database: String,
-            val username: String,
-            val password: String
+            val url: String, val database: String, val username: String, val password: String
         )
     }
 
@@ -38,7 +31,7 @@ data class ConfigData(
         val wordCloud: WordCloud,
         val driftBottle: DriftBottle,
         val telegram: Telegram,
-        val blockChain: BlockChain,
+        val huobi: Huobi,
         val githubRepo: GithubRepo,
         val phoenixWright: PhoenixWright,
         val parseYoutube: ParseYoutube,
@@ -62,15 +55,11 @@ data class ConfigData(
         )
 
         data class AnimePic(
-            val r18: Boolean,
-            val cd: Int,
-            val reverseProxy: String,
-            val recallPicTime: Int
+            val r18: Boolean, val cd: Int, val reverseProxy: String, val recallPicTime: Int
         )
 
         data class Repeat(
-            val waitTime: Int,
-            val thresholdValue: Int
+            val waitTime: Int, val thresholdValue: Int
         )
 
         data class Epic(
@@ -82,20 +71,18 @@ data class ConfigData(
         )
 
         data class AnimeCrawler(
-            val rateLimiter: Boolean,
-            val permitsPerMinute: Int
+            val rateLimiter: Boolean, val permitsPerMinute: Int
         )
 
         data class Roulette(
-            val timeout: Int,
-            val maxMuteTime: Int
+            val timeout: Int, val maxMuteTime: Int
         )
 
         data class DriftBottle(
             val cd: Int
         )
 
-        data class BlockChain(
+        data class Huobi(
             val proxy: Boolean
         )
 
@@ -108,16 +95,11 @@ data class ConfigData(
         )
 
         data class ParseYoutube(
-            val proxy: Boolean,
-            val apiKey: String
+            val proxy: Boolean, val apiKey: String
         )
 
         data class ChatGPT(
-            val timeout: Int,
-            val token: String,
-            val messages: List<ChatMessage>,
-            val model: String,
-            val proxy: Boolean
+            val timeout: Int, val token: String, val messages: List<ChatMessage>, val model: String, val proxy: Boolean
         ) {
             data class ChatMessage(
                 val role: String,
@@ -139,9 +121,7 @@ data class ConfigData(
             val userWhiteList: List<String>
         ) {
             data class Rules(
-                val group: List<RuleItem>,
-                val channel: List<RuleItem>,
-                val friend: List<RuleItem>
+                val group: List<RuleItem>, val channel: List<RuleItem>, val friend: List<RuleItem>
             ) {
                 data class RuleItem(
                     val source: String,

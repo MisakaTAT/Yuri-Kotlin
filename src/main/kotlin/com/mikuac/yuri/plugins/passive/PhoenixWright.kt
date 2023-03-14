@@ -19,6 +19,8 @@ import java.util.regex.Matcher
 @Component
 class PhoenixWright {
 
+    private val cfg = Config.plugins.phoenixWright
+
     private fun buildMsg(matcher: Matcher): String {
         var topText = matcher.group(1) ?: throw YuriException("请输入顶部内容")
         var bottomText = matcher.group(2) ?: throw YuriException("请输入底部内容")
@@ -26,7 +28,7 @@ class PhoenixWright {
         bottomText = URLEncoder.encode(bottomText, StandardCharsets.UTF_8.toString())
         val img = formatPNG(
             "https://gsapi.cbrx.io/image?top=${topText}&bottom=${bottomText}",
-            Config.plugins.phoenixWright.proxy
+            cfg.proxy
         )
         return MsgUtils.builder().img(img).build()
     }

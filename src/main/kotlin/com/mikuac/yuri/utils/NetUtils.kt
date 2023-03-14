@@ -13,6 +13,8 @@ import java.util.concurrent.TimeUnit
 @Suppress("unused")
 object NetUtils {
 
+    private val cfg = Config.base
+
     private val mediaType = "application/json; charset=utf-8".toMediaType()
 
     private val client = OkHttpClient()
@@ -28,8 +30,8 @@ object NetUtils {
         if (proxy) {
             client.proxy(
                 Proxy(
-                    Proxy.Type.valueOf(Config.base.proxy.type),
-                    InetSocketAddress(Config.base.proxy.host, Config.base.proxy.port)
+                    Proxy.Type.valueOf(cfg.proxy.type),
+                    InetSocketAddress(cfg.proxy.host, cfg.proxy.port)
                 )
             )
         }
@@ -67,8 +69,8 @@ object NetUtils {
         if (proxy) {
             client.proxy(
                 Proxy(
-                    Proxy.Type.valueOf(Config.base.proxy.type),
-                    InetSocketAddress(Config.base.proxy.host, Config.base.proxy.port)
+                    Proxy.Type.valueOf(cfg.proxy.type),
+                    InetSocketAddress(cfg.proxy.host, cfg.proxy.port)
                 )
             )
         }
@@ -81,8 +83,8 @@ object NetUtils {
         if (proxy) {
             client.proxy(
                 Proxy(
-                    Proxy.Type.valueOf(Config.base.proxy.type),
-                    InetSocketAddress(Config.base.proxy.host, Config.base.proxy.port)
+                    Proxy.Type.valueOf(cfg.proxy.type),
+                    InetSocketAddress(cfg.proxy.host, cfg.proxy.port)
                 )
             )
         }

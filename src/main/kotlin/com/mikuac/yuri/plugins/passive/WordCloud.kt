@@ -21,10 +21,10 @@ import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.enums.MsgTypeEnum
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import com.mikuac.yuri.config.Config
-import com.mikuac.yuri.ctx.Ctx
 import com.mikuac.yuri.entity.WordCloudEntity
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
+import com.mikuac.yuri.global.Global
 import com.mikuac.yuri.repository.WordCloudRepository
 import com.mikuac.yuri.utils.SendUtils
 import org.apache.commons.lang3.StringUtils
@@ -54,7 +54,7 @@ class WordCloud {
     private lateinit var repository: WordCloudRepository
 
     @Autowired
-    private lateinit var ctx: Ctx
+    private lateinit var global: Global
 
     @GroupMessageHandler
     fun saveMsg(event: GroupMessageEvent) {
@@ -203,7 +203,7 @@ class WordCloud {
     }
 
     private fun task(range: String) {
-        val bot = ctx.bot()
+        val bot = global.bot()
         val cronTaskRate = Config.plugins.wordCloud.cronTaskRate.times(1000L)
         bot.groupList.data.forEach {
             sleep(cronTaskRate)

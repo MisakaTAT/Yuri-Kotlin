@@ -10,6 +10,7 @@ import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
+import com.mikuac.yuri.dto.ParseYoutubeDTO
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.ImageUtils
 import com.mikuac.yuri.utils.NetUtils
@@ -21,58 +22,26 @@ import org.springframework.stereotype.Component
 @Component
 class ParseYoutube {
 
-    data class ParseYoutube(
-        val items: List<Item>,
-    ) {
-        data class Item(
-            val id: String,
-            val snippet: Snippet,
-            val statistics: Statistics
-        ) {
-            data class Snippet(
-                val channelTitle: String,
-                val publishedAt: String,
-                val thumbnails: Thumbnails,
-                val title: String
-            ) {
-                data class Thumbnails(
-                    val maxres: Maxres,
-                ) {
-                    data class Maxres(
-                        val url: String
-                    )
-                }
-            }
-
-            data class Statistics(
-                val favoriteCount: String,
-                val likeCount: String,
-                val viewCount: String
-            )
-        }
-    }
+    private val cfg = Config.plugins.parseYoutube
 
     private val regex = "^(?:https?://)?(?:www.)?(?:youtube.com|youtu.be)/(?:watch\\?v=)([^#&?]*).*\$".toRegex()
 
-    private fun request(url: String): ParseYoutube {
-        val data: ParseYoutube
+    private fun request(url: String): ParseYoutubeDTO {
+        val data: ParseYoutubeDTO
         val id = RegexUtils.group(regex, 1, url)
         if (id.isBlank()) throw YuriException("Youtube链接解析失败")
         val api = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet," +
-                "statistics&id=${id}&key=${Config.plugins.parseYoutube.apiKey}"
+                "statistics&id=${id}&key=${cfg.apiKey}"
         val resp = NetUtils.get(api, true)
-        data = Gson().fromJson(resp.body?.string(), ParseYoutube::class.java)
+        data = Gson().fromJson(resp.body?.string(), ParseYoutubeDTO::class.java)
         resp.close()
         return data
     }
 
-    private fun buildMsg(parseYoutube: ParseYoutube): String {
+    private fun buildMsg(parseYoutube: ParseYoutubeDTO): String {
         if (parseYoutube.items.isEmpty()) throw YuriException("数据获取失败")
         val data = parseYoutube.items[0]
-        val img = ImageUtils.formatPNG(
-            data.snippet.thumbnails.maxres.url,
-            Config.plugins.githubRepo.proxy
-        )
+        val img = ImageUtils.formatPNG(data.snippet.thumbnails.maxres.url, cfg.proxy)
         val localDateTime = LocalDateTimeUtil.parse(data.snippet.publishedAt, "yyyy-MM-dd'T'HH:mm:ss'Z'")
         val time = LocalDateTimeUtil.format(localDateTime, DatePattern.NORM_DATETIME_PATTERN)
 

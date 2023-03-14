@@ -14,8 +14,10 @@ import java.util.regex.Matcher
 @Component
 class GroupAddRequest : BotPlugin() {
 
+    private val cfg = Config.base
+
     override fun onGroupAddRequest(bot: Bot, event: GroupAddRequestEvent): Int {
-        Config.base.adminList.forEach {
+        cfg.adminList.forEach {
             val msg = MsgUtils.builder()
                 .text("申请人: ${event.userId}")
                 .text("\n目标群: ${event.groupId}")

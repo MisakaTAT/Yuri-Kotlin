@@ -22,6 +22,8 @@ import java.util.regex.Matcher
 @Component
 class Manager {
 
+    private val cfg = Config.base
+
     @Autowired
     private lateinit var userBlackListRepository: UserBlackListRepository
 
@@ -36,7 +38,7 @@ class Manager {
 
     @PrivateMessageHandler(cmd = RegexCMD.MANAGER)
     fun managerHandler(bot: Bot, event: PrivateMessageEvent, matcher: Matcher) {
-        if (event.userId !in Config.base.adminList) {
+        if (event.userId !in cfg.adminList) {
             bot.sendPrivateMsg(event.userId, "此操作仅管理员可执行 config.yaml --> adminList", false)
             return
         }

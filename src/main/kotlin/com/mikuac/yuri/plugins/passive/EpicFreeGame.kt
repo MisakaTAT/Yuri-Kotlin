@@ -11,6 +11,7 @@ import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
+import com.mikuac.yuri.dto.EpicFreeGameDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.NetUtils
@@ -24,80 +25,13 @@ import java.util.concurrent.TimeUnit
 @Component
 class EpicFreeGame {
 
-    data class EpicFreeGame(
-        val elements: List<Elements>
-    ) {
-        data class Elements(
-            val customAttributes: List<CustomAttribute>,
-            val description: String,
-            val catalogNs: CatalogNs,
-            val keyImages: List<KeyImage>,
-            val price: Price,
-            val promotions: Promotions?,
-            val seller: Seller,
-            val title: String,
-        ) {
+    private val cfg = Config.plugins.epic
 
-            data class CatalogNs(
-                val mappings: List<Mapping>
-            )
-
-            data class Mapping(
-                val pageSlug: String,
-            )
-
-            data class CustomAttribute(
-                val key: String,
-                val value: String
-            )
-
-            data class KeyImage(
-                val type: String,
-                val url: String
-            )
-
-            data class Price(
-                val totalPrice: TotalPrice
-            ) {
-                data class TotalPrice(
-                    val fmtPrice: FmtPrice,
-                ) {
-                    data class FmtPrice(
-                        val originalPrice: String
-                    )
-                }
-            }
-
-            data class Promotions(
-                val promotionalOffers: List<PromotionalOffers>,
-                val upcomingPromotionalOffers: List<UpcomingPromotionalOffer>
-            ) {
-                data class PromotionalOffers(
-                    val promotionalOffers: List<PromotionalOffer>
-                )
-
-                data class UpcomingPromotionalOffer(
-                    val promotionalOffers: List<PromotionalOffer>
-                )
-
-                data class PromotionalOffer(
-                    val startDate: String,
-                    val endDate: String
-                )
-            }
-
-            data class Seller(
-                val name: String
-            )
-
-        }
-    }
-
-    private val expiringMap: ExpiringMap<String, EpicFreeGame> =
+    private val expiringMap: ExpiringMap<String, EpicFreeGameDTO> =
         ExpiringMap.builder().variableExpiration().expirationPolicy(ExpirationPolicy.CREATED)
-            .expiration(Config.plugins.epic.cacheTime.times(1000L), TimeUnit.MILLISECONDS).build()
+            .expiration(cfg.cacheTime.times(1000L), TimeUnit.MILLISECONDS).build()
 
-    private fun request(): EpicFreeGame {
+    private fun request(): EpicFreeGameDTO {
         // 检查缓存
         val cache = expiringMap["cache"]
         if (cache != null) return cache
@@ -108,7 +42,7 @@ class EpicFreeGame {
         headers["User-Agent"] =
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36"
 
-        val data: EpicFreeGame
+        val data: EpicFreeGameDTO
         val api =
             "https://store-site-backend-static-ipv4.ak.epicgames.com/freeGamesPromotions?locale=zh-CN&country=CN&allowCountries=CN"
         val resp = NetUtils.get(api, headers)
@@ -118,7 +52,7 @@ class EpicFreeGame {
             .asJsonObject["data"]
             .asJsonObject["Catalog"]
             .asJsonObject["searchStore"]
-        data = Gson().fromJson(elements, EpicFreeGame::class.java)
+        data = Gson().fromJson(elements, EpicFreeGameDTO::class.java)
         if (data.elements.isEmpty()) throw YuriException("游戏列表为空")
         expiringMap["cache"] = data
         return data
@@ -130,6 +64,7 @@ class EpicFreeGame {
         return DateUtil.format(date, "yyy年MM月dd日 HH时mm分")
     }
 
+    @Suppress("kotlin:S3776")
     private fun buildMsg(): ArrayList<String> {
         try {
             val games = request().elements

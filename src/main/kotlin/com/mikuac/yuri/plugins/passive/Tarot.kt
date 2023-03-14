@@ -7,6 +7,7 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
+import com.mikuac.yuri.dto.TarotDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.SendUtils
@@ -26,17 +27,6 @@ import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 @Component
 class Tarot : ApplicationRunner {
 
-    data class Tarot(
-        val tarot: List<Tarot>,
-    ) {
-        data class Tarot(
-            val name: String,
-            val positive: String,
-            val negative: String,
-            val imageName: String
-        )
-    }
-
     private val expiringMap: ExpiringMap<Long, Boolean> = ExpiringMap.builder()
         .variableExpiration()
         .expirationPolicy(ExpirationPolicy.CREATED)
@@ -44,7 +34,7 @@ class Tarot : ApplicationRunner {
         .build()
 
     companion object {
-        lateinit var data: Tarot
+        lateinit var data: TarotDTO
     }
 
     override fun run(args: ApplicationArguments?) {
@@ -52,7 +42,7 @@ class Tarot : ApplicationRunner {
         val stream = javaClass.classLoader.getResourceAsStream("tarot.yaml")!!
         val bufferedReader = BufferedReader(InputStreamReader(stream, "UTF-8"))
         val map: HashMap<String, JvmType.Object> = yaml.load(bufferedReader)
-        data = Gson().fromJson(Gson().toJson(map), Tarot::class.java)
+        data = Gson().fromJson(Gson().toJson(map), TarotDTO::class.java)
     }
 
     private fun buildMsg(msgId: Int): String {

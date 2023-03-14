@@ -1,4 +1,4 @@
-package com.mikuac.yuri.ctx
+package com.mikuac.yuri.global
 
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.core.BotContainer
@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class Ctx {
+class Global {
 
     @Autowired
     private lateinit var container: BotContainer

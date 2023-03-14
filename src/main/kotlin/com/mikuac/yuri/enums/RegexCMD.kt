@@ -1,5 +1,6 @@
 package com.mikuac.yuri.enums
 
+@Suppress("SpellCheckingInspection")
 class RegexCMD {
 
     companion object {

@@ -2,7 +2,7 @@ package com.mikuac.yuri.telegram
 
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import com.mikuac.yuri.config.Config
-import com.mikuac.yuri.plugins.initiative.MessageForward
+import com.mikuac.yuri.plugins.initiative.TelegramForward
 import lombok.extern.slf4j.Slf4j
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
@@ -36,7 +36,7 @@ class Register : ApplicationRunner {
         log.info("Telegram 代理启用: {}:{} 代理类型: {}", proxy.host, proxy.port, type)
 
         try {
-            botsApi.registerBot(MessageForward(botOptions, cfg.botToken))
+            botsApi.registerBot(TelegramForward(botOptions, cfg.botToken))
         } catch (e: Exception) {
             e.printStackTrace()
         }

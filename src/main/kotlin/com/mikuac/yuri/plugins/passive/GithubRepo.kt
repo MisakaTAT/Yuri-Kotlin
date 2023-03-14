@@ -1,7 +1,6 @@
 package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
@@ -9,6 +8,7 @@ import com.mikuac.shiro.common.utils.OneBotMedia
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
+import com.mikuac.yuri.dto.GithubRepoDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.ImageUtils
@@ -21,38 +21,13 @@ import java.util.regex.Matcher
 @Component
 class GithubRepo {
 
-    data class GithubRepo(
-        @SerializedName("total_count")
-        val totalCount: Int,
-        val items: List<Items>
-    ) {
-        data class Items(
-            val description: String,
-            val language: String,
-            val license: License? = null,
-            @SerializedName("full_name")
-            val fullName: String,
-            @SerializedName("html_url")
-            val htmlUrl: String,
-            @SerializedName("forks_count")
-            val forks: Int,
-            @SerializedName("stargazers_count")
-            val stars: Int,
-            @SerializedName("default_branch")
-            val defaultBranch: String,
-        ) {
-            data class License(
-                @SerializedName("spdx_id")
-                val spdxId: String? = null
-            )
-        }
-    }
+    private val cfg = Config.plugins.githubRepo
 
-    private fun request(repoName: String): GithubRepo {
-        val data: GithubRepo
+    private fun request(repoName: String): GithubRepoDTO {
+        val data: GithubRepoDTO
         val api = "https://api.github.com/search/repositories?q=${repoName}"
-        val resp = NetUtils.get(api, Config.plugins.githubRepo.proxy)
-        data = Gson().fromJson(resp.body?.string(), GithubRepo::class.java)
+        val resp = NetUtils.get(api, cfg.proxy)
+        data = Gson().fromJson(resp.body?.string(), GithubRepoDTO::class.java)
         resp.close()
         if (data.totalCount <= 0) throw YuriException("未找到名为 $repoName 的仓库")
         return data
@@ -61,10 +36,7 @@ class GithubRepo {
     private fun buildMsg(matcher: Matcher): String {
         val searchName = matcher.group(1) ?: throw YuriException("请按格式输入正确的仓库名")
         val data = request(searchName).items[0]
-        val img = ImageUtils.formatPNG(
-            "https://opengraph.githubassets.com/0/${data.fullName}",
-            Config.plugins.githubRepo.proxy
-        )
+        val img = ImageUtils.formatPNG("https://opengraph.githubassets.com/0/${data.fullName}", cfg.proxy)
         return MsgUtils.builder()
             .text("RepoName: ${data.fullName}")
             .text("\nDefaultBranch: ${data.defaultBranch}")

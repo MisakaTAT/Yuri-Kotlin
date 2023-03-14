@@ -27,6 +27,7 @@ class Roulette {
     }
 
     @Getter
+    @Suppress("kotlin:S6218")
     data class GroupRouletteData(
         private var bulletCount: Int,
         private val userId: Long,
@@ -58,8 +59,8 @@ class Roulette {
         fun bot(): Bot = this.bot
     }
 
-    enum class RouletteType(val OperateName: String, val introduction: String) {
-        // OperateName 在使用指令时用到 introduction 在游戏介绍时用到
+    enum class RouletteType(val operateName: String, val introduction: String) {
+        // operateName 在使用指令时用到 introduction 在游戏介绍时用到
         MUTE("禁言", "禁言"),
         KICK("踢人", "踢出"),
     }
@@ -101,7 +102,7 @@ class Roulette {
         // 只有管理员和群主可以切换轮盘模式
         if (level[userRole]!! > 1) {
             rouletteType = if (rouletteType == RouletteType.MUTE) RouletteType.KICK else RouletteType.MUTE
-            bot.sendGroupMsg(groupId, "轮盘已切换至${rouletteType.OperateName}模式", false)
+            bot.sendGroupMsg(groupId, "轮盘已切换至${rouletteType.operateName}模式", false)
             return
         }
         SendUtils.at(userId, groupId, bot, "诶呀~ 切换轮盘模式需要管理员权限呢")

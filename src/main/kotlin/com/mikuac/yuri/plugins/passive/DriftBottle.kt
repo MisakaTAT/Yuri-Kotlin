@@ -23,6 +23,8 @@ import java.util.regex.Matcher
 @Component
 class DriftBottle {
 
+    private val cfg = Config.plugins.driftBottle
+
     private val expiringMap: ExpiringMap<Long, Long> = ExpiringMap.builder()
         .variableExpiration()
         .expirationPolicy(ExpirationPolicy.CREATED)
@@ -31,6 +33,7 @@ class DriftBottle {
     @Autowired
     private lateinit var repository: DriftBottleRepository
 
+    @Suppress("kotlin:S3776")
     @GroupMessageHandler(cmd = RegexCMD.DRIFT_BOTTLE)
     fun driftBottleHandler(event: GroupMessageEvent, bot: Bot, matcher: Matcher) {
         try {
@@ -61,7 +64,7 @@ class DriftBottle {
                     val expectedExpiration = expiringMap.getExpectedExpiration(groupId) / 1000
                     throw YuriException("呜～ 太快了会坏掉的··· 冷却：[${expectedExpiration}秒]")
                 }
-                expiringMap.put(groupId, userId, Config.plugins.driftBottle.cd.toLong(), TimeUnit.SECONDS)
+                expiringMap.put(groupId, userId, cfg.cd.toLong(), TimeUnit.SECONDS)
                 val bottles = repository.findAllByOpenIsFalseAndUserIdNotLikeAndGroupIdNotLike(userId, groupId)
                 val count = repository.countAllByOpenIsFalse()
                 if (bottles.isEmpty()) {

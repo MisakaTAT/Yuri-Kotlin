@@ -14,12 +14,12 @@ class DataSourceConfig {
 
     @Bean
     fun getDataSource(): DataSource {
-        val c = Config.base.mysql
+        val cfg = Config.base.mysql
         val dataSourceBuilder = DataSourceBuilder.create()
         dataSourceBuilder.driverClassName("com.mysql.cj.jdbc.Driver")
-        dataSourceBuilder.url("jdbc:mysql://${c.url}/${c.database}")
-        dataSourceBuilder.username(c.username)
-        dataSourceBuilder.password(c.password)
+        dataSourceBuilder.url("jdbc:mysql://${cfg.url}/${cfg.database}")
+        dataSourceBuilder.username(cfg.username)
+        dataSourceBuilder.password(cfg.password)
         return dataSourceBuilder.build()
     }
 

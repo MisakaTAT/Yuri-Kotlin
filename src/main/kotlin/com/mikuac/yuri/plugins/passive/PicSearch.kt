@@ -22,6 +22,8 @@ class PicSearch {
     @Autowired
     private lateinit var ascii2d: Ascii2d
 
+    private val cfg = Config.plugins.picSearch
+
     @AnyMessageHandler(cmd = RegexCMD.SAUCE_NAO_SEARCH)
     fun picHandler(bot: Bot, event: AnyMessageEvent) {
         SearchModeUtils.setSearchMode(this.javaClass.simpleName, event.userId, event.groupId ?: 0L, bot)
@@ -39,11 +41,9 @@ class PicSearch {
             val sauceNaoResult = sauceNao.buildMsgForSauceNao(imgUrl, imgMd5)
             bot.sendMsg(event, sauceNaoResult.second, false)
 
-            if (!Config.plugins.picSearch.alwaysUseAscii2d) {
+            if (!cfg.alwaysUseAscii2d) {
                 val similarity = sauceNaoResult.first
-                if (similarity.isNotBlank()) {
-                    if (similarity.toFloat() > Config.plugins.picSearch.similarity.toFloat()) return
-                }
+                if (similarity.isNotBlank() && similarity.toFloat() > cfg.similarity.toFloat()) return
             }
 
             bot.sendMsg(event, "检索结果相似度较低，正在使用Ascii2d进行检索···", false)

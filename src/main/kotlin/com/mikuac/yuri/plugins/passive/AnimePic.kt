@@ -8,6 +8,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.annotation.Slf4j
 import com.mikuac.yuri.config.Config
+import com.mikuac.yuri.dto.AnimePicDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.NetUtils
@@ -25,35 +26,20 @@ import java.util.concurrent.TimeUnit
 @Component
 class AnimePic {
 
-    data class AnimePic(
-        val data: List<Data>,
-        val error: String
-    ) {
-        data class Data(
-            val author: String,
-            val pid: Int,
-            val title: String,
-            val uid: Int,
-            val urls: Urls,
-        )
-
-        data class Urls(
-            val original: String
-        )
-    }
+    private val cfg = Config.plugins.animePic
 
     private val expiringMap: ExpiringMap<Long, Long> = ExpiringMap.builder()
         .variableExpiration()
         .expirationPolicy(ExpirationPolicy.CREATED)
-        .expiration(Config.plugins.animePic.cd.times(1000L), TimeUnit.MILLISECONDS)
+        .expiration(cfg.cd.times(1000L), TimeUnit.MILLISECONDS)
         .build()
 
-    private fun request(r18: Boolean): AnimePic.Data {
-        val data: AnimePic
+    private fun request(r18: Boolean): AnimePicDTO.Data {
+        val data: AnimePicDTO
         var api = "https://api.lolicon.app/setu/v2"
         if (r18) api = "$api?r18=1"
         val resp = NetUtils.get(api)
-        data = Gson().fromJson(resp.body?.string(), AnimePic::class.java)
+        data = Gson().fromJson(resp.body?.string(), AnimePicDTO::class.java)
         resp.close()
         if (data.error.isNotEmpty()) throw YuriException(data.error)
         if (data.data.isEmpty()) throw YuriException("列表为空")
@@ -62,7 +48,7 @@ class AnimePic {
 
     private fun buildTextMsg(r18: Boolean): Pair<String, String?> {
         val data = request(r18)
-        val imgUrl = data.urls.original.replace("i.pixiv.cat", Config.plugins.animePic.reverseProxy)
+        val imgUrl = data.urls.original.replace("i.pixiv.cat", cfg.reverseProxy)
         return Pair(
             MsgUtils.builder()
                 .text("标题：${data.title}")
@@ -82,7 +68,7 @@ class AnimePic {
 
     private fun recallMsgPic(msgId: Int, bot: Bot) = runBlocking {
         launch {
-            delay(Config.plugins.animePic.recallPicTime.times(1000L))
+            delay(cfg.recallPicTime.times(1000L))
             bot.deleteMsg(msgId)
         }
     }
@@ -94,7 +80,7 @@ class AnimePic {
             throw YuriException("整天色图色图，信不信把你变成色图？冷却：[${expectedExpiration}秒]")
         }
         val r18 = msg.contains(Regex("(?i)r18"))
-        if (!Config.plugins.animePic.r18 && r18) throw YuriException("NSFW禁止！")
+        if (!cfg.r18 && r18) throw YuriException("NSFW禁止！")
         val buildTextMsg = buildTextMsg(r18)
         return Pair(buildTextMsg.first, buildTextMsg.second)
     }
@@ -104,7 +90,7 @@ class AnimePic {
         try {
             val msg = buildMsg(event.message, event.userId, event.groupId)
             bot.sendMsg(event, msg.first, false)
-            val cdTime = Config.plugins.animePic.cd.times(1000L)
+            val cdTime = cfg.cd.times(1000L)
             expiringMap.put(event.groupId + event.userId, event.userId, cdTime, TimeUnit.MILLISECONDS)
             val picMsgId = bot.sendMsg(event, buildPicMsg(msg.second), false)?.data?.messageId
             if (picMsgId != null) recallMsgPic(picMsgId, bot)

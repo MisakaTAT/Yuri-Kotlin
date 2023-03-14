@@ -26,14 +26,16 @@ import java.util.regex.Matcher
 @Component
 class ChatGPT {
 
+    private val proxy = Config.base.proxy
+
+    private val cfg = Config.plugins.chatGPT
+
     private fun callChatCompletion(content: String): ChatCompletionResult? {
-        val proxy = Config.base.proxy
-        val config = Config.plugins.chatGPT
-        if (config.token.isBlank() || config.model.isBlank()) throw YuriException("未正确配置 OpenAI 令牌或模型")
-        var service = OpenAiService(config.token, Duration.ofSeconds(config.timeout.toLong()))
-        if (config.proxy) {
+        if (cfg.token.isBlank() || cfg.model.isBlank()) throw YuriException("未正确配置 OpenAI 令牌或模型")
+        var service = OpenAiService(cfg.token, Duration.ofSeconds(cfg.timeout.toLong()))
+        if (cfg.proxy) {
             val mapper = defaultObjectMapper()
-            val client = defaultClient(config.token, Duration.ofSeconds(config.timeout.toLong()))
+            val client = defaultClient(cfg.token, Duration.ofSeconds(cfg.timeout.toLong()))
                 .newBuilder()
                 .proxy(Proxy(Proxy.Type.valueOf(proxy.type), InetSocketAddress(proxy.host, proxy.port)))
                 .build()
@@ -42,14 +44,14 @@ class ChatGPT {
             service = OpenAiService(api)
         }
         val messages = ArrayList<ChatMessage>()
-        if (config.messages.isNotEmpty()) {
-            config.messages.forEach {
+        if (cfg.messages.isNotEmpty()) {
+            cfg.messages.forEach {
                 messages.add(ChatMessage(ChatMessageRole.valueOf(it.role.uppercase()).value(), it.content.trim()))
             }
         }
         messages.add(ChatMessage(ChatMessageRole.USER.value(), content.trim()))
         val chatCompletionRequest = ChatCompletionRequest.builder()
-            .model(config.model)
+            .model(cfg.model)
             .messages(messages)
             .build()
         return service.createChatCompletion(chatCompletionRequest)

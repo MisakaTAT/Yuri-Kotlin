@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component
 @Component
 class CheckUtils {
 
+    private val cfg = Config.base
+
     @Autowired
     private lateinit var userBlackListRepository: UserBlackListRepository
 
@@ -22,7 +24,7 @@ class CheckUtils {
 
     // 管理员权限检查
     fun roleCheck(userId: Long, groupId: Long, bot: Bot): Boolean {
-        if (Config.base.adminList.contains(userId)) return true
+        if (cfg.adminList.contains(userId)) return true
         SendUtils.at(userId, groupId, bot, "您没有权限执行此操作")
         return false
     }

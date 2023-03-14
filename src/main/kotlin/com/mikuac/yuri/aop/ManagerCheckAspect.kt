@@ -15,8 +15,10 @@ import org.springframework.stereotype.Component
 @Component
 class ManagerCheckAspect {
 
+    private val cfg = Config.base
+
     @Autowired
-    private lateinit var checkUtils: CheckUtils
+    private lateinit var utils: CheckUtils
 
     // 过滤腾讯官方机器人
     private fun filterTencentBot(userId: Long): Boolean {
@@ -45,15 +47,15 @@ class ManagerCheckAspect {
     private fun check(userId: Long, groupId: Long, isPrivate: Boolean): Boolean {
         if (filterTencentBot(userId)) return false
         // 如果用户处于黑名单不响应本次请求
-        if (checkUtils.checkUserInBlackList(userId)) return false
+        if (utils.checkUserInBlackList(userId)) return false
         // 如果开启仅白名单模式，则只处理白名单内群组请求
-        if (Config.base.enableGroupOnlyWhiteList && !isPrivate) {
-            if (checkUtils.checkGroupInWhiteList(groupId)) return true
+        if (cfg.enableGroupOnlyWhiteList && !isPrivate) {
+            if (utils.checkGroupInWhiteList(groupId)) return true
             return false
         }
         // 白名单优先级高于黑名单，如果群组处于白名单则不进行黑名单检查
-        if (checkUtils.checkGroupInWhiteList(groupId)) return true
-        if (checkUtils.checkGroupInBlackList(groupId)) return false
+        if (utils.checkGroupInWhiteList(groupId)) return true
+        if (utils.checkGroupInBlackList(groupId)) return false
         return true
     }
 

@@ -10,14 +10,14 @@ import org.springframework.stereotype.Component
 @Component
 class Poke : BotPlugin() {
 
+    private val cfg = Config.base
+
     override fun onGroupPokeNotice(bot: Bot, event: PokeNoticeEvent): Int {
         val groupId = event.groupId
         val userId = event.userId
         val targetId = event.targetId
-        if (event.senderId != Config.base.selfId) {
-            if (Config.base.selfId == targetId || Config.base.adminList.contains(targetId)) {
-                bot.sendGroupMsg(groupId, MsgUtils.builder().poke(userId).build(), false)
-            }
+        if (event.senderId != cfg.selfId && (cfg.selfId == targetId || cfg.adminList.contains(targetId))) {
+            bot.sendGroupMsg(groupId, MsgUtils.builder().poke(userId).build(), false)
         }
         return MESSAGE_IGNORE
     }

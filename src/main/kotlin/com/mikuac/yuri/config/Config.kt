@@ -31,8 +31,8 @@ class Config {
     private val defaultConfigFileName = "default.config.jsonc"
 
     companion object {
-        lateinit var base: ConfigData.Base
-        lateinit var plugins: ConfigData.Plugins
+        lateinit var base: ConfigDataClass.Base
+        lateinit var plugins: ConfigDataClass.Plugins
     }
 
     @Autowired
@@ -55,7 +55,7 @@ class Config {
             e.printStackTrace()
         }
         val reader = Files.newBufferedReader(Paths.get(configFileName))
-        val config = Gson().fromJson(reader, ConfigData::class.java)
+        val config = Gson().fromJson(reader, ConfigDataClass::class.java)
         base = config.base
         plugins = config.plugins
         if (!isReload) log.info("配置文件初始化完毕")

@@ -2,8 +2,8 @@ package com.mikuac.yuri.plugins.initiative
 
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.yuri.config.Config
-import com.mikuac.yuri.config.ConfigData.Plugins.Telegram.Rules.RuleItem
-import com.mikuac.yuri.ctx.Ctx
+import com.mikuac.yuri.config.ConfigDataClass.Plugins.Telegram.Rules.RuleItem
+import com.mikuac.yuri.global.Global
 import com.mikuac.yuri.utils.BeanUtils
 import com.mikuac.yuri.utils.ImageUtils.formatPNG
 import com.mikuac.yuri.utils.TelegramUtils.getFile
@@ -16,7 +16,7 @@ import java.util.function.Supplier
 import java.util.stream.Stream
 
 @Slf4j
-class MessageForward(opts: DefaultBotOptions, token: String) : TelegramLongPollingBot(opts, token) {
+class TelegramForward(opts: DefaultBotOptions, token: String) : TelegramLongPollingBot(opts, token) {
 
     private companion object {
         const val GROUP = "group"
@@ -31,6 +31,7 @@ class MessageForward(opts: DefaultBotOptions, token: String) : TelegramLongPolli
         return cfg.botUsername
     }
 
+    @Suppress("kotlin:S3776")
     override fun onUpdateReceived(update: Update) {
         // check enable and has message
         if (!cfg.enable || !update.hasMessage()) {
@@ -84,11 +85,10 @@ class MessageForward(opts: DefaultBotOptions, token: String) : TelegramLongPolli
         }
 
         // check user white list
-        if (listOf(GROUP, SUPER_GROUP).contains(chat.type)) {
-            if (cfg.enableUserWhiteList && !cfg.userWhiteList.contains(fromUser)) {
-                return
-            }
-        }
+        if (listOf(GROUP, SUPER_GROUP).contains(chat.type) && cfg.enableUserWhiteList && !cfg.userWhiteList.contains(
+                fromUser
+            )
+        ) return
 
         send(chat.type, msg.build(), fromUser ?: "", chat.title ?: "")
     }
@@ -113,7 +113,7 @@ class MessageForward(opts: DefaultBotOptions, token: String) : TelegramLongPolli
     }
 
     private fun handler(targets: Supplier<Stream<RuleItem>>, msg: String) {
-        val bot = BeanUtils.getBean(Ctx::class.java).bot()
+        val bot = BeanUtils.getBean(Global::class.java).bot()
         targets.get().forEach { t ->
             t.target.friend.forEach {
                 bot.sendPrivateMsg(it, msg, false)

@@ -6,6 +6,7 @@ import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.shiro.enums.MsgTypeEnum
+import com.mikuac.yuri.dto.NsfwDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.NetUtils
@@ -16,26 +17,16 @@ import org.springframework.stereotype.Component
 @Component
 class Nsfw {
 
-    class Nsfw : ArrayList<Nsfw.Item>() {
-        data class Item(
-            val drawings: Double,
-            val hentai: Double,
-            val neutral: Double,
-            val porn: Double,
-            val sexy: Double
-        )
-    }
-
-    private fun request(img: String): Nsfw {
-        val data: Nsfw
+    private fun request(img: String): NsfwDTO {
+        val data: NsfwDTO
         val api = "https://nsfwtag.azurewebsites.net/api/nsfw?url=${img}"
         val resp = NetUtils.get(api)
-        data = Gson().fromJson(resp.body?.string(), Nsfw::class.java)
+        data = Gson().fromJson(resp.body?.string(), NsfwDTO::class.java)
         resp.close()
         return data
     }
 
-    private fun judge(p: Nsfw.Item): String {
+    private fun judge(p: NsfwDTO.Item): String {
         if (p.neutral > 0.3) {
             return "就这？"
         }
