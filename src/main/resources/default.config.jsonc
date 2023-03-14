@@ -168,7 +168,7 @@
       ]
     },
     // 区块链插件配置
-    "blockChain": {
+    "huobi": {
       // 是否启用代理
       "proxy": true
     },
