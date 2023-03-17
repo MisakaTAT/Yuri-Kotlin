@@ -43,7 +43,7 @@ class SauceNao {
         }
 
         // 返回的结果按相识度排序，第一个相似度最高，默认取第一个
-        val resultList = request(imgUrl).results.filter {
+        val resultList = request(imgUrl).results!!.filter {
             it.header.indexId in listOf(5, 18, 38, 41)
         }
         if (resultList.isEmpty()) {
