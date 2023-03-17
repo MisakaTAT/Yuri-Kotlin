@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class SauceDTO(
     val header: Header,
-    val results: List<Result>
+    val results: List<Result>?
 ) {
     data class Header(
         @SerializedName("long_remaining")

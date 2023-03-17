@@ -28,7 +28,7 @@ class SauceNao {
             resp.close()
             if (data.header.longRemaining <= 0) throw YuriException("今日的搜索配额已耗尽啦")
             if (data.header.shortRemaining <= 0) throw YuriException("短时间内搜索配额已耗尽")
-            if (data.results.isEmpty()) throw YuriException("未能找到相似的内容")
+            if (data.results.isNullOrEmpty()) throw YuriException("服务出现问题或未能找到相似的内容")
         } catch (e: Exception) {
             throw YuriException("SauceNao数据获取异常：${e.message}")
         }
