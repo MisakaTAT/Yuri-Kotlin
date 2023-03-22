@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 class Help {
 
     @AnyMessageHandler(cmd = RegexCMD.HELP)
-    fun helpHandler(bot: Bot, event: AnyMessageEvent) {
+    fun handler(bot: Bot, event: AnyMessageEvent) {
         val msg = """
             使用教程: https://mikuac.com/archives/675
             GitHub: https://github.com/MisakaTAT/Yuri-Kotlin

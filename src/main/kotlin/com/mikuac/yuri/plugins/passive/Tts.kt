@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component
 class Tts {
 
     @AnyMessageHandler(cmd = RegexCMD.TTS)
-    fun ttsHandler(event: AnyMessageEvent, bot: Bot) {
+    fun handler(event: AnyMessageEvent, bot: Bot) {
         ExceptionHandler.with(bot, event) {
             val msg = event.arrayMsg.filter { it.type == MsgTypeEnum.text }.map { it.data["text"] }.joinToString()
             val regex = RegexUtils.regexMatcher(RegexCMD.TTS, msg) ?: throw YuriException("非法输入")

@@ -23,7 +23,7 @@ class ActionLogAspect {
         return String(ch)
     }
 
-    @Before("execution(* com.mikuac.yuri.plugins.passive.*.*Handler(..))")
+    @Before("execution(* com.mikuac.yuri.plugins.passive.*.handler(..))")
     fun handler(jp: JoinPoint) {
         jp.args.forEach { arg ->
             when (arg) {

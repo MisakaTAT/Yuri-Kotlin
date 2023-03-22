@@ -158,7 +158,7 @@ class AnimeCrawler {
     }
 
     @AnyMessageHandler(cmd = RegexCMD.ANIME_CRAWLER)
-    fun animeCrawlerHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
+    fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             var msg: String = buildMsg(matcher)
             if (msg.startsWith("base64://")) msg = MsgUtils.builder().img(msg).build()

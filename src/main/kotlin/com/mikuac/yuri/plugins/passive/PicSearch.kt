@@ -24,12 +24,12 @@ class PicSearch {
     private val cfg = Config.plugins.picSearch
 
     @AnyMessageHandler(cmd = RegexCMD.SAUCE_NAO_SEARCH)
-    fun picHandler(bot: Bot, event: AnyMessageEvent) {
+    fun handler(bot: Bot, event: AnyMessageEvent) {
         SearchModeUtils.setSearchMode(this.javaClass.simpleName, event.userId, event.groupId ?: 0L, bot)
     }
 
     @AnyMessageHandler
-    fun picSearch(bot: Bot, event: AnyMessageEvent) {
+    fun search(bot: Bot, event: AnyMessageEvent) {
         if (!SearchModeUtils.check(this.javaClass.simpleName, event.userId, event.groupId ?: 0L)) return
         // 发送检索结果
         ExceptionHandler.with(bot, event) {

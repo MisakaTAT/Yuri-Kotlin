@@ -53,7 +53,7 @@ class Huobi {
     }
 
     @AnyMessageHandler(cmd = RegexCMD.BLOCK_CHAIN)
-    fun blockChainHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
+    fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             bot.sendMsg(event, buildMsg(matcher), false)
         }

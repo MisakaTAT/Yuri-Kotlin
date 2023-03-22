@@ -54,7 +54,7 @@ class GithubRepo {
     }
 
     @AnyMessageHandler(cmd = RegexCMD.GITHUB_REPO)
-    fun githubRepoHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
+    fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             bot.sendMsg(event, buildMsg(matcher), false)
         }

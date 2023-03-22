@@ -60,7 +60,7 @@ class BotStatus {
     }
 
     @AnyMessageHandler(cmd = RegexCMD.BOT_STATUS)
-    fun botStatusHandler(bot: Bot, event: AnyMessageEvent) {
+    fun handler(bot: Bot, event: AnyMessageEvent) {
         ExceptionHandler.with(bot, event) {
             bot.sendMsg(event, buildMsg(), false)
         }

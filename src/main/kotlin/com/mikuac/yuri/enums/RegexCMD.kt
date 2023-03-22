@@ -4,6 +4,8 @@ package com.mikuac.yuri.enums
 class RegexCMD {
 
     companion object {
+        const val CHAT_GPT = "^(?i)chat\\s(?<action>set|del|show)?\\s?(?<prompt>[\\s\\S]+?)?\$"
+
         const val BOT_STATUS = "^(?i)status\$|^状态\$"
         const val THROW_USER = "^(?i)throw\\s(.*)\$|^[丢抛]\\s(.*)\$"
         const val BV_AV_CONVERT = "^(?i)bv[2转]av\\s(.*)\$|^(?i)av[2转]bv\\s(.*)\$"
@@ -30,7 +32,6 @@ class RegexCMD {
         const val NSFW = "^(?i)nsfw标签\\s?[\\s\\S]+\$"
         const val TTS = "^tts\\s([\\s\\S]+)\$"
         const val GROUP_ADD_REQ = "^(同意加群|拒绝加群)\\s(add|invite)\\s([0-9]+)\$"
-        const val CHAT_GPT = "^(?i)chat\\s([\\s\\S]+)\$"
         const val SEND_LIKE = "^赞我([0-9]+)次\$"
         const val CLEAR_SEND_LIKE = "^重置点赞(.*)\$"
     }

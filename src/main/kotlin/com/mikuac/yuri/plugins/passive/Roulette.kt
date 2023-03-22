@@ -183,7 +183,7 @@ class Roulette {
     }
 
     @GroupMessageHandler(cmd = RegexCMD.ROULETTE)
-    fun rouletteHandler(event: GroupMessageEvent, bot: Bot, matcher: Matcher) {
+    fun handler(event: GroupMessageEvent, bot: Bot, matcher: Matcher) {
         val groupId = event.groupId
         val userId = event.userId
         val userRole = bot.getGroupMemberInfo(groupId, event.userId, true).data.role

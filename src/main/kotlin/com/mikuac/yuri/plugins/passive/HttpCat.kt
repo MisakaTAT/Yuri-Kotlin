@@ -21,7 +21,7 @@ class HttpCat {
     }
 
     @AnyMessageHandler(cmd = RegexCMD.HTTP_CAT)
-    fun httpCatHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
+    fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             val msg = buildMsg(matcher)
             bot.sendMsg(event, msg, false)

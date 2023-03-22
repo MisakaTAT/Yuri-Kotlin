@@ -47,7 +47,7 @@ class Hitokoto {
     }
 
     @AnyMessageHandler(cmd = RegexCMD.HITOKOTO)
-    fun hitokotoHandler(bot: Bot, event: AnyMessageEvent) {
+    fun handler(bot: Bot, event: AnyMessageEvent) {
         ExceptionHandler.with(bot, event) {
             val data = request()
             val msg = MsgUtils.builder()

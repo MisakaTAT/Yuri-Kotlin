@@ -59,7 +59,7 @@ class Tarot : ApplicationRunner {
     }
 
     @AnyMessageHandler(cmd = RegexCMD.TAROT)
-    fun tarotHandler(bot: Bot, event: AnyMessageEvent) {
+    fun handler(bot: Bot, event: AnyMessageEvent) {
         ExceptionHandler.with(bot, event) {
             val userId = event.userId
             if (expiringMap[userId] != null && expiringMap[userId] == true) {

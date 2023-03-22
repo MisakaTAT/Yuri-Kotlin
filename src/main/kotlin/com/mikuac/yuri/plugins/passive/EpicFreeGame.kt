@@ -115,7 +115,7 @@ class EpicFreeGame {
     }
 
     @AnyMessageHandler(cmd = RegexCMD.EPIC_FREE_GAME)
-    fun epicFreeGameHandler(bot: Bot, event: AnyMessageEvent) {
+    fun handler(bot: Bot, event: AnyMessageEvent) {
         ExceptionHandler.with(bot, event) {
             val msg = ShiroUtils.generateForwardMsg(event.selfId, Config.base.nickname, buildMsg())
             bot.sendForwardMsg(event, msg)

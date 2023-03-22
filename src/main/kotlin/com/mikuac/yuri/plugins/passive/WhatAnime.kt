@@ -129,12 +129,12 @@ class WhatAnime {
     }
 
     @AnyMessageHandler(cmd = RegexCMD.WHAT_ANIME_SEARCH)
-    fun whatAnimeHandler(bot: Bot, event: AnyMessageEvent) {
+    fun handler(bot: Bot, event: AnyMessageEvent) {
         SearchModeUtils.setSearchMode(this.javaClass.simpleName, event.userId, event.groupId ?: 0L, bot)
     }
 
     @AnyMessageHandler
-    fun whatAnimeSearch(bot: Bot, event: AnyMessageEvent) {
+    fun search(bot: Bot, event: AnyMessageEvent) {
         if (!SearchModeUtils.check(this.javaClass.simpleName, event.userId, event.groupId ?: 0L)) return
         // 发送检索结果
         ExceptionHandler.with(bot, event) {

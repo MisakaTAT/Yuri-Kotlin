@@ -91,7 +91,7 @@ class RainbowSixSiege {
     }
 
     @AnyMessageHandler(cmd = RegexCMD.R6S)
-    fun r6sHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
+    fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             val username = matcher.group(1) ?: YuriException("用户名获取失败")
             val data = request(username.toString().trim())

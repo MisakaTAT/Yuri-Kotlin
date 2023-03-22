@@ -24,7 +24,7 @@ class Broadcast {
     }
 
     @AnyMessageHandler(cmd = RegexCMD.BROADCAST)
-    fun broadcastHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
+    fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         if (event.userId in Config.base.adminList) {
             val msg = matcher.group(1)
             sendGroup(bot, msg.trim())

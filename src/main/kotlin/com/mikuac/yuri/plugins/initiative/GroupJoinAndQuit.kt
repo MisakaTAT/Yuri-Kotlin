@@ -18,7 +18,7 @@ class GroupJoinAndQuit {
     private val cfg = Config.base
 
     @GroupDecreaseHandler
-    fun decreaseHandler(bot: Bot, event: GroupDecreaseNoticeEvent) {
+    fun handler(bot: Bot, event: GroupDecreaseNoticeEvent) {
         val userId = event.userId
         val subType = event.subType
         val groupId = event.groupId
@@ -36,7 +36,7 @@ class GroupJoinAndQuit {
     }
 
     @GroupIncreaseHandler
-    fun increaseHandler(bot: Bot, event: GroupIncreaseNoticeEvent) {
+    fun handler(bot: Bot, event: GroupIncreaseNoticeEvent) {
         val groupId = event.groupId
         val userId = event.userId
         // 排除BOT自身入群通知

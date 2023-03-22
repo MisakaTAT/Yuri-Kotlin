@@ -30,7 +30,7 @@ class SendLike {
     }
 
     @GroupMessageHandler(cmd = RegexCMD.CLEAR_SEND_LIKE)
-    fun clearSendLikeStatus(bot: Bot, event: GroupMessageEvent) {
+    fun handler(bot: Bot, event: GroupMessageEvent) {
         if (event.userId !in Config.base.adminList) {
             bot.sendGroupMsg(event.groupId, "此操作需要管理员权限", false)
             return
@@ -42,7 +42,7 @@ class SendLike {
     }
 
     @GroupMessageHandler(cmd = RegexCMD.SEND_LIKE)
-    fun sendLikeHandler(bot: Bot, event: GroupMessageEvent, matcher: Matcher) {
+    fun handler(bot: Bot, event: GroupMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             val userId = event.userId
             val maxTimes = Config.plugins.sendLike.maxTimes

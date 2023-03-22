@@ -148,7 +148,7 @@ class WordCloud {
     }
 
     @GroupMessageHandler(cmd = RegexCMD.WORD_CLOUD)
-    fun wordCloudHandler(event: GroupMessageEvent, bot: Bot, matcher: Matcher) {
+    fun handler(event: GroupMessageEvent, bot: Bot, matcher: Matcher) {
         val msgId = event.messageId
         ExceptionHandler.with(bot, event) {
             val type = matcher.group(1)
@@ -164,7 +164,7 @@ class WordCloud {
     }
 
     @AnyMessageHandler(cmd = RegexCMD.WORD_CLOUD_CRON)
-    fun wordCloudCronHandler(event: AnyMessageEvent, bot: Bot, matcher: Matcher) {
+    fun handler(event: AnyMessageEvent, bot: Bot, matcher: Matcher) {
         if (event.userId !in Config.base.adminList) {
             bot.sendMsg(event, "此操作需要管理员权限", false)
         }

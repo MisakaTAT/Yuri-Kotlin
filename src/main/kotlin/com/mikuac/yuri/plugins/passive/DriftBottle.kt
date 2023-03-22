@@ -35,7 +35,7 @@ class DriftBottle {
 
     @Suppress("kotlin:S3776")
     @GroupMessageHandler(cmd = RegexCMD.DRIFT_BOTTLE)
-    fun driftBottleHandler(event: GroupMessageEvent, bot: Bot, matcher: Matcher) {
+    fun handler(event: GroupMessageEvent, bot: Bot, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             val msg = event.message
             val groupId = event.groupId

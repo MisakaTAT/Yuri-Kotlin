@@ -49,7 +49,7 @@ class Nsfw {
     }
 
     @AnyMessageHandler(cmd = RegexCMD.NSFW)
-    fun nsfwHandler(event: AnyMessageEvent, bot: Bot) {
+    fun handler(event: AnyMessageEvent, bot: Bot) {
         ExceptionHandler.with(bot, event) {
             val images = event.arrayMsg.filter { it.type == MsgTypeEnum.image }
             if (images.isEmpty()) throw YuriException("没有发现需要鉴定的图片")

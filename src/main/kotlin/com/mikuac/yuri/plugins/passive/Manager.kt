@@ -37,7 +37,7 @@ class Manager {
     private lateinit var checkUtils: CheckUtils
 
     @PrivateMessageHandler(cmd = RegexCMD.MANAGER)
-    fun managerHandler(bot: Bot, event: PrivateMessageEvent, matcher: Matcher) {
+    fun handler(bot: Bot, event: PrivateMessageEvent, matcher: Matcher) {
         if (event.userId !in cfg.adminList) {
             bot.sendPrivateMsg(event.userId, "此操作仅管理员可执行 config.yaml --> adminList", false)
             return

@@ -34,7 +34,7 @@ class PhoenixWright {
     }
 
     @AnyMessageHandler(cmd = RegexCMD.PHOENIX_WRIGHT)
-    fun phoenixWrightHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
+    fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             bot.sendMsg(event, buildMsg(matcher), false)
         }

@@ -31,7 +31,7 @@ class GroupAddRequest : BotPlugin() {
     }
 
     @PrivateMessageHandler(cmd = RegexCMD.GROUP_ADD_REQ)
-    fun groupAddHandler(event: PrivateMessageEvent, bot: Bot, matcher: Matcher) {
+    fun handler(event: PrivateMessageEvent, bot: Bot, matcher: Matcher) {
         val type = matcher.group(1)
         val reqType = matcher.group(2)
         val flag = matcher.group(3)

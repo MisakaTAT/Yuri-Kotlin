@@ -86,7 +86,7 @@ class AnimePic {
     }
 
     @AnyMessageHandler(cmd = RegexCMD.ANIME_PIC)
-    fun animePicHandler(bot: Bot, event: AnyMessageEvent) {
+    fun handler(bot: Bot, event: AnyMessageEvent) {
         ExceptionHandler.with(bot, event) {
             val msg = buildMsg(event.message, event.userId, event.groupId)
             bot.sendMsg(event, msg.first, false)

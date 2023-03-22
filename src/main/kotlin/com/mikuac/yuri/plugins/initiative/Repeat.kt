@@ -30,7 +30,7 @@ class Repeat {
     private val msgCountMap: HashMap<Long, Int> = HashMap()
 
     @GroupMessageHandler
-    fun repeatHandler(bot: Bot, event: GroupMessageEvent) {
+    fun handler(bot: Bot, event: GroupMessageEvent) {
         val msg = event.message
         val groupId = event.groupId
         val userId = event.userId

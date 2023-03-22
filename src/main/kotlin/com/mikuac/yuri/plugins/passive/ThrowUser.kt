@@ -75,7 +75,7 @@ class ThrowUser {
     }
 
     @GroupMessageHandler(cmd = RegexCMD.THROW_USER)
-    fun throwUserHandler(bot: Bot, event: GroupMessageEvent) {
+    fun handler(bot: Bot, event: GroupMessageEvent) {
         ExceptionHandler.with(bot, event) {
             bot.sendGroupMsg(event.groupId, MsgUtils.builder().img(buildMsg(event)).build(), false)
         }
