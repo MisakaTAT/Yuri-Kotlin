@@ -4,7 +4,7 @@ import jakarta.persistence.*
 
 @Entity
 @Table(name = "chat_gpt")
-class ChatGPTEntity(
+data class ChatGPTEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
