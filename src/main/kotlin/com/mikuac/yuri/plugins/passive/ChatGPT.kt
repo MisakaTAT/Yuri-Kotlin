@@ -102,6 +102,8 @@ class ChatGPT {
                     val local = repository.findByUserId(userId)
                     if (local.isPresent) {
                         SendUtils.reply(event, bot, local.get().personality)
+                    } else {
+                        SendUtils.reply(event, bot, "暂无预设")
                     }
                     return@with
                 }
