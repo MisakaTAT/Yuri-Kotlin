@@ -28,17 +28,27 @@ class ManagerCheckAspect {
     @Around("execution(* com.mikuac.yuri.plugins.passive.*.*Handler(..))")
     fun handler(pjp: ProceedingJoinPoint) {
         pjp.args.forEach { arg ->
-            if (arg is AnyMessageEvent) {
-                if (check(arg.userId, arg.groupId ?: 0L, false)) pjp.proceed()
-                return
-            }
-            if (arg is GroupMessageEvent) {
-                if (check(arg.userId, arg.groupId, false)) pjp.proceed()
-                return
-            }
-            if (arg is PrivateMessageEvent) {
-                if (check(arg.userId, 0L, true)) pjp.proceed()
-                return
+            when (arg) {
+                is AnyMessageEvent -> {
+                    arg.let {
+                        if (check(it.userId, it.groupId ?: 0L, false)) pjp.proceed()
+                        return
+                    }
+                }
+
+                is GroupMessageEvent -> {
+                    arg.let {
+                        if (check(it.userId, it.groupId, false)) pjp.proceed()
+                        return
+                    }
+                }
+
+                is PrivateMessageEvent -> {
+                    arg.let {
+                        if (check(it.userId, 0L, true)) pjp.proceed()
+                        return
+                    }
+                }
             }
         }
         pjp.proceed()

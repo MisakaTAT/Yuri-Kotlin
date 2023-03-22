@@ -5,7 +5,7 @@ import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.enums.RegexCMD
-import com.mikuac.yuri.utils.SendUtils
+import com.mikuac.yuri.exception.ExceptionHandler
 import org.springframework.stereotype.Component
 import java.util.regex.Matcher
 import kotlin.math.pow
@@ -58,11 +58,8 @@ class BvToAv {
 
     @AnyMessageHandler(cmd = RegexCMD.BV_AV_CONVERT)
     fun bvToAvHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
-        try {
+        ExceptionHandler.with(bot, event) {
             bot.sendMsg(event, buildMsg(matcher), false)
-        } catch (e: Exception) {
-            SendUtils.reply(event, bot, "格式非法")
-            e.printStackTrace()
         }
     }
 

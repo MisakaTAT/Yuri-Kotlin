@@ -95,10 +95,9 @@ class SearchModeUtils : BotPlugin() {
         fun getImgUrl(userId: Long, groupId: Long, arrMsg: List<ArrayMsg>): String? {
             val images = arrMsg.filter { it.type == MsgTypeEnum.image }
             if (images.isEmpty()) return null
-            val imgUrl = images[0].data["url"] ?: return null
             // 重新设置过期时间
             resetExpiration(userId, groupId)
-            return imgUrl
+            return images[0].data["url"]
         }
 
     }

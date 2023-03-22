@@ -12,12 +12,12 @@ import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.dto.WhatAnimeDTO
 import com.mikuac.yuri.entity.WhatAnimeCacheEntity
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.repository.WhatAnimeCacheRepository
 import com.mikuac.yuri.utils.DateUtils
 import com.mikuac.yuri.utils.NetUtils
 import com.mikuac.yuri.utils.SearchModeUtils
-import com.mikuac.yuri.utils.SendUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -137,16 +137,11 @@ class WhatAnime {
     fun whatAnimeSearch(bot: Bot, event: AnyMessageEvent) {
         if (!SearchModeUtils.check(this.javaClass.simpleName, event.userId, event.groupId ?: 0L)) return
         // 发送检索结果
-        try {
-            val msg = buildMsg(event.userId, event.groupId, event.arrayMsg) ?: return
+        ExceptionHandler.with(bot, event) {
+            val msg = buildMsg(event.userId, event.groupId, event.arrayMsg) ?: return@with
             bot.sendMsg(event, msg.first, false)
             // 发送预览视频
             if (Config.plugins.picSearch.animePreviewVideo) bot.sendMsg(event, msg.second, false)
-        } catch (e: YuriException) {
-            e.message?.let { SendUtils.reply(event, bot, it) }
-        } catch (e: Exception) {
-            SendUtils.reply(event, bot, "ERROR: ${e.message}")
-            e.printStackTrace()
         }
     }
 

@@ -9,9 +9,9 @@ import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.annotation.Slf4j
 import com.mikuac.yuri.dto.AnimeCrawlerDTO
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.NetUtils
-import com.mikuac.yuri.utils.SendUtils
 import org.springframework.stereotype.Component
 import java.awt.Color
 import java.awt.Font
@@ -159,15 +159,10 @@ class AnimeCrawler {
 
     @AnyMessageHandler(cmd = RegexCMD.ANIME_CRAWLER)
     fun animeCrawlerHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
-        try {
+        ExceptionHandler.with(bot, event) {
             var msg: String = buildMsg(matcher)
             if (msg.startsWith("base64://")) msg = MsgUtils.builder().img(msg).build()
             bot.sendMsg(event, msg, false)
-        } catch (e: YuriException) {
-            e.message?.let { SendUtils.reply(event, bot, it) }
-        } catch (e: Exception) {
-            SendUtils.reply(event, bot, "ERROR: ${e.message}")
-            e.printStackTrace()
         }
     }
 

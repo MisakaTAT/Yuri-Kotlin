@@ -26,25 +26,38 @@ class ActionLogAspect {
     @Before("execution(* com.mikuac.yuri.plugins.passive.*.*Handler(..))")
     fun handler(jp: JoinPoint) {
         jp.args.forEach { arg ->
-            if (arg is AnyMessageEvent) {
-                val msgType = arg.messageType
-                val pluginInfo =
-                    "[${jp.target.javaClass.simpleName}:${arg.javaClass.simpleName}](${upperCase(msgType)})"
-                val groupInfo = if ("group" != arg.messageType) "" else "Group(${arg.groupId})"
-                val userInfo = "User(${arg.userId})"
-                val reqInfo = if (groupInfo.isNotEmpty()) "$groupInfo/$userInfo" else userInfo
-                log.info("$pluginInfo -> $reqInfo -> ${arg.message}")
-                return
-            }
-            if (arg is PrivateMessageEvent) {
-                log.info("[${jp.target.javaClass.simpleName}:${arg.javaClass.simpleName}](Private) -> User(${arg.userId}) -> ${arg.message}")
-                return
-            }
-            if (arg is GroupMessageEvent) {
-                log.info("[${jp.target.javaClass.simpleName}:${arg.javaClass.simpleName}](Group) -> Group(${arg.groupId})/User(${arg.userId}) -> ${arg.message}")
-                return
+            when (arg) {
+                is AnyMessageEvent -> {
+                    arg.let {
+                        val msgType = it.messageType
+                        val handlerName = it.javaClass.simpleName
+                        val className = jp.target.javaClass.simpleName
+                        val plugin = "[${className}:${handlerName}](${upperCase(msgType)})"
+                        val group = if ("group" != it.messageType) "" else "Group(${it.groupId})"
+                        val user = "User(${it.userId})"
+                        val req = if (group.isNotEmpty()) "$group/$user" else user
+                        log.info("$plugin -> $req -> ${it.message}")
+                        return
+                    }
+                }
+
+                is PrivateMessageEvent -> {
+                    arg.let {
+                        val handlerName = it.javaClass.simpleName
+                        val className = jp.target.javaClass.simpleName
+                        log.info("[${className}:${handlerName}](Private) -> User(${arg.userId}) -> ${arg.message}")
+
+                    }
+                }
+
+                is GroupMessageEvent -> {
+                    arg.let {
+                        val handlerName = it.javaClass.simpleName
+                        val className = jp.target.javaClass.simpleName
+                        log.info("[${className}:${handlerName}](Group) -> Group(${it.groupId})/User(${it.userId}) -> ${it.message}")
+                    }
+                }
             }
         }
     }
-
 }

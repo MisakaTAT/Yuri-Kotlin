@@ -6,10 +6,10 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.SendUtils
 import com.theokanning.openai.OpenAiApi
-import com.theokanning.openai.OpenAiHttpException
 import com.theokanning.openai.completion.chat.ChatCompletionRequest
 import com.theokanning.openai.completion.chat.ChatCompletionResult
 import com.theokanning.openai.completion.chat.ChatMessage
@@ -59,25 +59,13 @@ class ChatGPT {
 
     @AnyMessageHandler(cmd = RegexCMD.CHAT_GPT)
     fun chatGPTHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
-        try {
+        ExceptionHandler.with(bot, event) {
             val content = matcher.group(1)
-            if (content.isNullOrBlank()) return
+            if (content.isNullOrBlank()) return@with
             val choices = callChatCompletion(content)?.choices ?: throw YuriException("ChatGPT 返回为空")
             if (choices.isNotEmpty()) {
                 SendUtils.reply(event, bot, choices[0].message.content.trim())
             }
-        } catch (e: YuriException) {
-            e.message?.let { SendUtils.reply(event, bot, it) }
-        } catch (e: OpenAiHttpException) {
-            if (e.message?.contains("Rate limit") == true) {
-                SendUtils.reply(event, bot, "呜呜，人太多回答不过来了，稍后再来吧。")
-                return
-            }
-            SendUtils.reply(event, bot, "ERROR: ${e.message}")
-            e.printStackTrace()
-        } catch (e: Exception) {
-            SendUtils.reply(event, bot, "ERROR: ${e.message}")
-            e.printStackTrace()
         }
     }
 

@@ -13,9 +13,9 @@ import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.dto.EpicFreeGameDTO
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.NetUtils
-import com.mikuac.yuri.utils.SendUtils
 import net.jodah.expiringmap.ExpirationPolicy
 import net.jodah.expiringmap.ExpiringMap
 import org.springframework.stereotype.Component
@@ -116,14 +116,9 @@ class EpicFreeGame {
 
     @AnyMessageHandler(cmd = RegexCMD.EPIC_FREE_GAME)
     fun epicFreeGameHandler(bot: Bot, event: AnyMessageEvent) {
-        try {
+        ExceptionHandler.with(bot, event) {
             val msg = ShiroUtils.generateForwardMsg(event.selfId, Config.base.nickname, buildMsg())
             bot.sendForwardMsg(event, msg)
-        } catch (e: YuriException) {
-            e.message?.let { SendUtils.reply(event, bot, it) }
-        } catch (e: Exception) {
-            SendUtils.reply(event, bot, "ERROR: ${e.message}")
-            e.printStackTrace()
         }
     }
 

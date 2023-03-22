@@ -8,9 +8,9 @@ import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.entity.DriftBottleEntity
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.repository.DriftBottleRepository
-import com.mikuac.yuri.utils.SendUtils
 import net.jodah.expiringmap.ExpirationPolicy
 import net.jodah.expiringmap.ExpiringMap
 import org.springframework.beans.factory.annotation.Autowired
@@ -36,7 +36,7 @@ class DriftBottle {
     @Suppress("kotlin:S3776")
     @GroupMessageHandler(cmd = RegexCMD.DRIFT_BOTTLE)
     fun driftBottleHandler(event: GroupMessageEvent, bot: Bot, matcher: Matcher) {
-        try {
+        ExceptionHandler.with(bot, event) {
             val msg = event.message
             val groupId = event.groupId
             val userId = event.userId
@@ -56,7 +56,7 @@ class DriftBottle {
                         .build(),
                     false
                 )
-                return
+                return@with
             }
 
             if (msg.startsWith("捡漂流瓶")) {
@@ -99,7 +99,7 @@ class DriftBottle {
                         .build(),
                     false
                 )
-                return
+                return@with
             }
 
             if (msg.startsWith("跳海")) {
@@ -116,7 +116,7 @@ class DriftBottle {
                         .build(),
                     false
                 )
-                return
+                return@with
             }
 
             if (msg.startsWith("查漂流瓶")) {
@@ -137,13 +137,7 @@ class DriftBottle {
                     false
                 )
             }
-        } catch (e: YuriException) {
-            e.message?.let { SendUtils.reply(event, bot, it) }
-        } catch (e: Exception) {
-            SendUtils.reply(event, bot, "ERROR: ${e.message}")
-            e.printStackTrace()
         }
-
     }
 
 }

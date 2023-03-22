@@ -8,8 +8,8 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.enums.MsgTypeEnum
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
-import com.mikuac.yuri.utils.SendUtils
 import net.coobird.thumbnailator.Thumbnails
 import net.coobird.thumbnailator.geometry.Positions
 import org.springframework.stereotype.Component
@@ -76,13 +76,8 @@ class ThrowUser {
 
     @GroupMessageHandler(cmd = RegexCMD.THROW_USER)
     fun throwUserHandler(bot: Bot, event: GroupMessageEvent) {
-        try {
+        ExceptionHandler.with(bot, event) {
             bot.sendGroupMsg(event.groupId, MsgUtils.builder().img(buildMsg(event)).build(), false)
-        } catch (e: YuriException) {
-            e.message?.let { SendUtils.reply(event, bot, it) }
-        } catch (e: Exception) {
-            SendUtils.reply(event, bot, "ERROR: ${e.message}")
-            e.printStackTrace()
         }
     }
 

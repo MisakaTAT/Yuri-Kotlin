@@ -10,10 +10,10 @@ import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.dto.GithubRepoDTO
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.ImageUtils
 import com.mikuac.yuri.utils.NetUtils
-import com.mikuac.yuri.utils.SendUtils
 import org.springframework.stereotype.Component
 import java.util.regex.Matcher
 
@@ -55,13 +55,8 @@ class GithubRepo {
 
     @AnyMessageHandler(cmd = RegexCMD.GITHUB_REPO)
     fun githubRepoHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
-        try {
+        ExceptionHandler.with(bot, event) {
             bot.sendMsg(event, buildMsg(matcher), false)
-        } catch (e: YuriException) {
-            e.message?.let { SendUtils.reply(event, bot, it) }
-        } catch (e: Exception) {
-            SendUtils.reply(event, bot, "ERROR: ${e.message}")
-            e.printStackTrace()
         }
     }
 

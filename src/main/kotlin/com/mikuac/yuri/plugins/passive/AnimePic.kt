@@ -10,9 +10,9 @@ import com.mikuac.yuri.annotation.Slf4j
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.dto.AnimePicDTO
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.NetUtils
-import com.mikuac.yuri.utils.SendUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -87,18 +87,13 @@ class AnimePic {
 
     @AnyMessageHandler(cmd = RegexCMD.ANIME_PIC)
     fun animePicHandler(bot: Bot, event: AnyMessageEvent) {
-        try {
+        ExceptionHandler.with(bot, event) {
             val msg = buildMsg(event.message, event.userId, event.groupId)
             bot.sendMsg(event, msg.first, false)
             val cdTime = cfg.cd.times(1000L)
             expiringMap.put(event.groupId + event.userId, event.userId, cdTime, TimeUnit.MILLISECONDS)
             val picMsgId = bot.sendMsg(event, buildPicMsg(msg.second), false)?.data?.messageId
-            if (picMsgId != null) recallMsgPic(picMsgId, bot)
-        } catch (e: YuriException) {
-            e.message?.let { SendUtils.reply(event, bot, it) }
-        } catch (e: Exception) {
-            SendUtils.reply(event, bot, "ERROR: ${e.message}")
-            e.printStackTrace()
+            picMsgId?.let { recallMsgPic(it, bot) }
         }
     }
 

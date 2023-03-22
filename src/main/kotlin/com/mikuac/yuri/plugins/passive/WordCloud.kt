@@ -23,6 +23,7 @@ import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.entity.WordCloudEntity
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.global.Global
 import com.mikuac.yuri.repository.WordCloudRepository
@@ -149,21 +150,16 @@ class WordCloud {
     @GroupMessageHandler(cmd = RegexCMD.WORD_CLOUD)
     fun wordCloudHandler(event: GroupMessageEvent, bot: Bot, matcher: Matcher) {
         val msgId = event.messageId
-        try {
+        ExceptionHandler.with(bot, event) {
             val type = matcher.group(1)
             val range = matcher.group(2)
-            SendUtils.reply(msgId, event.userId, event.groupId, bot, "数据检索中，请耐心等待～")
+            SendUtils.reply(event, bot, "数据检索中，请耐心等待～")
             val contents = getWords(event.userId, event.groupId, type, range)
             if (contents.isEmpty()) {
                 throw YuriException("唔呣～数据库里没有找到你的发言记录呢")
             }
             val msg = MsgUtils.builder().reply(msgId).img("base64://${generateWordCloud(contents)}").build()
             bot.sendGroupMsg(event.groupId, msg, false)
-        } catch (e: YuriException) {
-            e.message?.let { SendUtils.reply(msgId, event.userId, event.groupId, bot, it) }
-        } catch (e: Exception) {
-            SendUtils.reply(msgId, event.userId, event.groupId, bot, "ERROR: ${e.message}")
-            e.printStackTrace()
         }
     }
 

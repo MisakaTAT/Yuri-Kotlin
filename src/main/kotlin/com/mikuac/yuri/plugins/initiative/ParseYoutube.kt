@@ -11,11 +11,11 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.dto.ParseYoutubeDTO
+import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.ImageUtils
 import com.mikuac.yuri.utils.NetUtils
 import com.mikuac.yuri.utils.RegexUtils
-import com.mikuac.yuri.utils.SendUtils
 import org.springframework.stereotype.Component
 
 @Shiro
@@ -57,14 +57,9 @@ class ParseYoutube {
 
     @AnyMessageHandler
     fun handler(bot: Bot, event: AnyMessageEvent) {
-        try {
-            if (!regex.matches(event.message)) return
+        ExceptionHandler.with(bot, event) {
+            if (!regex.matches(event.message)) return@with
             bot.sendMsg(event, buildMsg(request(event.message)), false)
-        } catch (e: YuriException) {
-            e.message?.let { SendUtils.reply(event, bot, it) }
-        } catch (e: Exception) {
-            SendUtils.reply(event, bot, "ERROR: ${e.message}")
-            e.printStackTrace()
         }
     }
 

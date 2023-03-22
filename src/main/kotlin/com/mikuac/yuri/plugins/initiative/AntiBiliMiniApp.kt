@@ -10,10 +10,10 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.shiro.enums.MsgTypeEnum
 import com.mikuac.yuri.dto.AntiBiliMiniAppDTO
+import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.NetUtils
 import com.mikuac.yuri.utils.RegexUtils
-import com.mikuac.yuri.utils.SendUtils
 import org.springframework.stereotype.Component
 
 @Shiro
@@ -51,18 +51,13 @@ class AntiBiliMiniApp {
 
     @AnyMessageHandler
     fun handler(bot: Bot, event: AnyMessageEvent) {
-        try {
+        ExceptionHandler.with(bot, event) {
             val msg = event.message
-            if (!msg.contains("com.tencent.miniapp_01") || !msg.contains("哔哩哔哩")) return
+            if (!msg.contains("com.tencent.miniapp_01") || !msg.contains("哔哩哔哩")) return@with
             val json = event.arrayMsg.filter { it.type == MsgTypeEnum.json }
             if (json.isNotEmpty()) {
                 bot.sendMsg(event, json[0].data["data"]?.let { buildMsg(it) }, false)
             }
-        } catch (e: YuriException) {
-            e.message?.let { SendUtils.reply(event, bot, it) }
-        } catch (e: Exception) {
-            SendUtils.reply(event, bot, "ERROR: ${e.message}")
-            e.printStackTrace()
         }
     }
 

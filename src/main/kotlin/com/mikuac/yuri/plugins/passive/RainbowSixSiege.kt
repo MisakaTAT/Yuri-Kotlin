@@ -8,10 +8,10 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.dto.RainbowSixSiegeDTO
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.FormatUtils
 import com.mikuac.yuri.utils.NetUtils
-import com.mikuac.yuri.utils.SendUtils
 import org.springframework.stereotype.Component
 import java.util.regex.Matcher
 
@@ -92,17 +92,10 @@ class RainbowSixSiege {
 
     @AnyMessageHandler(cmd = RegexCMD.R6S)
     fun r6sHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
-        try {
+        ExceptionHandler.with(bot, event) {
             val username = matcher.group(1) ?: YuriException("用户名获取失败")
             val data = request(username.toString().trim())
             bot.sendMsg(event, buildMsg(data), false)
-        } catch (e: IndexOutOfBoundsException) {
-            SendUtils.reply(event, bot, "未查询到此ID游戏数据")
-        } catch (e: YuriException) {
-            e.message?.let { SendUtils.reply(event, bot, it) }
-        } catch (e: Exception) {
-            SendUtils.reply(event, bot, "ERROR: ${e.message}")
-            e.printStackTrace()
         }
     }
 

@@ -8,9 +8,8 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.dto.HitokotoDTO
 import com.mikuac.yuri.enums.RegexCMD
-import com.mikuac.yuri.exception.YuriException
+import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.utils.NetUtils
-import com.mikuac.yuri.utils.SendUtils
 import org.springframework.stereotype.Component
 import java.util.*
 
@@ -49,7 +48,7 @@ class Hitokoto {
 
     @AnyMessageHandler(cmd = RegexCMD.HITOKOTO)
     fun hitokotoHandler(bot: Bot, event: AnyMessageEvent) {
-        try {
+        ExceptionHandler.with(bot, event) {
             val data = request()
             val msg = MsgUtils.builder()
                 .reply(event.messageId)
@@ -58,11 +57,6 @@ class Hitokoto {
                 .text("\n类型：${typesMap[data.type]}")
                 .build()
             bot.sendMsg(event, msg, false)
-        } catch (e: YuriException) {
-            e.message?.let { SendUtils.reply(event, bot, it) }
-        } catch (e: Exception) {
-            SendUtils.reply(event, bot, "ERROR: ${e.message}")
-            e.printStackTrace()
         }
     }
 

@@ -6,9 +6,8 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
-import com.mikuac.yuri.exception.YuriException
+import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.utils.SearchModeUtils
-import com.mikuac.yuri.utils.SendUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -33,9 +32,8 @@ class PicSearch {
     fun picSearch(bot: Bot, event: AnyMessageEvent) {
         if (!SearchModeUtils.check(this.javaClass.simpleName, event.userId, event.groupId ?: 0L)) return
         // 发送检索结果
-        try {
-            val imgUrl = SearchModeUtils.getImgUrl(event.userId, event.groupId, event.arrayMsg)
-            if (imgUrl.isNullOrBlank()) return
+        ExceptionHandler.with(bot, event) {
+            val imgUrl = SearchModeUtils.getImgUrl(event.userId, event.groupId, event.arrayMsg) ?: return@with
             val imgMd5 = imgUrl.split("-").last()
             // SauceNao
             val sauceNaoResult = sauceNao.buildMsgForSauceNao(imgUrl, imgMd5)
@@ -43,7 +41,7 @@ class PicSearch {
 
             if (!cfg.alwaysUseAscii2d) {
                 val similarity = sauceNaoResult.first
-                if (similarity.isNotBlank() && similarity.toFloat() > cfg.similarity.toFloat()) return
+                if (similarity.isNotBlank() && similarity.toFloat() > cfg.similarity.toFloat()) return@with
             }
 
             bot.sendMsg(event, "检索结果相似度较低，正在使用Ascii2d进行检索···", false)
@@ -52,11 +50,6 @@ class PicSearch {
             bot.sendMsg(event, ascii2dResult.first, false)
             // Ascii2d 特徴検索
             bot.sendMsg(event, ascii2dResult.second, false)
-        } catch (e: YuriException) {
-            e.message?.let { SendUtils.reply(event, bot, it) }
-        } catch (e: Exception) {
-            SendUtils.reply(event, bot, "ERROR: ${e.message}")
-            e.printStackTrace()
         }
     }
 

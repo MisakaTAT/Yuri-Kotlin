@@ -8,8 +8,8 @@ import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.enums.MsgTypeEnum
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
-import com.mikuac.yuri.utils.SendUtils
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.util.regex.Matcher
@@ -43,7 +43,7 @@ class SendLike {
 
     @GroupMessageHandler(cmd = RegexCMD.SEND_LIKE)
     fun sendLikeHandler(bot: Bot, event: GroupMessageEvent, matcher: Matcher) {
-        try {
+        ExceptionHandler.with(bot, event) {
             val userId = event.userId
             val maxTimes = Config.plugins.sendLike.maxTimes
             val count = status.getOrDefault(userId, 0)
@@ -55,11 +55,6 @@ class SendLike {
             bot.sendLike(event.userId, times)
             bot.sendGroupMsg(event.groupId, MsgUtils.builder().reply(event.messageId).text("点赞完成啦").build(), false)
             status[userId] = count + times
-        } catch (e: YuriException) {
-            e.message?.let { SendUtils.reply(event, bot, it) }
-        } catch (e: Exception) {
-            SendUtils.reply(event, bot, "ERROR: ${e.message}")
-            e.printStackTrace()
         }
     }
 

@@ -9,8 +9,8 @@ import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.dto.TarotDTO
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
-import com.mikuac.yuri.utils.SendUtils
 import net.jodah.expiringmap.ExpirationPolicy
 import net.jodah.expiringmap.ExpiringMap
 import org.springframework.boot.ApplicationArguments
@@ -60,7 +60,7 @@ class Tarot : ApplicationRunner {
 
     @AnyMessageHandler(cmd = RegexCMD.TAROT)
     fun tarotHandler(bot: Bot, event: AnyMessageEvent) {
-        try {
+        ExceptionHandler.with(bot, event) {
             val userId = event.userId
             if (expiringMap[userId] != null && expiringMap[userId] == true) {
                 val expectedExpiration = expiringMap.getExpectedExpiration(userId) / 1000
@@ -68,11 +68,6 @@ class Tarot : ApplicationRunner {
             }
             bot.sendMsg(event, buildMsg(event.messageId), false)
             expiringMap[userId] = true
-        } catch (e: YuriException) {
-            e.message?.let { SendUtils.reply(event, bot, it) }
-        } catch (e: Exception) {
-            SendUtils.reply(event, bot, "ERROR: ${e.message}")
-            e.printStackTrace()
         }
     }
 

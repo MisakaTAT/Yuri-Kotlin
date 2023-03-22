@@ -8,6 +8,7 @@ import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.shiro.enums.MsgTypeEnum
 import com.mikuac.yuri.dto.NsfwDTO
 import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.NetUtils
 import com.mikuac.yuri.utils.SendUtils
@@ -49,18 +50,13 @@ class Nsfw {
 
     @AnyMessageHandler(cmd = RegexCMD.NSFW)
     fun nsfwHandler(event: AnyMessageEvent, bot: Bot) {
-        try {
+        ExceptionHandler.with(bot, event) {
             val images = event.arrayMsg.filter { it.type == MsgTypeEnum.image }
             if (images.isEmpty()) throw YuriException("没有发现需要鉴定的图片")
             if (images.size > 1) throw YuriException("一次只能处理一张图片哦～")
             val data = images[0].data["url"]?.let { request(it) }
             if (data != null && data.isEmpty()) throw YuriException("鉴定失败，可能是网络炸惹 QAQ")
-            SendUtils.reply(event.messageId, event.userId, event.groupId, bot, judge(data!![0]))
-        } catch (e: YuriException) {
-            e.message?.let { SendUtils.reply(event, bot, it) }
-        } catch (e: Exception) {
-            SendUtils.reply(event, bot, "ERROR: ${e.message}")
-            e.printStackTrace()
+            SendUtils.reply(event, bot, judge(data!![0]))
         }
     }
 

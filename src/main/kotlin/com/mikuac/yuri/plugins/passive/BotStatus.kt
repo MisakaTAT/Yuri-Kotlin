@@ -9,7 +9,7 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.enums.RegexCMD
-import com.mikuac.yuri.utils.SendUtils
+import com.mikuac.yuri.exception.ExceptionHandler
 import org.springframework.stereotype.Component
 import java.lang.management.ManagementFactory
 import java.text.SimpleDateFormat
@@ -61,11 +61,8 @@ class BotStatus {
 
     @AnyMessageHandler(cmd = RegexCMD.BOT_STATUS)
     fun botStatusHandler(bot: Bot, event: AnyMessageEvent) {
-        try {
+        ExceptionHandler.with(bot, event) {
             bot.sendMsg(event, buildMsg(), false)
-        } catch (e: Exception) {
-            SendUtils.reply(event, bot, "ERROR: ${e.message}")
-            e.printStackTrace()
         }
     }
 
