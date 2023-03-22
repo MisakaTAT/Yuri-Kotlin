@@ -162,7 +162,7 @@ class WordCloud {
         } catch (e: YuriException) {
             e.message?.let { SendUtils.reply(msgId, event.userId, event.groupId, bot, it) }
         } catch (e: Exception) {
-            SendUtils.reply(msgId, event.userId, event.groupId, bot, "未知错误：${e.message}")
+            SendUtils.reply(msgId, event.userId, event.groupId, bot, "ERROR: ${e.message}")
             e.printStackTrace()
         }
     }

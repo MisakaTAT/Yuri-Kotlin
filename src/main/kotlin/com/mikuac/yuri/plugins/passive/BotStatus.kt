@@ -64,7 +64,7 @@ class BotStatus {
         try {
             bot.sendMsg(event, buildMsg(), false)
         } catch (e: Exception) {
-            SendUtils.reply(event, bot, "未知错误：${e.message}")
+            SendUtils.reply(event, bot, "ERROR: ${e.message}")
             e.printStackTrace()
         }
     }

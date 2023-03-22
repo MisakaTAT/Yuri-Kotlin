@@ -52,19 +52,16 @@ object SendUtils {
             buildReplyMsg(event.messageId, msg),
             false
         )?.data?.messageId
-
         if (event is GroupMessageEvent) return bot.sendGroupMsg(
             event.groupId,
             buildReplyMsg(event.messageId, msg),
             false
         )?.data?.messageId
-
         if (event is PrivateMessageEvent) return bot.sendPrivateMsg(
             event.userId,
             buildReplyMsg(event.messageId, msg),
             false
         )?.data?.messageId
-
         return null
     }
 

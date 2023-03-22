@@ -26,7 +26,6 @@ data class ConfigDataClass(
         val repeat: Repeat,
         val epic: Epic,
         val tarot: Tarot,
-        val animeCrawler: AnimeCrawler,
         val roulette: Roulette,
         val wordCloud: WordCloud,
         val driftBottle: DriftBottle,
@@ -68,10 +67,6 @@ data class ConfigDataClass(
 
         data class Tarot(
             val cd: Int
-        )
-
-        data class AnimeCrawler(
-            val rateLimiter: Boolean, val permitsPerMinute: Int
         )
 
         data class Roulette(

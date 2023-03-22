@@ -122,7 +122,7 @@ class EpicFreeGame {
         } catch (e: YuriException) {
             e.message?.let { SendUtils.reply(event, bot, it) }
         } catch (e: Exception) {
-            SendUtils.reply(event, bot, "未知错误：${e.message}")
+            SendUtils.reply(event, bot, "ERROR: ${e.message}")
             e.printStackTrace()
         }
     }

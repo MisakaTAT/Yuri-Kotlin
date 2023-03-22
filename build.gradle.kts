@@ -46,7 +46,6 @@ dependencies {
     api("cn.hutool:hutool-system:5.8.11")
     api("net.coobird:thumbnailator:0.4.19")
     api("com.github.oshi:oshi-core:6.4.0")
-    api("com.google.guava:guava:31.1-jre")
     api("org.telegram:telegrambots:6.5.0")
     api("org.jsoup:jsoup:1.15.4")
     api("com.squareup.okhttp3:okhttp:4.10.0")

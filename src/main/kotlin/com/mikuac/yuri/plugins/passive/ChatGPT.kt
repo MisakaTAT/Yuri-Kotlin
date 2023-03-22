@@ -73,10 +73,10 @@ class ChatGPT {
                 SendUtils.reply(event, bot, "呜呜，人太多回答不过来了，稍后再来吧。")
                 return
             }
-            SendUtils.reply(event, bot, "未知错误：${e.message}")
+            SendUtils.reply(event, bot, "ERROR: ${e.message}")
             e.printStackTrace()
         } catch (e: Exception) {
-            SendUtils.reply(event, bot, "未知错误：${e.message}")
+            SendUtils.reply(event, bot, "ERROR: ${e.message}")
             e.printStackTrace()
         }
     }

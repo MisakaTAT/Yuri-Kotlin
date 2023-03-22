@@ -67,9 +67,14 @@ class Ascii2d {
         val link = itemBox.select("div.detail-box > h6 > a")[0]
         val author = itemBox.select("div.detail-box > h6 > a")[1]
 
-        return MsgUtils.builder().img(thumbnail.attr("abs:src")).text("\n标题：${link.text()}")
-            .text("\n作者：${author.text()}").text("\n链接：${link.attr("abs:href")}")
-            .text("\n数据来源：Ascii2d ${if (type == 0) "色合検索" else "特徴検索"}").build()
+        return MsgUtils
+            .builder()
+            .img(thumbnail.attr("abs:src"))
+            .text("\n标题：${link.text()}")
+            .text("\n作者：${author.text()}")
+            .text("\n链接：${link.attr("abs:href")}")
+            .text("\n数据来源：Ascii2d ${if (type == 0) "色合検索" else "特徴検索"}")
+            .build()
     }
 
 }

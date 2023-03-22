@@ -77,13 +77,6 @@
       // 冷却时间（秒）
       "cd": 60
     },
-    // 番剧插件配置
-    "animeCrawler": {
-      // 开启调用限速
-      "rateLimiter": true,
-      // 每分钟可调用的次数（例如设置为 6 则是 10 秒允许调用一次）
-      "permitsPerMinute": 6
-    },
     // 轮盘插件配置
     "roulette": {
       // 超时（秒）

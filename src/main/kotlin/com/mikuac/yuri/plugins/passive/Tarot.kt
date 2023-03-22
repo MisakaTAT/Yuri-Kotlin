@@ -27,10 +27,12 @@ import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 @Component
 class Tarot : ApplicationRunner {
 
+    private val cfg = Config.plugins.tarot
+
     private val expiringMap: ExpiringMap<Long, Boolean> = ExpiringMap.builder()
         .variableExpiration()
         .expirationPolicy(ExpirationPolicy.CREATED)
-        .expiration(Config.plugins.tarot.cd.times(1000L), TimeUnit.MILLISECONDS)
+        .expiration(cfg.cd.times(1000L), TimeUnit.MILLISECONDS)
         .build()
 
     companion object {
@@ -69,7 +71,7 @@ class Tarot : ApplicationRunner {
         } catch (e: YuriException) {
             e.message?.let { SendUtils.reply(event, bot, it) }
         } catch (e: Exception) {
-            SendUtils.reply(event, bot, "未知错误：${e.message}")
+            SendUtils.reply(event, bot, "ERROR: ${e.message}")
             e.printStackTrace()
         }
     }

@@ -1,6 +1,5 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.google.common.util.concurrent.RateLimiter
 import com.google.gson.Gson
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
@@ -8,15 +7,11 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.annotation.Slf4j
-import com.mikuac.yuri.annotation.Slf4j.Companion.log
-import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.dto.AnimeCrawlerDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.NetUtils
 import com.mikuac.yuri.utils.SendUtils
-import org.springframework.boot.ApplicationArguments
-import org.springframework.boot.ApplicationRunner
 import org.springframework.stereotype.Component
 import java.awt.Color
 import java.awt.Font
@@ -32,19 +27,7 @@ import javax.imageio.ImageIO
 @Slf4j
 @Shiro
 @Component
-@Suppress("UnstableApiUsage")
-class AnimeCrawler : ApplicationRunner {
-
-    private lateinit var rateLimiter: RateLimiter
-
-    private val cfg = Config.plugins.animeCrawler
-
-    override fun run(args: ApplicationArguments?) {
-        if (cfg.rateLimiter) {
-            rateLimiter = RateLimiter.create(cfg.permitsPerMinute.toDouble() / 60)
-            log.info("${this.javaClass.simpleName} 已开启调用限速")
-        }
-    }
+class AnimeCrawler {
 
     private val font = Font.createFont(Font.TRUETYPE_FONT, this.javaClass.getResourceAsStream("/font/chinese_font.ttf"))
 
@@ -177,14 +160,13 @@ class AnimeCrawler : ApplicationRunner {
     @AnyMessageHandler(cmd = RegexCMD.ANIME_CRAWLER)
     fun animeCrawlerHandler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         try {
-            if (cfg.rateLimiter && !rateLimiter.tryAcquire()) throw YuriException("主人开启了调用限速QAQ，稍后再试试吧～")
             var msg: String = buildMsg(matcher)
             if (msg.startsWith("base64://")) msg = MsgUtils.builder().img(msg).build()
             bot.sendMsg(event, msg, false)
         } catch (e: YuriException) {
             e.message?.let { SendUtils.reply(event, bot, it) }
         } catch (e: Exception) {
-            SendUtils.reply(event, bot, "未知错误：${e.message}")
+            SendUtils.reply(event, bot, "ERROR: ${e.message}")
             e.printStackTrace()
         }
     }
