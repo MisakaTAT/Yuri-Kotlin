@@ -83,8 +83,7 @@ class ChatGPT {
                     if (prompt.isBlank()) throw YuriException("请提供有效的上下文")
                     val local = repository.findByUserId(userId)
                     if (local.isPresent) {
-                        local.get().personality = prompt
-                        repository.save(local.get())
+                        repository.save(ChatGPTEntity(local.get().id, local.get().personality, local.get().userId))
                     } else {
                         repository.save(ChatGPTEntity(0, prompt.trim(), userId))
                     }

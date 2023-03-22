@@ -12,7 +12,7 @@ data class ChatGPTEntity(
 
     @Lob
     @Column(nullable = false)
-    var personality: String,
+    val personality: String,
 
     @Column(nullable = false, unique = true)
     val userId: Long,
