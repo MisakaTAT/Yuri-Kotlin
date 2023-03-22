@@ -10,8 +10,7 @@ data class ChatGPTEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int,
 
-    @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "longtext")
     val personality: String,
 
     @Column(nullable = false, unique = true)

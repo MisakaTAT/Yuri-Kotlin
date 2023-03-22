@@ -17,8 +17,7 @@ class WordCloudEntity(
     @Column(nullable = false)
     val groupId: Long,
 
-    @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "longtext")
     val content: String,
 
     @Column(nullable = false)

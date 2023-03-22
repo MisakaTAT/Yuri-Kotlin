@@ -13,12 +13,10 @@ data class WhatAnimeCacheEntity(
     @Column(nullable = false, unique = true)
     val md5: String,
 
-    @Lob
-    @Column(nullable = false, unique = false)
+    @Column(nullable = false, unique = false, columnDefinition = "longtext")
     val infoResult: String,
 
-    @Lob
-    @Column(nullable = false, unique = false)
+    @Column(nullable = false, unique = false, columnDefinition = "longtext")
     val videoResult: String
 
 )

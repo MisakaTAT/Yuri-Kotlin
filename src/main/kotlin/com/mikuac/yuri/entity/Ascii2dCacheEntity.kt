@@ -13,8 +13,7 @@ data class Ascii2dCacheEntity(
     @Column(nullable = false, unique = true)
     val md5: String,
 
-    @Lob
-    @Column(nullable = false, unique = false)
+    @Column(nullable = false, unique = false, columnDefinition = "longtext")
     val infoResult: String
 
 )

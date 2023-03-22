@@ -22,8 +22,7 @@ data class DriftBottleEntity(
     @Column(nullable = false)
     val userName: String,
 
-    @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "longtext")
     val content: String,
 
     @Column(nullable = false)
