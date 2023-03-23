@@ -55,6 +55,8 @@ dependencies {
     api("mysql:mysql-connector-java:8.0.32")
     api("com.theokanning.openai-gpt3-java:service:0.11.1")
     api("com.google.code.gson:gson:2.10.1")
+    api("org.graalvm.js:js:22.3.1")
+    api("org.graalvm.js:js-scriptengine:22.3.1")
 
     api("org.jetbrains.kotlin:kotlin-reflect:1.8.10")
     api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10")
