@@ -64,6 +64,7 @@ class SeTu {
 
     private fun buildPicMsg(url: String?): String {
         url ?: return "图片获取失败了呢 _(:3 」∠)_"
+        if (cfg.antiShielding == 0) return MsgUtils.builder().img(url).build()
         return MsgUtils.builder().img(ImageUtils.imgAntiShielding(url, cfg.antiShielding)).build()
     }
 
