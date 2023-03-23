@@ -129,7 +129,7 @@ class ChatGPT {
         if (matcher.find()) {
             val limit = matcher.group(1).toInt()
             val current = matcher.group(2).toInt()
-            return "API调用过快，限制$limit/min，当前$current/min`;"
+            return "API调用过快，限制$limit/分钟，当前$current/分钟`。"
         }
         return errMsg
     }
