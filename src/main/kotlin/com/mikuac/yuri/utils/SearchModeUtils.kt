@@ -1,9 +1,9 @@
 package com.mikuac.yuri.utils
 
 import com.mikuac.shiro.annotation.AnyMessageHandler
+import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.bo.ArrayMsg
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.shiro.enums.MsgTypeEnum
 import com.mikuac.yuri.config.Config
@@ -13,8 +13,9 @@ import net.jodah.expiringmap.ExpiringMap
 import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 
+@Shiro
 @Component
-class SearchModeUtils : BotPlugin() {
+class SearchModeUtils {
 
     data class SearchMode(
         val userId: Long,
@@ -29,17 +30,16 @@ class SearchModeUtils : BotPlugin() {
     }
 
     companion object {
-
-        private val hashMap = hashMapOf("WhatAnime" to "番", "PicSearch" to "图")
+        private val modeNames = hashMapOf("WhatAnime" to "番", "PicSearch" to "图")
 
         private val expiringMap: ExpiringMap<Long, SearchMode> = ExpiringMap.builder()
             .variableExpiration()
             .expirationPolicy(ExpirationPolicy.CREATED)
-            .asyncExpirationListener { _: Long, value: SearchMode -> expCallBack(value) }
+            .asyncExpirationListener { _: Long, value: SearchMode -> onExpiration(value) }
             .build()
 
         // 过期通知
-        private fun expCallBack(value: SearchMode) {
+        private fun onExpiration(value: SearchMode) {
             SendUtils.at(
                 value.userId,
                 value.groupId,
@@ -57,13 +57,13 @@ class SearchModeUtils : BotPlugin() {
             val info = SearchMode(userId = userId, groupId = groupId, mode = mode, bot)
             val nativeMode: String
             if (isSearchMode(key)) {
-                nativeMode = hashMap[expiringMap[key]?.mode].toString()
+                nativeMode = modeNames[expiringMap[key]?.mode].toString()
                 SendUtils.at(userId, groupId, bot, "当前已经处于搜${nativeMode}模式啦，请直接发送需要检索的图片。")
                 return
             }
             val timeout = Config.plugins.picSearch.timeout.times(1000L)
             expiringMap.put(key, info, timeout, TimeUnit.MILLISECONDS)
-            nativeMode = hashMap[mode].toString()
+            nativeMode = modeNames[mode].toString()
             SendUtils.at(userId, groupId, bot, "您已进入搜${nativeMode}模式，请发送想要查找的图片。")
         }
 
@@ -74,7 +74,7 @@ class SearchModeUtils : BotPlugin() {
 
         private fun remove(userId: Long, groupId: Long, bot: Bot) {
             val key = userId + groupId
-            if (expiringMap[key] == null) return
+            expiringMap[key] ?: return
             expiringMap.remove(key)
             SendUtils.at(userId, groupId, bot, "不客气哟！")
         }
@@ -99,7 +99,6 @@ class SearchModeUtils : BotPlugin() {
             resetExpiration(userId, groupId)
             return images[0].data["url"]
         }
-
     }
 
 }

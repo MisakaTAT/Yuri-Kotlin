@@ -19,6 +19,10 @@ object NetUtils {
 
     private val client = OkHttpClient()
 
+    private fun createProxy(): Proxy {
+        return Proxy(Proxy.Type.valueOf(cfg.proxy.type), InetSocketAddress(cfg.proxy.host, cfg.proxy.port))
+    }
+
     fun get(url: String): Response {
         val req = Request.Builder().url(url).get().build()
         return client.newCall(req).execute()
@@ -27,14 +31,7 @@ object NetUtils {
     fun get(url: String, proxy: Boolean): Response {
         val req = Request.Builder().url(url).get()
         val client = client.newBuilder()
-        if (proxy) {
-            client.proxy(
-                Proxy(
-                    Proxy.Type.valueOf(cfg.proxy.type),
-                    InetSocketAddress(cfg.proxy.host, cfg.proxy.port)
-                )
-            )
-        }
+        if (proxy) client.proxy(createProxy())
         return client.build().newCall(req.build()).execute()
 
     }
@@ -66,28 +63,14 @@ object NetUtils {
             req.header(it.key, it.value)
         }
         val client = client.newBuilder()
-        if (proxy) {
-            client.proxy(
-                Proxy(
-                    Proxy.Type.valueOf(cfg.proxy.type),
-                    InetSocketAddress(cfg.proxy.host, cfg.proxy.port)
-                )
-            )
-        }
+        if (proxy) client.proxy(createProxy())
         return client.readTimeout(readTimeout, TimeUnit.SECONDS).build().newCall(req.build()).execute()
     }
 
     fun post(url: String, json: String, proxy: Boolean): Response {
         val req = Request.Builder().url(url).post(json.toRequestBody(mediaType))
         val client = client.newBuilder()
-        if (proxy) {
-            client.proxy(
-                Proxy(
-                    Proxy.Type.valueOf(cfg.proxy.type),
-                    InetSocketAddress(cfg.proxy.host, cfg.proxy.port)
-                )
-            )
-        }
+        if (proxy) client.proxy(createProxy())
         return client.build().newCall(req.build()).execute()
     }
 

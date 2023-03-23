@@ -11,7 +11,7 @@ data class ChatGPTEntity(
     val id: Int,
 
     @Column(nullable = false, columnDefinition = "longtext")
-    var personality: String,
+    var preset: String,
 
     @Column(nullable = false, unique = true)
     val userId: Long,

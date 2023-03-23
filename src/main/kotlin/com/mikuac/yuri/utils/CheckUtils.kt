@@ -14,13 +14,13 @@ class CheckUtils {
     private val cfg = Config.base
 
     @Autowired
-    private lateinit var userBlackListRepository: UserBlackListRepository
+    private lateinit var userBlack: UserBlackListRepository
 
     @Autowired
-    private lateinit var groupBlackListRepository: GroupBlackListRepository
+    private lateinit var groupBlack: GroupBlackListRepository
 
     @Autowired
-    private lateinit var groupWhiteListRepository: GroupWhiteListRepository
+    private lateinit var groupWhite: GroupWhiteListRepository
 
     // 管理员权限检查
     fun roleCheck(userId: Long, groupId: Long, bot: Bot): Boolean {
@@ -31,19 +31,19 @@ class CheckUtils {
 
     // 检查用户是否在黑名单中
     fun checkUserInBlackList(userId: Long): Boolean {
-        if (userBlackListRepository.findByUserId(userId).isPresent) return true
+        if (userBlack.findByUserId(userId).isPresent) return true
         return false
     }
 
     // 检查群组是否在黑名单中
     fun checkGroupInBlackList(groupId: Long): Boolean {
-        if (groupBlackListRepository.findByGroupId(groupId).isPresent) return true
+        if (groupBlack.findByGroupId(groupId).isPresent) return true
         return false
     }
 
     // 检查群组是否在白名单中
     fun checkGroupInWhiteList(groupId: Long): Boolean {
-        if (groupWhiteListRepository.findByGroupId(groupId).isPresent) return true
+        if (groupWhite.findByGroupId(groupId).isPresent) return true
         return false
     }
 
