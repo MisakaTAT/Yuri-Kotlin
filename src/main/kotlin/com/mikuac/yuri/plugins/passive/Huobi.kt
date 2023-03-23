@@ -52,7 +52,7 @@ class Huobi {
         """.trimIndent()
     }
 
-    @AnyMessageHandler(cmd = RegexCMD.BLOCK_CHAIN)
+    @AnyMessageHandler(cmd = RegexCMD.Huobi)
     fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             bot.sendMsg(event, buildMsg(matcher), false)

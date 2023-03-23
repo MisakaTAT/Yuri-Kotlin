@@ -12,6 +12,7 @@ import com.mikuac.yuri.dto.AnimePicDTO
 import com.mikuac.yuri.enums.RegexCMD
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
+import com.mikuac.yuri.utils.ImageUtils
 import com.mikuac.yuri.utils.NetUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -24,9 +25,9 @@ import java.util.concurrent.TimeUnit
 @Slf4j
 @Shiro
 @Component
-class AnimePic {
+class SeTu {
 
-    private val cfg = Config.plugins.animePic
+    private val cfg = Config.plugins.setu
 
     private val expiringMap: ExpiringMap<Long, Long> = ExpiringMap.builder()
         .variableExpiration()
@@ -63,7 +64,7 @@ class AnimePic {
 
     private fun buildPicMsg(url: String?): String {
         url ?: return "图片获取失败了呢 _(:3 」∠)_"
-        return MsgUtils.builder().img(url).build()
+        return MsgUtils.builder().img(ImageUtils.imgAntiShielding(url, cfg.antiShielding)).build()
     }
 
     private fun recallMsgPic(msgId: Int, bot: Bot) = runBlocking {
@@ -85,13 +86,14 @@ class AnimePic {
         return Pair(buildTextMsg.first, buildTextMsg.second)
     }
 
-    @AnyMessageHandler(cmd = RegexCMD.ANIME_PIC)
+    @AnyMessageHandler(cmd = RegexCMD.SETU)
     fun handler(bot: Bot, event: AnyMessageEvent) {
         ExceptionHandler.with(bot, event) {
-            val msg = buildMsg(event.message, event.userId, event.groupId)
+            val groupId = event.groupId ?: 0L
+            val msg = buildMsg(event.message, event.userId, groupId)
             bot.sendMsg(event, msg.first, false)
             val cdTime = cfg.cd.times(1000L)
-            expiringMap.put(event.groupId + event.userId, event.userId, cdTime, TimeUnit.MILLISECONDS)
+            expiringMap.put(groupId + event.userId, event.userId, cdTime, TimeUnit.MILLISECONDS)
             val picMsgId = bot.sendMsg(event, buildPicMsg(msg.second), false)?.data?.messageId
             picMsgId?.let { recallMsgPic(it, bot) }
         }

@@ -22,7 +22,7 @@ data class ConfigDataClass(
 
     data class Plugins(
         val picSearch: PicSearch,
-        val animePic: AnimePic,
+        val setu: SeTu,
         val repeat: Repeat,
         val epic: Epic,
         val tarot: Tarot,
@@ -53,8 +53,12 @@ data class ConfigDataClass(
             val proxy: Boolean,
         )
 
-        data class AnimePic(
-            val r18: Boolean, val cd: Int, val reverseProxy: String, val recallPicTime: Int
+        data class SeTu(
+            val r18: Boolean,
+            val cd: Int,
+            val reverseProxy: String,
+            val recallPicTime: Int,
+            val antiShielding: Int,
         )
 
         data class Repeat(
