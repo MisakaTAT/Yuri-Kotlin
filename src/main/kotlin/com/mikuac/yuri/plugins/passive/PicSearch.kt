@@ -5,7 +5,7 @@ import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.utils.SearchModeUtils
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,7 +23,7 @@ class PicSearch {
 
     private val cfg = Config.plugins.picSearch
 
-    @AnyMessageHandler(cmd = RegexCMD.SAUCE_NAO_SEARCH)
+    @AnyMessageHandler(cmd = Regex.SAUCE_NAO_SEARCH)
     fun handler(bot: Bot, event: AnyMessageEvent) {
         SearchModeUtils.setSearchMode(this.javaClass.simpleName, event.userId, event.groupId ?: 0L, bot)
     }

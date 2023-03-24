@@ -4,7 +4,7 @@ import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import org.springframework.stereotype.Component
 import java.util.regex.Matcher
@@ -56,7 +56,7 @@ class BvToAv {
         return "转换失败"
     }
 
-    @AnyMessageHandler(cmd = RegexCMD.BV_AV_CONVERT)
+    @AnyMessageHandler(cmd = Regex.BV_AV_CONVERT)
     fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             bot.sendMsg(event, buildMsg(matcher), false)

@@ -8,7 +8,7 @@ import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import org.springframework.stereotype.Component
 import java.lang.management.ManagementFactory
@@ -59,7 +59,7 @@ class BotStatus {
             .build()
     }
 
-    @AnyMessageHandler(cmd = RegexCMD.BOT_STATUS)
+    @AnyMessageHandler(cmd = Regex.BOT_STATUS)
     fun handler(bot: Bot, event: AnyMessageEvent) {
         ExceptionHandler.with(bot, event) {
             bot.sendMsg(event, buildMsg(), false)

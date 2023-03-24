@@ -11,6 +11,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.dto.ParseYoutubeDTO
+import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.ImageUtils
@@ -24,11 +25,9 @@ class ParseYoutube {
 
     private val cfg = Config.plugins.parseYoutube
 
-    private val regex = "^(?:https?://)?(?:www.)?(?:youtube.com|youtu.be)/(?:watch\\?v=)([^#&?]*).*\$".toRegex()
-
     private fun request(url: String): ParseYoutubeDTO {
         val data: ParseYoutubeDTO
-        val id = RegexUtils.group(regex, 1, url)
+        val id = RegexUtils.group(1, url, Regex.YOUTUBE_URL)
         if (id.isBlank()) throw YuriException("Youtube链接解析失败")
         val api = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet," +
                 "statistics&id=${id}&key=${cfg.apiKey}"
@@ -58,7 +57,7 @@ class ParseYoutube {
     @AnyMessageHandler
     fun handler(bot: Bot, event: AnyMessageEvent) {
         ExceptionHandler.with(bot, event) {
-            if (!regex.matches(event.message)) return@with
+            if (!RegexUtils.match(event.message, Regex.YOUTUBE_URL)) return@with
             bot.sendMsg(event, buildMsg(request(event.message)), false)
         }
     }

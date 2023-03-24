@@ -7,7 +7,7 @@ import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.annotation.Slf4j
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import com.mikuac.yuri.config.Config
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import org.springframework.stereotype.Component
 import java.util.regex.Matcher
 
@@ -23,7 +23,7 @@ class Broadcast {
         }
     }
 
-    @AnyMessageHandler(cmd = RegexCMD.BROADCAST)
+    @AnyMessageHandler(cmd = Regex.BROADCAST)
     fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         if (event.userId in Config.base.adminList) {
             val msg = matcher.group(1)

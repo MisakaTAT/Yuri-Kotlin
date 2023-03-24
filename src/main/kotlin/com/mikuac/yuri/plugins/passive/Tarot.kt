@@ -8,7 +8,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.dto.TarotDTO
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import net.jodah.expiringmap.ExpirationPolicy
@@ -58,7 +58,7 @@ class Tarot : ApplicationRunner {
             .build()
     }
 
-    @AnyMessageHandler(cmd = RegexCMD.TAROT)
+    @AnyMessageHandler(cmd = Regex.TAROT)
     fun handler(bot: Bot, event: AnyMessageEvent) {
         ExceptionHandler.with(bot, event) {
             val userId = event.userId

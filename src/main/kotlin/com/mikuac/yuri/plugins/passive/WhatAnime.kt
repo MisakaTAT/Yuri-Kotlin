@@ -11,7 +11,7 @@ import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.dto.WhatAnimeDTO
 import com.mikuac.yuri.entity.WhatAnimeCacheEntity
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.repository.WhatAnimeCacheRepository
@@ -128,7 +128,7 @@ class WhatAnime {
         return Pair(infoMsg, videoMsg)
     }
 
-    @AnyMessageHandler(cmd = RegexCMD.WHAT_ANIME_SEARCH)
+    @AnyMessageHandler(cmd = Regex.WHAT_ANIME_SEARCH)
     fun handler(bot: Bot, event: AnyMessageEvent) {
         SearchModeUtils.setSearchMode(this.javaClass.simpleName, event.userId, event.groupId ?: 0L, bot)
     }

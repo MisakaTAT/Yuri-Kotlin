@@ -7,7 +7,7 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.dto.DouYinParseDTO
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.NetUtils
@@ -34,25 +34,25 @@ class DouYinParse {
         val url = "https://www.douyin.com/aweme/v1/web/aweme/detail/?aweme_id=$id"
         val query = URL(url).query
         val engine = ScriptEngineManager().getEngineByName("js")
-        val script = this::class.java.getResource("/X-Bogus.js")!!.readText()
+        val script = this::class.java.getResource("/douyin-sign.js")!!.readText()
         val sign = engine.eval("$script; sign('$query', '$agent')") as String
         return "$url&X-Bogus=$sign"
     }
 
     private fun request(msg: String): DouYinParseDTO.Detail {
-        val shortURL = RegexUtils.group(RegexCMD.DOU_YIN_SHORT_URL.toRegex(), 1, msg)
+        val shortURL = RegexUtils.group("url", msg, Regex.DOU_YIN_SHORT_URL)
         if (shortURL.isBlank()) throw YuriException("抖音短链接提取失败")
         val firstResp = NetUtils.get(shortURL)
         val videoID = RegexUtils.group(
-            RegexCMD.DOU_YIN_REAL_URL_ID.toRegex(),
-            1,
-            firstResp.request.url.toString()
+            "id",
+            firstResp.request.url.toString(),
+            Regex.DOU_YIN_REAL_URL_ID,
         )
         firstResp.close()
         if (videoID.isBlank()) throw YuriException("抖音视频ID提取失败")
         val data: DouYinParseDTO
         val resp = NetUtils.get(signURL(videoID), headers)
-        data = Gson().fromJson(resp.body?.string(), DouYinParseDTO::class.java)
+        data = Gson().fromJson(resp.body?.string(), DouYinParseDTO::class.java) ?: throw YuriException("抖音链接解析失败")
         resp.close()
         return data.detail
     }
@@ -60,8 +60,7 @@ class DouYinParse {
     @AnyMessageHandler
     fun handler(bot: Bot, event: AnyMessageEvent) {
         ExceptionHandler.with(bot, event) {
-            val pattern = RegexCMD.DOU_YIN_SHORT_URL.toRegex()
-            if (!pattern.containsMatchIn(event.message)) return@with
+            if (!RegexUtils.check(event.message, Regex.DOU_YIN_SHORT_URL)) return@with
             val data = request(event.message)
             bot.sendMsg(
                 event,

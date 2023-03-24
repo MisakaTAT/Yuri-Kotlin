@@ -7,7 +7,7 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.dto.RainbowSixSiegeDTO
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.FormatUtils
@@ -90,7 +90,7 @@ class RainbowSixSiege {
             .build()
     }
 
-    @AnyMessageHandler(cmd = RegexCMD.R6S)
+    @AnyMessageHandler(cmd = Regex.R6S)
     fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             val username = matcher.group(1) ?: YuriException("用户名获取失败")

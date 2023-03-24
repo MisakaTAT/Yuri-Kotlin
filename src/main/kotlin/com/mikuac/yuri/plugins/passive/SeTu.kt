@@ -9,7 +9,7 @@ import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.annotation.Slf4j
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.dto.AnimePicDTO
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.ImageUtils
@@ -87,7 +87,7 @@ class SeTu {
         return Pair(buildTextMsg.first, buildTextMsg.second)
     }
 
-    @AnyMessageHandler(cmd = RegexCMD.SETU)
+    @AnyMessageHandler(cmd = Regex.SETU)
     fun handler(bot: Bot, event: AnyMessageEvent) {
         ExceptionHandler.with(bot, event) {
             val groupId = event.groupId ?: 0L

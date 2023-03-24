@@ -7,7 +7,7 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.dto.HitokotoDTO
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.utils.NetUtils
 import org.springframework.stereotype.Component
@@ -46,7 +46,7 @@ class Hitokoto {
         return data
     }
 
-    @AnyMessageHandler(cmd = RegexCMD.HITOKOTO)
+    @AnyMessageHandler(cmd = Regex.HITOKOTO)
     fun handler(bot: Bot, event: AnyMessageEvent) {
         ExceptionHandler.with(bot, event) {
             val data = request()

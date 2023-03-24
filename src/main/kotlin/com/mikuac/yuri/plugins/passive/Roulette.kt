@@ -5,7 +5,7 @@ import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.config.Config
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.utils.SendUtils
 import lombok.Getter
 import net.jodah.expiringmap.ExpirationPolicy
@@ -182,7 +182,7 @@ class Roulette {
         data.progress++
     }
 
-    @GroupMessageHandler(cmd = RegexCMD.ROULETTE)
+    @GroupMessageHandler(cmd = Regex.ROULETTE)
     fun handler(event: GroupMessageEvent, bot: Bot, matcher: Matcher) {
         val groupId = event.groupId
         val userId = event.userId

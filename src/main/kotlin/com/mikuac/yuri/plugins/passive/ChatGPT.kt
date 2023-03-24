@@ -6,7 +6,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.entity.ChatGPTEntity
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.repository.ChatGPTRepository
@@ -134,7 +134,7 @@ class ChatGPT {
         return errMsg
     }
 
-    @AnyMessageHandler(cmd = RegexCMD.CHAT_GPT)
+    @AnyMessageHandler(cmd = Regex.CHAT_GPT)
     fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             val userId = event.userId

@@ -8,7 +8,7 @@ import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.entity.GroupBlackListEntity
 import com.mikuac.yuri.entity.GroupWhiteListEntity
 import com.mikuac.yuri.entity.UserBlackListEntity
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.repository.GroupBlackListRepository
 import com.mikuac.yuri.repository.GroupWhiteListRepository
 import com.mikuac.yuri.repository.UserBlackListRepository
@@ -36,7 +36,7 @@ class Manager {
     @Autowired
     private lateinit var checkUtils: CheckUtils
 
-    @PrivateMessageHandler(cmd = RegexCMD.MANAGER)
+    @PrivateMessageHandler(cmd = Regex.MANAGER)
     fun handler(bot: Bot, event: PrivateMessageEvent, matcher: Matcher) {
         if (event.userId !in cfg.adminList) {
             bot.sendPrivateMsg(event.userId, "此操作仅管理员可执行 config.yaml --> adminList", false)

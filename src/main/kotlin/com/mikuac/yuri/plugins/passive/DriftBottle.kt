@@ -7,7 +7,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.entity.DriftBottleEntity
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.repository.DriftBottleRepository
@@ -34,7 +34,7 @@ class DriftBottle {
     private lateinit var repository: DriftBottleRepository
 
     @Suppress("kotlin:S3776")
-    @GroupMessageHandler(cmd = RegexCMD.DRIFT_BOTTLE)
+    @GroupMessageHandler(cmd = Regex.DRIFT_BOTTLE)
     fun handler(event: GroupMessageEvent, bot: Bot, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             val msg = event.message

@@ -8,7 +8,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.annotation.Slf4j
 import com.mikuac.yuri.dto.AnimeCrawlerDTO
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.NetUtils
@@ -157,7 +157,7 @@ class AnimeCrawler {
         }
     }
 
-    @AnyMessageHandler(cmd = RegexCMD.ANIME_CRAWLER)
+    @AnyMessageHandler(cmd = Regex.ANIME_CRAWLER)
     fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             var msg: String = buildMsg(matcher)

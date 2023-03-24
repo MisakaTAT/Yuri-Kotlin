@@ -12,7 +12,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.dto.EpicFreeGameDTO
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.NetUtils
@@ -114,7 +114,7 @@ class EpicFreeGame {
         }
     }
 
-    @AnyMessageHandler(cmd = RegexCMD.EPIC_FREE_GAME)
+    @AnyMessageHandler(cmd = Regex.EPIC_FREE_GAME)
     fun handler(bot: Bot, event: AnyMessageEvent) {
         ExceptionHandler.with(bot, event) {
             val msg = ShiroUtils.generateForwardMsg(event.selfId, Config.base.nickname, buildMsg())

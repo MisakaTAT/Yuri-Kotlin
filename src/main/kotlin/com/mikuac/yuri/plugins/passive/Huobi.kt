@@ -7,7 +7,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.dto.HuobiDTO
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.NetUtils
@@ -52,7 +52,7 @@ class Huobi {
         """.trimIndent()
     }
 
-    @AnyMessageHandler(cmd = RegexCMD.Huobi)
+    @AnyMessageHandler(cmd = Regex.Huobi)
     fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             bot.sendMsg(event, buildMsg(matcher), false)

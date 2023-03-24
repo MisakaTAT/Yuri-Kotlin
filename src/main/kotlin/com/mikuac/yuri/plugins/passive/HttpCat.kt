@@ -5,7 +5,7 @@ import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import org.springframework.stereotype.Component
@@ -20,7 +20,7 @@ class HttpCat {
         return MsgUtils.builder().img("https://http.cat/${statusCode}").build()
     }
 
-    @AnyMessageHandler(cmd = RegexCMD.HTTP_CAT)
+    @AnyMessageHandler(cmd = Regex.HTTP_CAT)
     fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             val msg = buildMsg(matcher)

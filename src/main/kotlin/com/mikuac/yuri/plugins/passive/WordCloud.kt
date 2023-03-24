@@ -22,7 +22,7 @@ import com.mikuac.shiro.enums.MsgTypeEnum
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.entity.WordCloudEntity
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.global.Global
@@ -147,7 +147,7 @@ class WordCloud {
         return contents
     }
 
-    @GroupMessageHandler(cmd = RegexCMD.WORD_CLOUD)
+    @GroupMessageHandler(cmd = Regex.WORD_CLOUD)
     fun handler(event: GroupMessageEvent, bot: Bot, matcher: Matcher) {
         val msgId = event.messageId
         ExceptionHandler.with(bot, event) {
@@ -163,7 +163,7 @@ class WordCloud {
         }
     }
 
-    @AnyMessageHandler(cmd = RegexCMD.WORD_CLOUD_CRON)
+    @AnyMessageHandler(cmd = Regex.WORD_CLOUD_CRON)
     fun handler(event: AnyMessageEvent, bot: Bot, matcher: Matcher) {
         if (event.userId !in Config.base.adminList) {
             bot.sendMsg(event, "此操作需要管理员权限", false)

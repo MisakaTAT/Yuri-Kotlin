@@ -7,7 +7,7 @@ import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.shiro.dto.event.request.GroupAddRequestEvent
 import com.mikuac.yuri.config.Config
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import org.springframework.stereotype.Component
 import java.util.regex.Matcher
 
@@ -30,7 +30,7 @@ class GroupAddRequest : BotPlugin() {
         return MESSAGE_IGNORE
     }
 
-    @PrivateMessageHandler(cmd = RegexCMD.GROUP_ADD_REQ)
+    @PrivateMessageHandler(cmd = Regex.GROUP_ADD_REQ)
     fun handler(event: PrivateMessageEvent, bot: Bot, matcher: Matcher) {
         val type = matcher.group(1)
         val reqType = matcher.group(2)

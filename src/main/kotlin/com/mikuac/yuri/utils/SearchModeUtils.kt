@@ -7,7 +7,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.shiro.enums.MsgTypeEnum
 import com.mikuac.yuri.config.Config
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import net.jodah.expiringmap.ExpirationPolicy
 import net.jodah.expiringmap.ExpiringMap
 import org.springframework.stereotype.Component
@@ -24,7 +24,7 @@ class SearchModeUtils {
         val bot: Bot
     )
 
-    @AnyMessageHandler(cmd = RegexCMD.UNSET_SEARCH_MODE)
+    @AnyMessageHandler(cmd = Regex.UNSET_SEARCH_MODE)
     fun unsetSearchMode(bot: Bot, event: AnyMessageEvent) {
         remove(event.userId, event.groupId, bot)
     }

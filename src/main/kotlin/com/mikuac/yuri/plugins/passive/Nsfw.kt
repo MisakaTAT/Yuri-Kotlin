@@ -7,7 +7,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.shiro.enums.MsgTypeEnum
 import com.mikuac.yuri.dto.NsfwDTO
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.NetUtils
@@ -48,7 +48,7 @@ class Nsfw {
         return c
     }
 
-    @AnyMessageHandler(cmd = RegexCMD.NSFW)
+    @AnyMessageHandler(cmd = Regex.NSFW)
     fun handler(event: AnyMessageEvent, bot: Bot) {
         ExceptionHandler.with(bot, event) {
             val images = event.arrayMsg.filter { it.type == MsgTypeEnum.image }

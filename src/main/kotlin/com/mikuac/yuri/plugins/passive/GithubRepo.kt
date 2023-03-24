@@ -9,7 +9,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.dto.GithubRepoDTO
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.ImageUtils
@@ -53,7 +53,7 @@ class GithubRepo {
             .build()
     }
 
-    @AnyMessageHandler(cmd = RegexCMD.GITHUB_REPO)
+    @AnyMessageHandler(cmd = Regex.GITHUB_REPO)
     fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             bot.sendMsg(event, buildMsg(matcher), false)

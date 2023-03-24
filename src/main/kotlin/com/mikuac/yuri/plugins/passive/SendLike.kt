@@ -7,7 +7,7 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.enums.MsgTypeEnum
 import com.mikuac.yuri.config.Config
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import org.springframework.scheduling.annotation.Scheduled
@@ -29,7 +29,7 @@ class SendLike {
         status.clear()
     }
 
-    @GroupMessageHandler(cmd = RegexCMD.CLEAR_SEND_LIKE)
+    @GroupMessageHandler(cmd = Regex.CLEAR_SEND_LIKE)
     fun handler(bot: Bot, event: GroupMessageEvent) {
         if (event.userId !in Config.base.adminList) {
             bot.sendGroupMsg(event.groupId, "此操作需要管理员权限", false)
@@ -41,7 +41,7 @@ class SendLike {
         }
     }
 
-    @GroupMessageHandler(cmd = RegexCMD.SEND_LIKE)
+    @GroupMessageHandler(cmd = Regex.SEND_LIKE)
     fun handler(bot: Bot, event: GroupMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             val userId = event.userId

@@ -1,12 +1,13 @@
 package com.mikuac.yuri.enums
 
 @Suppress("SpellCheckingInspection")
-object RegexCMD {
+object Regex {
 
     const val CHAT_GPT = "^(?i)chat\\s(?<action>set|del|show)?\\s?(?<prompt>[\\s\\S]+?)?\$"
-
     const val DOU_YIN_REAL_URL_ID = "/video/(?<id>\\d+)"
     const val DOU_YIN_SHORT_URL = "(?<url>(?:https?:\\/\\/)?v\\.douyin\\.com\\/\\w+)"
+    const val BILIBILI_BID = "(?<=video/)(.*)(?=/\\?)"
+    const val YOUTUBE_URL = "^(?:https?://)?(?:www.)?(?:youtube.com|youtu.be)/(?:watch\\?v=)([^#&?]*).*\$"
 
     const val BOT_STATUS = "^(?i)status\$|^状态\$"
     const val THROW_USER = "^(?i)throw\\s(.*)\$|^[丢抛]\\s(.*)\$"

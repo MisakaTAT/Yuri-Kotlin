@@ -7,7 +7,7 @@ import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.enums.MsgTypeEnum
-import com.mikuac.yuri.enums.RegexCMD
+import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import net.coobird.thumbnailator.Thumbnails
@@ -74,7 +74,7 @@ class ThrowUser {
         return "base64://${drawImage(atUserId.toLong())}"
     }
 
-    @GroupMessageHandler(cmd = RegexCMD.THROW_USER)
+    @GroupMessageHandler(cmd = Regex.THROW_USER)
     fun handler(bot: Bot, event: GroupMessageEvent) {
         ExceptionHandler.with(bot, event) {
             bot.sendGroupMsg(event.groupId, MsgUtils.builder().img(buildMsg(event)).build(), false)
