@@ -8,8 +8,8 @@ object RegexUtils {
     }
 
     fun group(group: Int, text: String, regex: String): String {
-        val matchResult = regex.toRegex().find(text) ?: return ""
-        val groups = matchResult.groupValues
+        val match = regex.toRegex().find(text) ?: return ""
+        val groups = match.groupValues
         return if (group in groups.indices) groups[group] else ""
     }
 
