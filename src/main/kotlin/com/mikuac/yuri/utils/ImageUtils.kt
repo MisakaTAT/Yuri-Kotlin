@@ -1,6 +1,5 @@
 package com.mikuac.yuri.utils
 
-import com.mikuac.yuri.exception.YuriException
 import java.awt.Color
 import java.awt.geom.AffineTransform
 import java.awt.image.BufferedImage
@@ -83,7 +82,7 @@ object ImageUtils {
     private fun extractImageFormat(url: String): String {
         val regex = "\\.(jpg|jpeg|png)$".toRegex()
         val matchResult = regex.find(url)
-        return matchResult?.groupValues?.get(1) ?: throw YuriException("不支持的图片格式")
+        return matchResult?.groupValues?.get(1) ?: "png"
     }
 
 }
