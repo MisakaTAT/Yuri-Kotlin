@@ -34,8 +34,9 @@ class GithubRepo {
     }
 
     private fun buildMsg(matcher: Matcher): String {
-        val searchName = matcher.group(1) ?: throw YuriException("请按格式输入正确的仓库名")
-        val data = request(searchName).items[0]
+        val repoName = matcher.group("repo").trim()
+        if (repoName.isBlank()) throw YuriException("请按格式输入正确的仓库名")
+        val data = request(repoName).items[0]
         val img = ImageUtils.formatPNG("https://opengraph.githubassets.com/0/${data.fullName}", cfg.proxy)
         return MsgUtils.builder()
             .text("RepoName: ${data.fullName}")

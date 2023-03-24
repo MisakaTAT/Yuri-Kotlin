@@ -22,8 +22,8 @@ class PhoenixWright {
     private val cfg = Config.plugins.phoenixWright
 
     private fun buildMsg(matcher: Matcher): String {
-        var topText = matcher.group(1) ?: throw YuriException("请输入顶部内容")
-        var bottomText = matcher.group(2) ?: throw YuriException("请输入底部内容")
+        var topText = matcher.group("top") ?: throw YuriException("请输入顶部内容")
+        var bottomText = matcher.group("bottom") ?: throw YuriException("请输入底部内容")
         topText = URLEncoder.encode(topText, StandardCharsets.UTF_8.toString())
         bottomText = URLEncoder.encode(bottomText, StandardCharsets.UTF_8.toString())
         val img = formatPNG(

@@ -27,7 +27,7 @@ class ParseYoutube {
 
     private fun request(url: String): ParseYoutubeDTO {
         val data: ParseYoutubeDTO
-        val id = RegexUtils.group(1, url, Regex.YOUTUBE_URL)
+        val id = RegexUtils.group("id", url, Regex.YOUTUBE_URL)
         if (id.isBlank()) throw YuriException("Youtube链接解析失败")
         val api = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet," +
                 "statistics&id=${id}&key=${cfg.apiKey}"

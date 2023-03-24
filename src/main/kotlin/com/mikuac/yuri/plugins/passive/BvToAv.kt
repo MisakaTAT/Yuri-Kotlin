@@ -7,6 +7,7 @@ import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import org.springframework.stereotype.Component
+import java.util.*
 import java.util.regex.Matcher
 import kotlin.math.pow
 
@@ -49,10 +50,10 @@ class BvToAv {
     }
 
     private fun buildMsg(matcher: Matcher): String {
-        val bvId = matcher.group(1)
-        val avId = matcher.group(2)
-        if (bvId != null && bvId.isNotEmpty()) return bv2av(bvId)
-        if (avId != null && avId.isNotEmpty()) return av2bv(avId)
+        val action = matcher.group("action").uppercase(Locale.getDefault())
+        val id = matcher.group("id").trim()
+        if (action.startsWith("BV") && id.isNotBlank()) return bv2av(id)
+        if (action.startsWith("AV") && id.isNotBlank()) return av2bv(id)
         return "转换失败"
     }
 

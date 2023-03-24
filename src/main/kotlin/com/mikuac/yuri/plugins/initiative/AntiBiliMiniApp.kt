@@ -24,7 +24,7 @@ class AntiBiliMiniApp {
     private fun request(shortURL: String): AntiBiliMiniAppDTO {
         val data: AntiBiliMiniAppDTO
         val urlResp = NetUtils.get(shortURL)
-        val bid = RegexUtils.group(1, urlResp.request.url.toString(), Regex.BILIBILI_BID)
+        val bid = RegexUtils.group("bid", urlResp.request.url.toString(), Regex.BILIBILI_BID)
         urlResp.close()
         val api = "https://api.bilibili.com/x/web-interface/view?bvid=${bid}"
         val resp = NetUtils.get(api)

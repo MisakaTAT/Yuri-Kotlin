@@ -21,6 +21,7 @@ import net.jodah.expiringmap.ExpirationPolicy
 import net.jodah.expiringmap.ExpiringMap
 import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
+import java.util.regex.Matcher
 
 @Slf4j
 @Shiro
@@ -75,23 +76,23 @@ class SeTu {
         }
     }
 
-    private fun buildMsg(msg: String, userId: Long, groupId: Long): Pair<String, String?> {
+    private fun buildMsg(r18: Boolean, userId: Long, groupId: Long): Pair<String, String?> {
         // 检查是否处于冷却时间
         if (expiringMap[groupId + userId] != null && expiringMap[groupId + userId] == userId) {
             val expectedExpiration = expiringMap.getExpectedExpiration(groupId + userId) / 1000
             throw YuriException("整天色图色图，信不信把你变成色图？冷却：[${expectedExpiration}秒]")
         }
-        val r18 = msg.contains(Regex("(?i)r18"))
         if (!cfg.r18 && r18) throw YuriException("NSFW禁止！")
         val buildTextMsg = buildTextMsg(r18)
         return Pair(buildTextMsg.first, buildTextMsg.second)
     }
 
     @AnyMessageHandler(cmd = Regex.SETU)
-    fun handler(bot: Bot, event: AnyMessageEvent) {
+    fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             val groupId = event.groupId ?: 0L
-            val msg = buildMsg(event.message, event.userId, groupId)
+            val r18 = matcher.group("r18").trim()
+            val msg = buildMsg(r18.isNotBlank(), event.userId, groupId)
             bot.sendMsg(event, msg.first, false)
             val cdTime = cfg.cd.times(1000L)
             expiringMap.put(groupId + event.userId, event.userId, cdTime, TimeUnit.MILLISECONDS)
