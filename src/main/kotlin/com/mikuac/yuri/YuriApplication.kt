@@ -17,5 +17,6 @@ import org.springframework.scheduling.annotation.EnableScheduling
 class YuriApplication
 
 fun main(args: Array<String>) {
+    System.setProperty("polyglot.engine.WarnInterpreterOnly", "false")
     runApplication<YuriApplication>(*args)
 }

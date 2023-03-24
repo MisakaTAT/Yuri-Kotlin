@@ -40,7 +40,7 @@ class DouYinParse {
     }
 
     private fun request(msg: String): DouYinParseDTO.Detail {
-        val shortURL = RegexUtils.group("url", msg, Regex.DOU_YIN_SHORT_URL)
+        val shortURL = RegexUtils.group("url", msg, Regex.DOU_YIN_SHORT_URL).trim()
         if (shortURL.isBlank()) throw YuriException("抖音短链接提取失败")
         val firstResp = NetUtils.get(shortURL)
         val videoID = RegexUtils.group(

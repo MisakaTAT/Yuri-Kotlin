@@ -2,12 +2,13 @@ package com.mikuac.yuri.utils
 
 object RegexUtils {
 
-    fun group(group: String, txt: String, regex: String): String {
-        return regex.toRegex().matchEntire(txt)?.groups?.get(group)?.value ?: ""
+    fun group(group: String, text: String, regex: String): String {
+        val match = regex.toRegex().find(text) ?: return ""
+        return match.groups[group]?.value ?: ""
     }
 
-    fun group(group: Int, txt: String, regex: String): String {
-        val matchResult = regex.toRegex().find(txt) ?: return ""
+    fun group(group: Int, text: String, regex: String): String {
+        val matchResult = regex.toRegex().find(text) ?: return ""
         val groups = matchResult.groupValues
         return if (group in groups.indices) groups[group] else ""
     }
