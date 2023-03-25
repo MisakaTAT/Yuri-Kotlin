@@ -91,8 +91,8 @@ class SeTu {
     fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             val groupId = event.groupId ?: 0L
-            val r18 = matcher.group("r18").trim()
-            val msg = buildMsg(r18.isNotBlank(), event.userId, groupId)
+            val r18 = matcher.group("r18")
+            val msg = buildMsg(!r18.isNullOrBlank(), event.userId, groupId)
             bot.sendMsg(event, msg.first, false)
             val cdTime = cfg.cd.times(1000L)
             expiringMap.put(groupId + event.userId, event.userId, cdTime, TimeUnit.MILLISECONDS)
