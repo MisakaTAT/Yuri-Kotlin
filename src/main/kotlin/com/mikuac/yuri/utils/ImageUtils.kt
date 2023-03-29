@@ -17,7 +17,7 @@ object ImageUtils {
     private const val ROTATE_RIGHT = 0b100
     private const val ROTATE_DOWN = 0b1000
 
-    private fun imgToBase64(bytes: ByteArray): String {
+    fun imgToBase64(bytes: ByteArray): String {
         return "base64://${Base64.getEncoder().encodeToString(bytes)}"
     }
 

@@ -1,5 +1,7 @@
 package com.mikuac.yuri.config
 
+import com.mikuac.yuri.plugins.passive.WebScreenshot
+
 data class ConfigDataClass(
     val base: Base, val plugins: Plugins
 ) {
@@ -35,7 +37,8 @@ data class ConfigDataClass(
         val phoenixWright: PhoenixWright,
         val parseYoutube: ParseYoutube,
         val chatGPT: ChatGPT,
-        val sendLike: SendLike
+        val sendLike: SendLike,
+        val webScreenshot: WebScreenshot
     ) {
         data class WordCloud(
             val cronTaskRate: Int,
@@ -105,6 +108,10 @@ data class ConfigDataClass(
                 val content: String,
             )
         }
+
+        data class WebScreenshot(
+            val proxy: Boolean
+        )
 
         data class SendLike(
             val maxTimes: Int
