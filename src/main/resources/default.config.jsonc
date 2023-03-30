@@ -207,6 +207,22 @@
     "webScreenshot": {
       // 是否启用代理
       "proxy": false
+    },
+    // rss 订阅
+    "rss": {
+      // rss 列表
+      "urls": [
+        "https://mikuac.com/feed/",
+        "https://rsshub.app/ff14/zh/news",
+        "https://rsshub.app/arknights/news",
+        "https://rsshub.app/bangumi/tv/calendar/today"
+      ],
+      // 需要通知的群
+      "groups": [
+        12345678
+      ],
+      // 检查周期（分钟）
+      "check": 5
     }
   }
 }

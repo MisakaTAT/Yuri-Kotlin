@@ -43,7 +43,7 @@ dependencies {
     api("com.mikuac:shiro:2.0.2")
     api("net.jodah:expiringmap:0.5.10")
     api("cn.hutool:hutool-core:5.8.16")
-    api("cn.hutool:hutool-system:5.8.15")
+    api("cn.hutool:hutool-system:5.8.16")
     api("net.coobird:thumbnailator:0.4.19")
     api("com.github.oshi:oshi-core:6.4.1")
     api("org.telegram:telegrambots:6.5.0")
@@ -57,7 +57,8 @@ dependencies {
     api("com.google.code.gson:gson:2.10.1")
     api("org.graalvm.js:js:22.3.1")
     api("org.graalvm.js:js-scriptengine:22.3.1")
-    api("com.microsoft.playwright:playwright:1.31.0")
+    api("com.microsoft.playwright:playwright:1.32.0")
+    api("com.rometools:rome:2.1.0")
 
     api("org.jetbrains.kotlin:kotlin-reflect:1.8.10")
     api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10")
