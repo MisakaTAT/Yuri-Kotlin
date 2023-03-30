@@ -48,9 +48,10 @@ class SeTu {
         return data.data[0]
     }
 
-    private fun buildTextMsg(r18: Boolean): Pair<String, String?> {
+    private fun buildTextMsg(r18: Boolean): Pair<String, String> {
         val data = request(r18)
-        val imgUrl = data.urls.original.replace("i.pixiv.cat", cfg.reverseProxy)
+        var imgUrl = data.urls.original
+        if (cfg.reverseProxy.isNotBlank()) imgUrl = imgUrl.replace("i.pixiv.cat", cfg.reverseProxy)
         return Pair(
             MsgUtils.builder()
                 .text("标题：${data.title}")
@@ -63,8 +64,7 @@ class SeTu {
         )
     }
 
-    private fun buildPicMsg(url: String?): String {
-        url ?: return "图片获取失败了呢 _(:3 」∠)_"
+    private fun buildPicMsg(url: String): String {
         if (cfg.antiShielding == 0) return MsgUtils.builder().img(url).build()
         return MsgUtils.builder().img(ImageUtils.imgAntiShielding(url, cfg.antiShielding)).build()
     }
@@ -76,7 +76,7 @@ class SeTu {
         }
     }
 
-    private fun buildMsg(r18: Boolean, userId: Long, groupId: Long): Pair<String, String?> {
+    private fun buildMsg(r18: Boolean, userId: Long, groupId: Long): Pair<String, String> {
         // 检查是否处于冷却时间
         if (expiringMap[groupId + userId] != null && expiringMap[groupId + userId] == userId) {
             val expectedExpiration = expiringMap.getExpectedExpiration(groupId + userId) / 1000

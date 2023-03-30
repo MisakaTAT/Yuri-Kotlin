@@ -3,6 +3,7 @@ package com.mikuac.yuri.plugins.passive
 import com.microsoft.playwright.BrowserType
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.Playwright
+import com.microsoft.playwright.PlaywrightException
 import com.microsoft.playwright.options.Clip
 import com.microsoft.playwright.options.Proxy
 import com.mikuac.shiro.annotation.AnyMessageHandler
@@ -15,6 +16,7 @@ import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.ImageUtils
+import com.mikuac.yuri.utils.RegexUtils
 import org.springframework.stereotype.Component
 import java.util.regex.Matcher
 
@@ -52,17 +54,21 @@ class WebScreenshot {
     @AnyMessageHandler(cmd = Regex.WEB_SCREENSHOT)
     fun handler(event: AnyMessageEvent, bot: Bot, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
-            val action = matcher.group("action")?.trim() ?: ""
-            val url = matcher.group("url")?.trim() ?: ""
-            val selector = matcher.group("selector")?.trim() ?: ""
-            if (url.isBlank()) throw YuriException("URL无效")
-            var base64 = ""
-            when (action) {
-                "网页截图" -> base64 = screenshot(url, false, selector)
-                "全屏网页截图" -> base64 = screenshot(url, true, selector)
+            try {
+                val action = matcher.group("action")?.trim() ?: ""
+                val url = matcher.group("url")?.trim() ?: ""
+                val selector = matcher.group("selector")?.trim() ?: ""
+                if (url.isBlank()) throw YuriException("URL无效")
+                var base64 = ""
+                when (action) {
+                    "网页截图" -> base64 = screenshot(url, false, selector)
+                    "全屏网页截图" -> base64 = screenshot(url, true, selector)
+                }
+                if (base64.isBlank()) throw YuriException("页面截取失败：$url")
+                bot.sendMsg(event, MsgUtils.builder().img(base64).build(), false)
+            } catch (e: PlaywrightException) {
+                throw RuntimeException(e.message?.let { RegexUtils.group("msg", it, "message='(?<msg>[^'].*)") })
             }
-            if (base64.isBlank()) throw YuriException("页面截取失败：$url")
-            bot.sendMsg(event, MsgUtils.builder().img(base64).build(), false)
         }
     }
 
