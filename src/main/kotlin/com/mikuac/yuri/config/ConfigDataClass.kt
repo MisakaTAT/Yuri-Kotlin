@@ -119,7 +119,9 @@ data class ConfigDataClass(
         data class Rss(
             val urls: List<String>,
             val groups: List<Long>,
-            val check: Int
+            val check: Int,
+            val proxy: Boolean,
+            val enable: Boolean
         )
 
         data class Telegram(
