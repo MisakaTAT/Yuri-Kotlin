@@ -9,6 +9,7 @@ import com.mikuac.yuri.utils.DateUtils
 import com.mikuac.yuri.utils.NetUtils
 import com.rometools.rome.io.SyndFeedInput
 import com.rometools.rome.io.XmlReader
+import org.jsoup.Jsoup
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
@@ -44,15 +45,17 @@ class Rss : ApplicationRunner {
                     SyndFeedInput().build(XmlReader(xml))
                 }
                 if (!feed.publishedDate.toInstant().isAfter(lastCheckTime)) return@forEach
-                val item = feed.entries.first()
+                val entries = feed.entries.first()
+                val doc = Jsoup.parse(entries.description.value)
+                val images = doc.select("img").map { it.absUrl("src") }
                 val msg = MsgUtils.builder()
                     .text("【RSS Subscribe】")
-                    .text("\n标题：${item.title}")
-                    .text("\n时间：${DateUtils.format(item.publishedDate)}")
-                    .text("\n链接：${item.link}")
-                    .build()
+                    .text("\n${entries.title}")
+                    .text("\n${entries.link}")
+                    .text("\n${DateUtils.format(entries.publishedDate)}")
+                if (images.isNotEmpty()) msg.img(images[0])
                 cfg.groups.forEach {
-                    global.bot().sendGroupMsg(it, msg, false)
+                    global.bot().sendGroupMsg(it, msg.build(), false)
                 }
             }
             lastCheckTime = currentTime
