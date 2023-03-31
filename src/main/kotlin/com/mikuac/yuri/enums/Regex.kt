@@ -22,7 +22,7 @@ object Regex {
     const val TAROT = "^(?i)tarot|塔罗牌\$"
     const val HITOKOTO = "^(?i)hitokoto|一言\$"
     const val SETU = "^(?i)(?:setu|色图)(?<r18>\\sr18)?\$"
-    const val WEB_SCREENSHOT = "(?<action>网页截图|全屏网页截图)\\s(?<url>https?://[\\w./?=&\\-]+)(?<selector>\\s.*)?"
+    const val WEB_SCREENSHOT = "(?<action>网页截图|全屏网页截图)\\s(?<url>https?://[\\w./?=&\\-%!@#\$*]+)(?<selector>\\s.*)?"
 
     const val ANIME_CRAWLER = "^(今日放送)\$|^(星期|周)([1-7]|[一二三四五六七日天])番剧\$"
     const val Huobi = "^(?i)bc\\s([a-z]+)\$"
