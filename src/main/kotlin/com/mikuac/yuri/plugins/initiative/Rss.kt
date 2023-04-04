@@ -33,7 +33,7 @@ class Rss : ApplicationRunner {
         }
     }
 
-    private var lastHashes = mutableMapOf<String, String>()
+    private val lastHashes = HashMap<String, String>()
 
     private fun String.toMd5(): String {
         val md = MessageDigest.getInstance("MD5")
@@ -43,13 +43,13 @@ class Rss : ApplicationRunner {
 
     private fun isUpdated(url: String, content: String): Boolean {
         val currentHash = content.toMd5()
-        val lastHash = lastHashes[url]
-        if (lastHash == null) {
+        if (!lastHashes.containsKey(url)) {
             lastHashes[url] = currentHash
             return false
         }
+        if (lastHashes[url] == currentHash) return false
         lastHashes[url] = currentHash
-        return currentHash != lastHash
+        return true
     }
 
     private fun start() {
