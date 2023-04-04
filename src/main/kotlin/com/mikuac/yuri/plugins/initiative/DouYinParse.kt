@@ -24,7 +24,8 @@ import javax.script.ScriptEngineManager
 @Component
 class DouYinParse {
 
-    private val agent = "Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Mobile Safari/537.36 Edg/87.0.664.66"
+    private val agent =
+        "Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Mobile Safari/537.36 Edg/87.0.664.66"
 
     private fun signURL(id: String): String {
         val url = "https://www.douyin.com/aweme/v1/web/aweme/detail/?aweme_id=$id"
@@ -64,7 +65,9 @@ class DouYinParse {
         data.addProperty("union", true)
         data.add("migrate_info", migrateInfo)
         val resp = NetUtils.post("https://ttwid.bytedance.com/ttwid/union/register/", data.toString())
-        return resp.headers["Set-Cookie"]?.let { RegexUtils.group("ttwid", it, "ttwid=(?<ttwid>[^;]+)") } ?: ""
+        val ttwid = resp.headers["Set-Cookie"]?.let { RegexUtils.group("ttwid", it, "ttwid=(?<ttwid>[^;]+)") } ?: ""
+        resp.close()
+        return ttwid
     }
 
     private fun request(msg: String): DouYinParseDTO.Detail {

@@ -37,7 +37,6 @@ data class ConfigDataClass(
         val chatGPT: ChatGPT,
         val sendLike: SendLike,
         val webScreenshot: WebScreenshot,
-        val rss: Rss
     ) {
         data class WordCloud(
             val cronTaskRate: Int,
@@ -114,14 +113,6 @@ data class ConfigDataClass(
 
         data class SendLike(
             val maxTimes: Int
-        )
-
-        data class Rss(
-            val urls: List<String>,
-            val groups: List<Long>,
-            val check: Int,
-            val proxy: Boolean,
-            val enable: Boolean
         )
 
         data class Telegram(
