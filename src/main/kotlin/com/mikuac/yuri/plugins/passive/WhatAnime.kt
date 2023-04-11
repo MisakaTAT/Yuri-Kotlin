@@ -4,10 +4,10 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
-import com.mikuac.shiro.bo.ArrayMsg
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
+import com.mikuac.shiro.model.ArrayMsg
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.dto.WhatAnimeDTO
 import com.mikuac.yuri.entity.WhatAnimeCacheEntity

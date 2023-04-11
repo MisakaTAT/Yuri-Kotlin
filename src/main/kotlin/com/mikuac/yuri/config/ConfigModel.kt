@@ -1,6 +1,6 @@
 package com.mikuac.yuri.config
 
-data class ConfigDataClass(
+data class ConfigModel(
     val base: Base, val plugins: Plugins
 ) {
     data class Base(
@@ -16,7 +16,11 @@ data class ConfigDataClass(
         )
 
         data class MySQL(
-            val url: String, val database: String, val username: String, val password: String
+            val enable: Boolean,
+            val url: String,
+            val database: String,
+            val username: String,
+            val password: String
         )
     }
 

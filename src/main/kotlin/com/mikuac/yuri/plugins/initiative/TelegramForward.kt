@@ -2,7 +2,7 @@ package com.mikuac.yuri.plugins.initiative
 
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.yuri.config.Config
-import com.mikuac.yuri.config.ConfigDataClass.Plugins.Telegram.Rules.RuleItem
+import com.mikuac.yuri.config.ConfigModel.Plugins.Telegram.Rules.RuleItem
 import com.mikuac.yuri.global.Global
 import com.mikuac.yuri.utils.BeanUtils
 import com.mikuac.yuri.utils.ImageUtils.formatPNG
@@ -47,13 +47,8 @@ class TelegramForward(opts: DefaultBotOptions, token: String) : TelegramLongPoll
         }
 
         if (message.hasPhoto()) {
-            val photoSizeList = message.photo
-            val photo = photoSizeList.stream().max(Comparator.comparingInt { obj: PhotoSize -> obj.fileSize })
-            if (photo.isPresent) {
-                val file = getFile(photo.get().fileId)
-                if (file != null) {
-                    msg.img(formatPNG(file, cfg.proxy))
-                }
+            message.photo.stream().max(Comparator.comparingInt { obj: PhotoSize -> obj.fileSize }).ifPresent {
+                getFile(it.fileId)?.let { msg.img(formatPNG(it, cfg.proxy)) }
             }
             val caption = message.caption
             if (caption != null && caption.isNotBlank()) {
@@ -65,13 +60,8 @@ class TelegramForward(opts: DefaultBotOptions, token: String) : TelegramLongPoll
         if (message.hasSticker()) {
             val sticker = message.sticker
             // 跳过动画表情和视频
-            if (sticker.isAnimated || sticker.isVideo) {
-                return
-            }
-            val file = getFile(sticker.fileId)
-            if (file != null) {
-                msg.img(formatPNG(file, cfg.proxy))
-            }
+            if (sticker.isAnimated || sticker.isVideo) return
+            getFile(sticker.fileId)?.let { msg.img(formatPNG(it, cfg.proxy)) }
         }
 
         val fromUser = message.from.userName

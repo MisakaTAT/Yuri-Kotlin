@@ -2,10 +2,10 @@ package com.mikuac.yuri.utils
 
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
-import com.mikuac.shiro.bo.ArrayMsg
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.shiro.enums.MsgTypeEnum
+import com.mikuac.shiro.model.ArrayMsg
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.Regex
 import net.jodah.expiringmap.ExpirationPolicy
@@ -88,8 +88,7 @@ class SearchModeUtils {
             // 判断当前检索模式与 SearchModeBean 中是否一致，否则会执行所有检索插件
             if (expiringMap[key]?.mode != mode) return false
             // 判断是否处于搜索模式
-            if (!isSearchMode(key)) return false
-            return true
+            return isSearchMode(key)
         }
 
         fun getImgUrl(userId: Long, groupId: Long, arrMsg: List<ArrayMsg>): String? {

@@ -6,8 +6,8 @@ import cn.hutool.core.io.watch.watchers.DelayWatcher
 import com.google.gson.Gson
 import com.mikuac.yuri.annotation.Slf4j
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
-import jakarta.annotation.PostConstruct
 import org.apache.commons.io.FileUtils
+import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.ExitCodeGenerator
 import org.springframework.boot.SpringApplication
@@ -22,7 +22,7 @@ import kotlin.system.exitProcess
 
 @Slf4j
 @Component
-class Config {
+class Config : InitializingBean {
 
     private var isReload = false
 
@@ -31,15 +31,14 @@ class Config {
     private val defaultConfigFileName = "default.config.jsonc"
 
     companion object {
-        lateinit var base: ConfigDataClass.Base
-        lateinit var plugins: ConfigDataClass.Plugins
+        lateinit var base: ConfigModel.Base
+        lateinit var plugins: ConfigModel.Plugins
     }
 
     @Autowired
     private lateinit var ctx: ConfigurableApplicationContext
 
-    @PostConstruct
-    private fun initConfig() {
+    private fun init() {
         try {
             val defaultConfigFile = javaClass.classLoader.getResourceAsStream(defaultConfigFileName)
             val configFile = File(configFileName)
@@ -51,28 +50,31 @@ class Config {
                 exitProcess(exitCode)
             }
         } catch (e: Exception) {
-            log.error("配置文件生成失败")
-            e.printStackTrace()
+            log.error("配置文件生成失败", e)
         }
         val reader = Files.newBufferedReader(Paths.get(configFileName))
-        val config = Gson().fromJson(reader, ConfigDataClass::class.java)
+        val config = Gson().fromJson(reader, ConfigModel::class.java)
         base = config.base
         plugins = config.plugins
         if (!isReload) log.info("配置文件初始化完毕")
     }
 
-    @PostConstruct
-    private fun watchMonitorConfigFile() {
+    private fun monitor() {
         val monitor = WatchMonitor.createAll("./", object : DelayWatcher(object : SimpleWatcher() {
             override fun onModify(event: WatchEvent<*>?, currentPath: Path?) {
                 if (configFileName == event?.context().toString()) {
                     isReload = true
-                    initConfig()
+                    init()
                     log.info("配置文件 $configFileName 已重载")
                 }
             }
         }, 500) {})
         monitor.start()
+    }
+
+    override fun afterPropertiesSet() {
+        init()
+        monitor()
     }
 
 }
