@@ -40,7 +40,7 @@ dependencies {
 
     api("com.mikuac:shiro:2.0.3")
     api("net.jodah:expiringmap:0.5.10")
-    api("cn.hutool:hutool-core:5.8.16")
+    api("cn.hutool:hutool-core:5.8.17")
     api("cn.hutool:hutool-system:5.8.16")
     api("net.coobird:thumbnailator:0.4.19")
     api("com.github.oshi:oshi-core:6.4.1")
