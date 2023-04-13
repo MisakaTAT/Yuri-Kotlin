@@ -1,11 +1,13 @@
 package com.mikuac.yuri.utils
 
+import cn.hutool.core.io.FileUtil
 import com.mikuac.yuri.config.Config
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
+import java.io.File
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.concurrent.TimeUnit
@@ -42,6 +44,20 @@ object NetUtils {
             req.header(it.key, it.value)
         }
         return client.newCall(req.build()).execute()
+    }
+
+    fun download(url: String, path: String, name: String, timeout: Int): String {
+        File(path).let { if (!it.exists()) FileUtil.mkdir(it) }
+        val req = Request.Builder().url(url).build()
+        val resp = client.newBuilder().readTimeout(timeout.toLong(), TimeUnit.SECONDS).build().newCall(req).execute()
+        val inputStream = resp.body?.byteStream()
+        val file = File(path, name)
+        inputStream?.use { input ->
+            file.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        }
+        return file.absolutePath
     }
 
     fun post(url: String, json: String): Response {

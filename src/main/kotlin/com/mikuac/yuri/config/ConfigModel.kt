@@ -1,3 +1,5 @@
+@file:Suppress("SpellCheckingInspection")
+
 package com.mikuac.yuri.config
 
 data class ConfigModel(
@@ -41,7 +43,13 @@ data class ConfigModel(
         val chatGPT: ChatGPT,
         val sendLike: SendLike,
         val webScreenshot: WebScreenshot,
+        val vits: Vits,
     ) {
+        data class Vits(
+            val timeout: Int,
+            val api: String,
+        )
+
         data class WordCloud(
             val cronTaskRate: Int,
             val minFontSize: Int,

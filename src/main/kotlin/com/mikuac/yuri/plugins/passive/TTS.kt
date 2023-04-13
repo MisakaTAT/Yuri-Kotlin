@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
 
 @Shiro
 @Component
-class Tts {
+class TTS {
 
     @AnyMessageHandler(cmd = Regex.TTS)
     fun handler(event: AnyMessageEvent, bot: Bot) {

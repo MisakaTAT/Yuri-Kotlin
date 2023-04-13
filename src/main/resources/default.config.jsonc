@@ -208,6 +208,13 @@
     "webScreenshot": {
       // 是否启用代理
       "proxy": false
+    },
+    // 语音生成 https://github.com/Artrajz/vits-simple-api
+    "vits": {
+      // 接口地址
+      "api": "",
+      // 超时（秒）
+      "timeout": 60
     }
   }
 }
