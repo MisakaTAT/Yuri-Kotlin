@@ -25,6 +25,8 @@ import org.springframework.stereotype.Component
 @Component
 class WhatAnime {
 
+    private val cfg = Config.plugins.picSearch
+
     @Autowired
     private lateinit var repository: WhatAnimeCacheRepository
 
@@ -65,29 +67,24 @@ class WhatAnime {
         val data: Pair<WhatAnimeDTO.Basic, WhatAnimeDTO.Detailed>
         try {
             // 获取基本信息
-            val basicResult = NetUtils.get(
-                "https://api.trace.moe/search?cutBorders&url=${imgUrl}",
-                Config.plugins.picSearch.proxy
-            )
-            val basicData = Gson().fromJson(basicResult.body?.string(), WhatAnimeDTO.Basic::class.java)
-            basicResult.close()
-            if (basicData.error != "") throw YuriException(basicData.error)
-            if (basicData.result.isEmpty()) throw YuriException("未找到匹配结果")
-            val animeId = basicData.result[0].aniList
+            val basic = NetUtils.get("https://api.trace.moe/search?cutBorders&url=${imgUrl}").use { resp ->
+                val basic = Gson().fromJson(resp.body?.string(), WhatAnimeDTO.Basic::class.java)
+                if (basic.error != "") throw YuriException(basic.error)
+                if (basic.result.isEmpty()) throw YuriException("未找到匹配结果")
+                basic
+            }
+
             // 获取详细信息
             val variables = JsonObject()
-            variables.addProperty("id", animeId)
-            val reqBody = JsonObject()
-            reqBody.addProperty("query", graphqlQuery)
-            reqBody.add("variables", variables)
-            val aniListResult = NetUtils.post(
-                "https://trace.moe/anilist/",
-                reqBody.toString(),
-                Config.plugins.picSearch.proxy
-            )
-            val aniListData = Gson().fromJson(aniListResult.body?.string(), WhatAnimeDTO.Detailed::class.java)
-            aniListResult.close()
-            data = Pair(basicData, aniListData)
+            variables.addProperty("id", basic.result[0].aniList)
+            val payload = JsonObject()
+            payload.addProperty("query", graphqlQuery)
+            payload.add("variables", variables)
+            val detailed = NetUtils.post("https://trace.moe/anilist/", payload.toString(), cfg.proxy).use { resp ->
+                Gson().fromJson(resp.body?.string(), WhatAnimeDTO.Detailed::class.java)
+            }
+
+            data = Pair(basic, detailed)
         } catch (e: Exception) {
             throw YuriException("WhatAnime数据获取异常：${e.message}")
         }

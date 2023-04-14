@@ -37,13 +37,10 @@ class Hitokoto {
     val types = arrayOf("a", "b", "c", "d", "h", "i", "j")
 
     private fun request(): HitokotoDTO {
-        val data: HitokotoDTO
         val type = types[Random().nextInt(types.size)]
-        val api = "https://v1.hitokoto.cn?c=${type}"
-        val resp = NetUtils.get(api)
-        data = Gson().fromJson(resp.body?.string(), HitokotoDTO::class.java)
-        resp.close()
-        return data
+        return NetUtils.get("https://v1.hitokoto.cn?c=${type}").use { resp ->
+            Gson().fromJson(resp.body?.string(), HitokotoDTO::class.java)
+        }
     }
 
     @AnyMessageHandler(cmd = Regex.HITOKOTO)

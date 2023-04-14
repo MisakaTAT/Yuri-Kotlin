@@ -32,13 +32,11 @@ class AnimeCrawler {
     private val font = Font.createFont(Font.TRUETYPE_FONT, this.javaClass.getResourceAsStream("/font/chinese_font.ttf"))
 
     private fun request(): AnimeCrawlerDTO {
-        val data: AnimeCrawlerDTO
-        val api = "https://bangumi.bilibili.com/web_api/timeline_global"
-        val resp = NetUtils.get(api)
-        data = Gson().fromJson(resp.body?.string(), AnimeCrawlerDTO::class.java)
-        resp.close()
-        if (data.code != 0) throw YuriException(data.message)
-        return data
+        return NetUtils.get("https://bangumi.bilibili.com/web_api/timeline_global").use { resp ->
+            val data = Gson().fromJson(resp.body?.string(), AnimeCrawlerDTO::class.java)
+            if (data.code != 0) throw YuriException(data.message)
+            data
+        }
     }
 
     private fun getAnimeForDate(dayOfWeek: Int): String {

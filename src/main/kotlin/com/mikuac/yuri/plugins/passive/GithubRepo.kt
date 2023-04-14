@@ -24,13 +24,11 @@ class GithubRepo {
     private val cfg = Config.plugins.githubRepo
 
     private fun request(repoName: String): GithubRepoDTO {
-        val data: GithubRepoDTO
-        val api = "https://api.github.com/search/repositories?q=${repoName}"
-        val resp = NetUtils.get(api, cfg.proxy)
-        data = Gson().fromJson(resp.body?.string(), GithubRepoDTO::class.java)
-        resp.close()
-        if (data.totalCount <= 0) throw YuriException("未找到名为 $repoName 的仓库")
-        return data
+        return NetUtils.get("https://api.github.com/search/repositories?q=${repoName}", cfg.proxy).use { resp ->
+            val data = Gson().fromJson(resp.body?.string(), GithubRepoDTO::class.java)
+            if (data.totalCount <= 0) throw YuriException("未找到名为 $repoName 的仓库")
+            data
+        }
     }
 
     private fun buildMsg(matcher: Matcher): String {

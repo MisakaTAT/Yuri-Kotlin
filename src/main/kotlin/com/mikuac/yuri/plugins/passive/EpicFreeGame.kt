@@ -33,8 +33,7 @@ class EpicFreeGame {
 
     private fun request(): EpicFreeGameDTO {
         // 检查缓存
-        val cache = expiringMap["cache"]
-        if (cache != null) return cache
+        expiringMap["cache"]?.let { return it }
 
         val headers: HashMap<String, String> = HashMap()
         headers["Referer"] = "https://www.epicgames.com/store/zh-CN/"
@@ -42,20 +41,17 @@ class EpicFreeGame {
         headers["User-Agent"] =
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36"
 
-        val data: EpicFreeGameDTO
         val api =
             "https://store-site-backend-static-ipv4.ak.epicgames.com/freeGamesPromotions?locale=zh-CN&country=CN&allowCountries=CN"
-        val resp = NetUtils.get(api, headers)
-        val jsonObject = JsonParser.parseString(resp.body?.string())
-        resp.close()
-        val elements = jsonObject
-            .asJsonObject["data"]
-            .asJsonObject["Catalog"]
-            .asJsonObject["searchStore"]
-        data = Gson().fromJson(elements, EpicFreeGameDTO::class.java)
-        if (data.elements.isEmpty()) throw YuriException("游戏列表为空")
-        expiringMap["cache"] = data
-        return data
+        return NetUtils.get(api, headers).use { resp ->
+            val jsonObj = JsonParser.parseString(resp.body?.string())
+            val elements = jsonObj.asJsonObject["data"].asJsonObject["Catalog"].asJsonObject["searchStore"]
+            val data = Gson().fromJson(elements, EpicFreeGameDTO::class.java)
+            if (data.elements.isEmpty()) throw YuriException("游戏列表为空")
+            expiringMap["cache"] = data
+            data
+        }
+
     }
 
     private fun formatDate(rawDate: String): String {

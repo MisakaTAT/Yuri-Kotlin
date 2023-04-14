@@ -21,15 +21,12 @@ class RainbowSixSiege {
 
     private fun request(username: String): RainbowSixSiegeDTO {
         if (username.isEmpty()) throw YuriException("用户名不合法，请检查输入是否正确。")
-        val data: RainbowSixSiegeDTO
-        val resp = NetUtils.get(
-            "https://www.r6s.cn/Stats?username=${username}",
-            mapOf(Pair("referer", "no-referer"))
-        )
-        data = Gson().fromJson(resp.body?.string(), RainbowSixSiegeDTO::class.java)
-        resp.close()
-        if (data.status != 200) throw YuriException("服务器可能爆炸惹，请稍后重试～")
-        return data
+        val api = "https://www.r6s.cn/Stats?username=${username}"
+        return NetUtils.get(api, mapOf(Pair("referer", "no-referer"))).use { resp ->
+            val data = Gson().fromJson(resp.body?.string(), RainbowSixSiegeDTO::class.java)
+            if (data.status != 200) throw YuriException("服务器可能爆炸惹，请稍后重试～")
+            data
+        }
     }
 
     private fun ratioComputed(a: Int, b: Int): String {

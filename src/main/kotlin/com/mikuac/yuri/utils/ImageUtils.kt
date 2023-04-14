@@ -22,27 +22,26 @@ object ImageUtils {
     }
 
     fun formatPNG(imgURL: String, proxy: Boolean): String {
-        val resp = NetUtils.get(imgURL, proxy)
-        val bufferedImage = ImageIO.read(resp.body?.byteStream())
-        resp.close()
-        val out = ByteArrayOutputStream()
-        ImageIO.write(bufferedImage, extractImageFormat(imgURL), out)
-        return imgToBase64(out.toByteArray())
+        return NetUtils.get(imgURL, proxy).use { resp ->
+            val bufferedImage = ImageIO.read(resp.body?.byteStream())
+            val out = ByteArrayOutputStream()
+            ImageIO.write(bufferedImage, extractImageFormat(imgURL), out)
+            imgToBase64(out.toByteArray())
+        }
     }
 
     fun imgAntiShielding(imgURL: String, mode: Int): String {
-        val resp = NetUtils.get(imgURL)
-        var image = ImageIO.read(resp.body?.byteStream())
-        resp.close()
+        return NetUtils.get(imgURL).use { resp ->
+            var image = ImageIO.read(resp.body?.byteStream())
+            if (mode and RAND_MOD_PX != 0) image = randomModifyPixels(image)
+            if (mode and ROTATE_LEFT != 0) image = rotateImage(image, 90.00)
+            else if (mode and ROTATE_RIGHT != 0) image = rotateImage(image, -90.00)
+            else if (mode and ROTATE_DOWN != 0) image = rotateImage(image, 180.00)
 
-        if (mode and RAND_MOD_PX != 0) image = randomModifyPixels(image)
-        if (mode and ROTATE_LEFT != 0) image = rotateImage(image, 90.00)
-        else if (mode and ROTATE_RIGHT != 0) image = rotateImage(image, -90.00)
-        else if (mode and ROTATE_DOWN != 0) image = rotateImage(image, 180.00)
-
-        val out = ByteArrayOutputStream()
-        ImageIO.write(image, extractImageFormat(imgURL), out)
-        return imgToBase64(out.toByteArray())
+            val out = ByteArrayOutputStream()
+            ImageIO.write(image, extractImageFormat(imgURL), out)
+            imgToBase64(out.toByteArray())
+        }
     }
 
     private fun randomModifyPixels(image: BufferedImage): BufferedImage {

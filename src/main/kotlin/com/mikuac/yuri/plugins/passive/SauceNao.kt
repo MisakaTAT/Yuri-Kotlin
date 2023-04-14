@@ -14,25 +14,26 @@ import org.springframework.stereotype.Component
 @Component
 class SauceNao {
 
+    private val cfg = Config.plugins.picSearch
+
     @Autowired
     private lateinit var repository: SauceNaoCacheRepository
 
     @Synchronized
-    private fun request(imgUrl: String): SauceDTO {
-        val data: SauceDTO
+    private fun request(img: String): SauceDTO {
         try {
-            val key = Config.plugins.picSearch.sauceNaoKey
-            val api = "https://saucenao.com/search.php?api_key=${key}&output_type=2&numres=3&db=999&url=${imgUrl}"
-            val resp = NetUtils.get(api, Config.plugins.picSearch.proxy)
-            data = Gson().fromJson(resp.body?.string(), SauceDTO::class.java)
-            resp.close()
-            if (data.header.longRemaining <= 0) throw YuriException("今日的搜索配额已耗尽啦")
-            if (data.header.shortRemaining <= 0) throw YuriException("短时间内搜索配额已耗尽")
-            if (data.results.isNullOrEmpty()) throw YuriException("服务出现问题或未能找到相似的内容")
+            val key = cfg.sauceNaoKey
+            val api = "https://saucenao.com/search.php?api_key=${key}&output_type=2&numres=3&db=999&url=${img}"
+            return NetUtils.get(api, cfg.proxy).use { resp ->
+                val data = Gson().fromJson(resp.body?.string(), SauceDTO::class.java)
+                if (data.header.longRemaining <= 0) throw YuriException("今日的搜索配额已耗尽啦")
+                if (data.header.shortRemaining <= 0) throw YuriException("短时间内搜索配额已耗尽")
+                if (data.results.isNullOrEmpty()) throw YuriException("服务出现问题或未能找到相似的内容")
+                data
+            }
         } catch (e: Exception) {
             throw YuriException("SauceNao数据获取异常：${e.message}")
         }
-        return data
     }
 
     fun buildMsgForSauceNao(imgUrl: String, imgMd5: String): Pair<String, String> {

@@ -24,13 +24,12 @@ class Huobi {
     private val cfg = Config.plugins.huobi
 
     private fun request(symbol: String): HuobiDTO {
-        val data: HuobiDTO
         val api = "https://api.huobi.pro/market/history/kline?period=1day&size=1&symbol=${symbol}usdt"
-        val resp = NetUtils.get(api, cfg.proxy)
-        data = Gson().fromJson(resp.body?.string(), HuobiDTO::class.java)
-        resp.close()
-        if ("ok" != data.status) throw YuriException("数据获取失败")
-        return data
+        return NetUtils.get(api, cfg.proxy).use { resp ->
+            val data = Gson().fromJson(resp.body?.string(), HuobiDTO::class.java)
+            if ("ok" != data.status) throw YuriException("数据获取失败")
+            data
+        }
     }
 
     private fun buildMsg(matcher: Matcher): String {

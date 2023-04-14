@@ -9,16 +9,13 @@ object TelegramUtils {
     private val cfg = Config.plugins.telegram
 
     fun getFile(fileId: String): String? {
-        val baseURL = "https://api.telegram.org"
+        val api = "https://api.telegram.org"
         val botToken = cfg.botToken
-        val api = "${baseURL}/bot${botToken}/getFile?file_id=${fileId}"
-        val resp = NetUtils.get(api, true)
-        val data = Gson().fromJson(resp.body?.string(), Result::class.java)
-        resp.close()
-        if (data.ok) {
-            return "${baseURL}/file/bot${botToken}/${data.result.filePath}"
+        return NetUtils.get("${api}/bot${botToken}/getFile?file_id=${fileId}", true).use { resp ->
+            val data = Gson().fromJson(resp.body?.string(), Result::class.java)
+            if (data.ok) "${api}/file/bot${botToken}/${data.result.filePath}"
+            null
         }
-        return null
     }
 
     data class Result(

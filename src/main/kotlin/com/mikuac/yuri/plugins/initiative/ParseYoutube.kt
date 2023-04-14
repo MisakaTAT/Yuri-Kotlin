@@ -26,15 +26,12 @@ class ParseYoutube {
     private val cfg = Config.plugins.parseYoutube
 
     private fun request(url: String): ParseYoutubeDTO {
-        val data: ParseYoutubeDTO
         val id = RegexUtils.group("id", url, Regex.YOUTUBE_URL)
-        if (id.isBlank()) throw YuriException("Youtube链接解析失败")
-        val api = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet," +
-                "statistics&id=${id}&key=${cfg.apiKey}"
-        val resp = NetUtils.get(api, true)
-        data = Gson().fromJson(resp.body?.string(), ParseYoutubeDTO::class.java)
-        resp.close()
-        return data
+        if (id.isBlank()) throw YuriException("Youtube Video ID 提取失败")
+        val api = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${id}&key=${cfg.apiKey}"
+        return NetUtils.get(api, true).use { resp ->
+            Gson().fromJson(resp.body?.string(), ParseYoutubeDTO::class.java)
+        }
     }
 
     private fun buildMsg(parseYoutube: ParseYoutubeDTO): String {

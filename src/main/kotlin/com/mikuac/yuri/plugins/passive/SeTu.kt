@@ -37,15 +37,12 @@ class SeTu {
         .build()
 
     private fun request(r18: Boolean): AnimePicDTO.Data {
-        val data: AnimePicDTO
-        var api = "https://api.lolicon.app/setu/v2"
-        if (r18) api = "$api?r18=1"
-        val resp = NetUtils.get(api)
-        data = Gson().fromJson(resp.body?.string(), AnimePicDTO::class.java)
-        resp.close()
-        if (data.error.isNotEmpty()) throw YuriException(data.error)
-        if (data.data.isEmpty()) throw YuriException("列表为空")
-        return data.data[0]
+        return NetUtils.get("https://api.lolicon.app/setu/v2${if (r18) "?r18=1" else ""}").use { resp ->
+            val data = Gson().fromJson(resp.body?.string(), AnimePicDTO::class.java)
+            if (data.error.isNotEmpty()) throw YuriException(data.error)
+            if (data.data.isEmpty()) throw YuriException("列表为空")
+            data.data[0]
+        }
     }
 
     private fun buildTextMsg(r18: Boolean): Pair<String, String> {

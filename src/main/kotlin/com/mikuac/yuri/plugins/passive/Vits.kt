@@ -25,10 +25,10 @@ class Vits {
     private val cfg = Config.plugins.vits
 
     private val speakers: VitsDTO.Speakers by lazy {
-        val resp = NetUtils.get("${cfg.api}/voice/speakers")
-        val speakers = Gson().fromJson(resp.body?.string(), VitsDTO.Speakers::class.java)
-        resp.close()
-        speakers
+        NetUtils.get("${cfg.api}/voice/speakers").use { resp ->
+            resp.code.let { if (it != 200) throw YuriException("服务器出现错误：${it}") }
+            Gson().fromJson(resp.body?.string(), VitsDTO.Speakers::class.java)
+        }
     }
 
     @AnyMessageHandler(cmd = Regex.VITS)

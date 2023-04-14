@@ -19,6 +19,8 @@ import java.net.Proxy
 @Component
 class Ascii2d {
 
+    private val cfg = Config.plugins.picSearch
+
     @Autowired
     private lateinit var repository: Ascii2dCacheRepository
 
@@ -27,28 +29,24 @@ class Ascii2d {
         val cache = repository.findByMd5(imgMd5)
         if (cache.isPresent) {
             val json = Gson().fromJson(cache.get().infoResult, HashMap::class.java)
-            return Pair(
-                "${json["color"]}\n[Tips] 该结果为数据库缓存", "${json["bovw"]}\n[Tips] 该结果为数据库缓存"
-            )
+            return Pair("${json["color"]}\n[Tips] 该结果为数据库缓存", "${json["bovw"]}\n[Tips] 该结果为数据库缓存")
         }
 
-        val proxy = Config.plugins.picSearch.proxy
-        val colorUrlResp = NetUtils.get("https://ascii2d.net/search/url/${imgUrl}", proxy)
-        val colorUrl = colorUrlResp.request.url.toString()
-        colorUrlResp.close()
-
-        try {
-            val colorSearchResult = request(0, colorUrl, proxy)
-            val bovwSearchResult = request(1, colorUrl.replace("/color/", "/bovw/"), proxy)
-            val json = JsonObject()
-            json.addProperty("color", colorSearchResult)
-            json.addProperty("bovw", bovwSearchResult)
-            repository.save(Ascii2dCacheEntity(0, imgMd5, json.toString()))
-            return Pair(colorSearchResult, bovwSearchResult)
-        } catch (e: IndexOutOfBoundsException) {
-            throw YuriException("Ascii2d未检索到相似内容···")
+        return NetUtils.get("https://ascii2d.net/search/url/${imgUrl}", cfg.proxy).use { resp ->
+            resp.request.url.toString()
+        }.let {
+            try {
+                val colorSearchResult = request(0, it, cfg.proxy)
+                val bovwSearchResult = request(1, it.replace("/color/", "/bovw/"), cfg.proxy)
+                val json = JsonObject()
+                json.addProperty("color", colorSearchResult)
+                json.addProperty("bovw", bovwSearchResult)
+                repository.save(Ascii2dCacheEntity(0, imgMd5, json.toString()))
+                Pair(colorSearchResult, bovwSearchResult)
+            } catch (e: IndexOutOfBoundsException) {
+                throw YuriException("Ascii2d未检索到相似内容···")
+            }
         }
-
     }
 
     private fun request(type: Int, resultUrl: String, proxy: Boolean): String {

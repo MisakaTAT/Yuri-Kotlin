@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 
 class VitsDTO {
     data class Speakers(
-            @SerializedName("VITS")
-            val vits: List<Map<String, String>>
+        @SerializedName("VITS")
+        val vits: List<Map<String, String>>
     )
 }

@@ -19,12 +19,9 @@ import org.springframework.stereotype.Component
 class Nsfw {
 
     private fun request(img: String): NsfwDTO {
-        val data: NsfwDTO
-        val api = "https://nsfwtag.azurewebsites.net/api/nsfw?url=${img}"
-        val resp = NetUtils.get(api)
-        data = Gson().fromJson(resp.body?.string(), NsfwDTO::class.java)
-        resp.close()
-        return data
+        return NetUtils.get("https://nsfwtag.azurewebsites.net/api/nsfw?url=${img}").use { resp ->
+            Gson().fromJson(resp.body?.string(), NsfwDTO::class.java)
+        }
     }
 
     private fun judge(p: NsfwDTO.Item): String {
@@ -55,8 +52,8 @@ class Nsfw {
             if (images.isEmpty()) throw YuriException("没有发现需要鉴定的图片")
             if (images.size > 1) throw YuriException("一次只能处理一张图片哦～")
             val data = images[0].data["url"]?.let { request(it) }
-            if (data != null && data.isEmpty()) throw YuriException("鉴定失败，可能是网络炸惹 QAQ")
-            SendUtils.reply(event, bot, judge(data!![0]))
+            if (data.isNullOrEmpty()) throw YuriException("鉴定失败，可能是网络炸惹 QAQ")
+            SendUtils.reply(event, bot, judge(data[0]))
         }
     }
 

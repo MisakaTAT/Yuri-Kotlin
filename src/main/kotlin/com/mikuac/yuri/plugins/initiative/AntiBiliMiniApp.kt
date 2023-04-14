@@ -22,16 +22,15 @@ import org.springframework.stereotype.Component
 class AntiBiliMiniApp {
 
     private fun request(shortURL: String): AntiBiliMiniAppDTO {
-        val data: AntiBiliMiniAppDTO
-        val urlResp = NetUtils.get(shortURL)
-        val bid = RegexUtils.group("bid", urlResp.request.url.toString(), Regex.BILIBILI_BID)
-        urlResp.close()
-        val api = "https://api.bilibili.com/x/web-interface/view?bvid=${bid}"
-        val resp = NetUtils.get(api)
-        data = Gson().fromJson(resp.body?.string(), AntiBiliMiniAppDTO::class.java)
-        resp.close()
-        if (data.code != 0) throw YuriException(data.message)
-        return data
+        return NetUtils.get(shortURL).use { resp ->
+            RegexUtils.group("bid", resp.request.url.toString(), Regex.BILIBILI_BID)
+        }.let { bid ->
+            NetUtils.get("https://api.bilibili.com/x/web-interface/view?bvid=${bid}").use { resp ->
+                val data = Gson().fromJson(resp.body?.string(), AntiBiliMiniAppDTO::class.java)
+                if (data.code != 0) throw YuriException(data.message)
+                data
+            }
+        }
     }
 
     private fun buildMsg(json: String): String {

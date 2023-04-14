@@ -65,33 +65,27 @@ class DouYinParse {
         data.addProperty("cbUrlProtocol", "https")
         data.addProperty("union", true)
         data.add("migrate_info", migrateInfo)
-        val resp = NetUtils.post("https://ttwid.bytedance.com/ttwid/union/register/", data.toString())
-        val ttwid = resp.headers["Set-Cookie"]?.let { RegexUtils.group("ttwid", it, "ttwid=(?<ttwid>[^;]+)") } ?: ""
-        resp.close()
-        return ttwid
+        return NetUtils.post("https://ttwid.bytedance.com/ttwid/union/register/", data.toString()).use { resp ->
+            resp.headers["Set-Cookie"]?.let { RegexUtils.group("ttwid", it, "ttwid=(?<ttwid>[^;]+)") } ?: ""
+        }
     }
 
     private fun request(msg: String): DouYinParseDTO.Detail {
         val shortURL = RegexUtils.group("url", msg, Regex.DOU_YIN_SHORT_URL).trim()
         if (shortURL.isBlank()) throw YuriException("抖音短链接提取失败")
-        val firstResp = NetUtils.get(shortURL)
-        val videoID = RegexUtils.group(
-            "id",
-            firstResp.request.url.toString(),
-            Regex.DOU_YIN_REAL_URL_ID,
-        )
-        firstResp.close()
-        if (videoID.isBlank()) throw YuriException("抖音视频ID提取失败")
-        val data: DouYinParseDTO
+        val videoId = NetUtils.get(shortURL).use { resp ->
+            val id = RegexUtils.group("id", resp.request.url.toString(), Regex.DOU_YIN_REAL_URL_ID)
+            if (id.isBlank()) throw YuriException("抖音视频ID提取失败")
+            id
+        }
+
         val headers = HashMap<String, String>()
         headers["User-Agent"] = agent
         headers["Cookie"] = createCookie()
         headers["Referer"] = "https://www.douyin.com/"
-        val resp = NetUtils.get(signURL(videoID), headers)
-        data =
+        return NetUtils.get(signURL(videoId), headers).use { resp ->
             Gson().fromJson(resp.body?.string(), DouYinParseDTO::class.java) ?: throw YuriException("抖音链接解析失败")
-        resp.close()
-        return data.detail
+        }.detail
     }
 
     @AnyMessageHandler

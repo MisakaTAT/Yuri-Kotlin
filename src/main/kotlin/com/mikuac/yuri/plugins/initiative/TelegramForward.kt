@@ -48,7 +48,7 @@ class TelegramForward(opts: DefaultBotOptions, token: String) : TelegramLongPoll
 
         if (message.hasPhoto()) {
             message.photo.stream().max(Comparator.comparingInt { obj: PhotoSize -> obj.fileSize }).ifPresent {
-                getFile(it.fileId)?.let { msg.img(formatPNG(it, cfg.proxy)) }
+                getFile(it.fileId)?.let { url -> msg.img(formatPNG(url, cfg.proxy)) }
             }
             val caption = message.caption
             if (caption != null && caption.isNotBlank()) {
