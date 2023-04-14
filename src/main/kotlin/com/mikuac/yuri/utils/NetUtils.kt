@@ -46,6 +46,20 @@ object NetUtils {
         return client.newCall(req.build()).execute()
     }
 
+    fun download(url: String, path: String, name: String): String {
+        File(path).let { if (!it.exists()) FileUtil.mkdir(it) }
+        val req = Request.Builder().url(url).build()
+        val resp = client.newCall(req).execute()
+        val inputStream = resp.body?.byteStream()
+        val file = File(path, name)
+        inputStream?.use { input ->
+            file.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        }
+        return file.absolutePath
+    }
+
     fun download(url: String, path: String, name: String, timeout: Int): String {
         File(path).let { if (!it.exists()) FileUtil.mkdir(it) }
         val req = Request.Builder().url(url).build()

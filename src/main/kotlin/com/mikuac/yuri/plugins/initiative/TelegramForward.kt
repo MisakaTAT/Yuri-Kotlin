@@ -1,11 +1,14 @@
 package com.mikuac.yuri.plugins.initiative
 
+import cn.hutool.core.util.IdUtil
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.config.ConfigModel.Plugins.Telegram.Rules.RuleItem
 import com.mikuac.yuri.global.Global
 import com.mikuac.yuri.utils.BeanUtils
+import com.mikuac.yuri.utils.FFmpegUtils
 import com.mikuac.yuri.utils.ImageUtils.formatPNG
+import com.mikuac.yuri.utils.NetUtils
 import com.mikuac.yuri.utils.TelegramUtils.getFile
 import lombok.extern.slf4j.Slf4j
 import org.telegram.telegrambots.bots.DefaultBotOptions
@@ -59,12 +62,29 @@ class TelegramForward(opts: DefaultBotOptions, token: String) : TelegramLongPoll
             }
         }
 
-        if (message.hasSticker()) {
-            val sticker = message.sticker
-            // 跳过动画表情和视频
-            if (sticker.isAnimated || sticker.isVideo) return
-            getFile(sticker.fileId).let { url ->
+        if (message.hasSticker() && !message.sticker.isAnimated && !message.sticker.isVideo) {
+            getFile(message.sticker.fileId).let { url ->
                 if (url.isNotBlank()) msg.img(formatPNG(url, cfg.proxy))
+            }
+        }
+
+        @Suppress("kotlin:S125")
+        // if (message.hasSticker() && message.sticker.isAnimated) {
+        //     val fileId = message.sticker.fileId
+        //     getFile(fileId).takeIf { it.isNotBlank() }?.let { url ->
+        //         println(url)
+        //     }
+        // }
+
+        if (message.hasSticker() && message.sticker.isVideo) {
+            val fileId = message.sticker.fileId
+            getFile(fileId).takeIf { it.isNotBlank() }?.let { url ->
+                if (url.endsWith(".webm")) {
+                    NetUtils.download(getFile(fileId), "cache/telegram", "${IdUtil.simpleUUID()}.webm")
+                        .let {
+                            msg.img("file://${FFmpegUtils.webm2Gif(it)}")
+                        }
+                }
             }
         }
 
