@@ -2,6 +2,7 @@ package com.mikuac.yuri.utils
 
 import cn.hutool.core.io.FileUtil
 import com.mikuac.yuri.config.Config
+import com.mikuac.yuri.exception.YuriException
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -66,6 +67,7 @@ object NetUtils {
         File(path).let { if (!it.exists()) FileUtil.mkdir(it) }
         val req = Request.Builder().url(url).build()
         val resp = client.newBuilder().readTimeout(timeout.toLong(), TimeUnit.SECONDS).build().newCall(req).execute()
+        resp.code.let { if (it != 200) throw YuriException("请求处理失败：${it}") }
         val inputStream = resp.body?.byteStream()
         val file = File(path, name)
         inputStream?.use { input ->

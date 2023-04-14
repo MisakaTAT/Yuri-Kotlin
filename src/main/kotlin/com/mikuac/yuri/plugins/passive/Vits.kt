@@ -24,10 +24,40 @@ class Vits {
 
     private val cfg = Config.plugins.vits
 
+    private val speakersId = ArrayList<Int>()
+
     private val speakers: VitsDTO.Speakers by lazy {
         NetUtils.get("${cfg.api}/voice/speakers").use { resp ->
             resp.code.let { if (it != 200) throw YuriException("服务器出现错误：${it}") }
             Gson().fromJson(resp.body?.string(), VitsDTO.Speakers::class.java)
+        }
+    }
+
+    private fun voice(text: String, model: Int, bot: Bot, event: AnyMessageEvent) {
+        if (text.isBlank()) throw YuriException("需要转换的文本内容为空")
+        if (speakersId.isEmpty()) speakers
+        if (!speakersId.contains(model)) throw YuriException("当前 ID 不存在，请使用 vits models 查询可用模型")
+        // https://github.com/Artrajz/vits-simple-api 的 silk 似乎有问题
+        // 所以请求 wav 格式然后给 go-cqhttp 装上 ffmpeg 让 go-cqhttp 做转换 :)
+        NetUtils.download(
+            "${cfg.api}/voice?lang=auto&format=wav&id=${model}&text=${text}",
+            "cache/vits",
+            "${IdUtil.simpleUUID()}.wav",
+            cfg.timeout
+        ).let {
+            bot.sendMsg(event, MsgUtils.builder().voice("file://$it").build(), false)
+        }
+    }
+
+    private fun models(bot: Bot, event: AnyMessageEvent) {
+        MsgUtils.builder().let { builder ->
+            speakers.vits.forEachIndexed { index, it ->
+                speakersId.add(it.keys.toList()[0].toInt())
+                builder.text("${if (index == 0) "" else "\n"}${it.keys.toList()[0]} | ${it.values.toList()[0]}")
+            }
+            builder.build()
+        }.let {
+            bot.sendMsg(event, it, false)
         }
     }
 
@@ -37,30 +67,8 @@ class Vits {
             if (cfg.api.isBlank()) throw YuriException("请配置 VITS 接口")
             val model = matcher.group("model")?.trim()?.toInt() ?: 0
             when (val text = matcher.group("text")?.trim() ?: "") {
-                "models" -> {
-                    MsgUtils.builder().let { builder ->
-                        speakers.vits.forEachIndexed { index, it ->
-                            builder.text("${if (index == 0) "" else "\n"}${it.keys.toList()[0]} | ${it.values.toList()[0]}")
-                        }
-                        builder.build()
-                    }.let {
-                        bot.sendMsg(event, it, false)
-                    }
-                }
-
-                else -> {
-                    if (text.isBlank()) throw YuriException("需要转换的文本内容为空")
-                    // https://github.com/Artrajz/vits-simple-api 的 silk 似乎有问题
-                    // 所以请求 wav 格式然后给 go-cqhttp 装上 ffmpeg 让 go-cqhttp 做转换 :)
-                    NetUtils.download(
-                        "${cfg.api}/voice?lang=auto&format=wav&id=${model}&text=${text}",
-                        "cache/vits",
-                        "${IdUtil.simpleUUID()}.wav",
-                        cfg.timeout
-                    ).let {
-                        bot.sendMsg(event, MsgUtils.builder().voice("file://$it").build(), false)
-                    }
-                }
+                "models" -> models(bot, event)
+                else -> voice(text, model, bot, event)
             }
         }
     }
