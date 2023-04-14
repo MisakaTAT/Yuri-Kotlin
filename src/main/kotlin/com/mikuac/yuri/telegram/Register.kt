@@ -38,7 +38,7 @@ class Register : ApplicationRunner {
         try {
             botsApi.registerBot(TelegramForward(botOptions, cfg.botToken))
         } catch (e: Exception) {
-            e.printStackTrace()
+            log.error("Telegram Bot Register", e)
         }
     }
 

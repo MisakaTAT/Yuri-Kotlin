@@ -4,7 +4,10 @@ import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
+import com.mikuac.yuri.annotation.Slf4j.Companion.log
+import lombok.extern.slf4j.Slf4j
 
+@Slf4j
 object ExceptionHandler {
 
     fun with(bot: Bot, event: Any, block: () -> Unit) {
@@ -14,7 +17,7 @@ object ExceptionHandler {
             e.message?.let { push(event, bot, it) }
         } catch (e: Exception) {
             push(event, bot, "ERROR: ${e.message}")
-            e.printStackTrace()
+            log.error("PluginException", e)
         }
     }
 

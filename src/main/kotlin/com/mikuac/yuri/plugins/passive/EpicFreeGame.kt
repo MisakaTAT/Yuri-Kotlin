@@ -10,6 +10,7 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
+import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.dto.EpicFreeGameDTO
 import com.mikuac.yuri.enums.Regex
@@ -105,7 +106,7 @@ class EpicFreeGame {
             }
             return msgList
         } catch (e: Exception) {
-            e.printStackTrace()
+            log.error("EpicFreeGame", e)
             throw YuriException("数据解析失败")
         }
     }
