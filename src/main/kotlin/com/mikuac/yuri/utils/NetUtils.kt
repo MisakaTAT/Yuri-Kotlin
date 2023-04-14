@@ -46,10 +46,12 @@ object NetUtils {
         return client.newCall(req.build()).execute()
     }
 
-    fun download(url: String, path: String, name: String): String {
+    fun download(url: String, path: String, name: String, proxy: Boolean): String {
         File(path).let { if (!it.exists()) FileUtil.mkdir(it) }
         val req = Request.Builder().url(url).build()
-        val resp = client.newCall(req).execute()
+        val client = client.newBuilder()
+        if (proxy) client.proxy(createProxy())
+        val resp = client.build().newCall(req).execute()
         val inputStream = resp.body?.byteStream()
         val file = File(path, name)
         inputStream?.use { input ->

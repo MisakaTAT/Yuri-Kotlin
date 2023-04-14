@@ -51,7 +51,7 @@ class TelegramForward(opts: DefaultBotOptions, token: String) : TelegramLongPoll
 
         if (message.hasPhoto()) {
             message.photo.stream().max(Comparator.comparingInt { obj: PhotoSize -> obj.fileSize }).ifPresent {
-                getFile(it.fileId).let { url ->
+                getFile(it.fileId, cfg.proxy).let { url ->
                     if (url.isNotBlank()) msg.img(formatPNG(url, cfg.proxy))
                 }
             }
@@ -63,7 +63,7 @@ class TelegramForward(opts: DefaultBotOptions, token: String) : TelegramLongPoll
         }
 
         if (message.hasSticker() && !message.sticker.isAnimated && !message.sticker.isVideo) {
-            getFile(message.sticker.fileId).let { url ->
+            getFile(message.sticker.fileId, cfg.proxy).let { url ->
                 if (url.isNotBlank()) msg.img(formatPNG(url, cfg.proxy))
             }
         }
@@ -78,12 +78,16 @@ class TelegramForward(opts: DefaultBotOptions, token: String) : TelegramLongPoll
 
         if (message.hasSticker() && message.sticker.isVideo) {
             val fileId = message.sticker.fileId
-            getFile(fileId).takeIf { it.isNotBlank() }?.let { url ->
+            getFile(fileId, cfg.proxy).takeIf { it.isNotBlank() }?.let { url ->
                 if (url.endsWith(".webm")) {
-                    NetUtils.download(getFile(fileId), "cache/telegram", "${IdUtil.simpleUUID()}.webm")
-                        .let {
-                            msg.img("file://${FFmpegUtils.webm2Gif(it)}")
-                        }
+                    NetUtils.download(
+                        getFile(fileId, cfg.proxy),
+                        "cache/telegram",
+                        "${IdUtil.simpleUUID()}.webm",
+                        cfg.proxy
+                    ).let {
+                        msg.img("file://${FFmpegUtils.webm2Gif(it)}")
+                    }
                 }
             }
         }
