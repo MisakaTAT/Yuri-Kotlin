@@ -8,13 +8,13 @@ object TelegramUtils {
 
     private val cfg = Config.plugins.telegram
 
-    fun getFile(fileId: String): String? {
+    fun getFile(fileId: String): String {
         val api = "https://api.telegram.org"
         val botToken = cfg.botToken
         return NetUtils.get("${api}/bot${botToken}/getFile?file_id=${fileId}", true).use { resp ->
             val data = Gson().fromJson(resp.body?.string(), Result::class.java)
-            if (data.ok) "${api}/file/bot${botToken}/${data.result.filePath}"
-            null
+            if (data.ok) return "${api}/file/bot${botToken}/${data.result.filePath}"
+            ""
         }
     }
 

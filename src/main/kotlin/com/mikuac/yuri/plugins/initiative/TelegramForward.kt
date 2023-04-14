@@ -48,7 +48,9 @@ class TelegramForward(opts: DefaultBotOptions, token: String) : TelegramLongPoll
 
         if (message.hasPhoto()) {
             message.photo.stream().max(Comparator.comparingInt { obj: PhotoSize -> obj.fileSize }).ifPresent {
-                getFile(it.fileId)?.let { url -> msg.img(formatPNG(url, cfg.proxy)) }
+                getFile(it.fileId).let { url ->
+                    if (url.isNotBlank()) msg.img(formatPNG(url, cfg.proxy))
+                }
             }
             val caption = message.caption
             if (caption != null && caption.isNotBlank()) {
@@ -61,7 +63,9 @@ class TelegramForward(opts: DefaultBotOptions, token: String) : TelegramLongPoll
             val sticker = message.sticker
             // 跳过动画表情和视频
             if (sticker.isAnimated || sticker.isVideo) return
-            getFile(sticker.fileId)?.let { msg.img(formatPNG(it, cfg.proxy)) }
+            getFile(sticker.fileId).let { url ->
+                if (url.isNotBlank()) msg.img(formatPNG(url, cfg.proxy))
+            }
         }
 
         val fromUser = message.from.userName
