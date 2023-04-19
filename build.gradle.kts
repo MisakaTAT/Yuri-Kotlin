@@ -54,7 +54,7 @@ dependencies {
     api("org.graalvm.js:js:22.3.1")
     api("org.graalvm.js:js-scriptengine:22.3.1")
     api("com.microsoft.playwright:playwright:1.32.0")
-    api("mysql:mysql-connector-java:8.0.32")
+    api("mysql:mysql-connector-java:8.0.33")
 
 
     api("org.jetbrains.kotlin:kotlin-reflect:1.8.20")
