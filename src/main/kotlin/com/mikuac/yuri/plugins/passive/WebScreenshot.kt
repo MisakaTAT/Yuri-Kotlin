@@ -46,7 +46,10 @@ class WebScreenshot {
                     pageOpts.setClip(clip)
                 }
                 val byteArray = page.screenshot(pageOpts)
-                ImageUtils.imgToBase64(byteArray)
+                ImageUtils.imgToBase64(byteArray).let {
+                    if (!it.second) throw YuriException("屏幕截取失败")
+                    it.first
+                }
             }
         }
     }
