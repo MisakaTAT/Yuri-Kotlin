@@ -1,5 +1,6 @@
 package com.mikuac.yuri.utils
 
+import com.mikuac.yuri.exception.YuriException
 import java.awt.Color
 import java.awt.geom.AffineTransform
 import java.awt.image.BufferedImage
@@ -30,8 +31,9 @@ object ImageUtils {
         }
     }
 
-    fun imgAntiShielding(imgURL: String, mode: Int): String {
-        return NetUtils.get(imgURL).use { resp ->
+    fun imgAntiShielding(imgURL: String, mode: Int, proxy: Boolean): String {
+        return NetUtils.get(imgURL, proxy).use { resp ->
+            if (resp.code != 200) throw YuriException("图片获取失败：${resp.code}")
             var image = ImageIO.read(resp.body?.byteStream())
             if (mode and RAND_MOD_PX != 0) image = randomModifyPixels(image)
             if (mode and ROTATE_LEFT != 0) image = rotateImage(image, 90.00)

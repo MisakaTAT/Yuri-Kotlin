@@ -17,7 +17,7 @@ object ExceptionHandler {
             e.message?.let { push(event, bot, it) }
         } catch (e: Exception) {
             push(event, bot, "ERROR: ${e.message}")
-            log.error("PluginException", e)
+            log.error(e.stackTrace.first().className, e)
         }
     }
 

@@ -47,8 +47,7 @@ class SeTu {
 
     private fun buildTextMsg(r18: Boolean): Pair<String, String> {
         val data = request(r18)
-        var imgUrl = data.urls.original
-        if (cfg.reverseProxy.isNotBlank()) imgUrl = imgUrl.replace("i.pixiv.cat", cfg.reverseProxy)
+        val imgUrl = data.urls.original
         return Pair(
             MsgUtils.builder()
                 .text("标题：${data.title}")
@@ -62,8 +61,7 @@ class SeTu {
     }
 
     private fun buildPicMsg(url: String): String {
-        if (cfg.antiShielding == 0) return MsgUtils.builder().img(url).build()
-        return MsgUtils.builder().img(ImageUtils.imgAntiShielding(url, cfg.antiShielding)).build()
+        return MsgUtils.builder().img(ImageUtils.imgAntiShielding(url, cfg.antiShielding, cfg.proxy)).build()
     }
 
     private fun recallMsgPic(msgId: Int, bot: Bot) = runBlocking {

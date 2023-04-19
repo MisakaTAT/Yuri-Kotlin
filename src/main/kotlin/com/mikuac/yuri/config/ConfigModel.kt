@@ -69,7 +69,7 @@ data class ConfigModel(
         data class SeTu(
             val r18: Boolean,
             val cd: Int,
-            val reverseProxy: String,
+            val proxy: Boolean,
             val recallPicTime: Int,
             val antiShielding: Int,
         )
