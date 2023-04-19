@@ -18,8 +18,11 @@ object ImageUtils {
     private const val ROTATE_RIGHT = 0b100
     private const val ROTATE_DOWN = 0b1000
 
-    fun imgToBase64(bytes: ByteArray): String {
-        return "base64://${Base64.getEncoder().encodeToString(bytes)}"
+    fun imgToBase64(bytes: ByteArray): Pair<String, Boolean> {
+        return Base64.getEncoder().encodeToString(bytes).trim().let {
+            if (it.isBlank()) return Pair("", false)
+            Pair("base64://${it}", true)
+        }
     }
 
     fun formatPNG(imgURL: String, proxy: Boolean): String {
@@ -27,7 +30,10 @@ object ImageUtils {
             val bufferedImage = ImageIO.read(resp.body?.byteStream())
             val out = ByteArrayOutputStream()
             ImageIO.write(bufferedImage, extractImageFormat(imgURL), out)
-            imgToBase64(out.toByteArray())
+            imgToBase64(out.toByteArray()).let {
+                if (it.second) it.first
+                imgURL
+            }
         }
     }
 
@@ -42,7 +48,10 @@ object ImageUtils {
 
             val out = ByteArrayOutputStream()
             ImageIO.write(image, extractImageFormat(imgURL), out)
-            imgToBase64(out.toByteArray())
+            imgToBase64(out.toByteArray()).let {
+                if (it.second) it.first
+                imgURL
+            }
         }
     }
 
