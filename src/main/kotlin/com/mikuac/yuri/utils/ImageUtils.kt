@@ -31,7 +31,7 @@ object ImageUtils {
             val out = ByteArrayOutputStream()
             ImageIO.write(bufferedImage, extractImageFormat(imgURL), out)
             imgToBase64(out.toByteArray()).let {
-                if (it.second) it.first
+                if (it.second) return it.first
                 imgURL
             }
         }
