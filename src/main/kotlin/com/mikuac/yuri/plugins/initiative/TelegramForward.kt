@@ -91,7 +91,7 @@ class TelegramForward(opts: DefaultBotOptions, token: String) : TelegramLongPoll
                 if (url.isNotBlank()) builder.img(formatPNG(url, cfg.proxy))
             }
         }
-        message.caption?.takeIf { it.isNotBlank() }.let {
+        message.caption?.takeIf { it.isNotBlank() }?.let {
             builder.text("\n")
             builder.text(message.caption)
         }
