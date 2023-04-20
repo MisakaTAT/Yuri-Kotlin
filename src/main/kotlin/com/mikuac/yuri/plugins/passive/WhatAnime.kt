@@ -120,7 +120,7 @@ class WhatAnime {
             .text("\n完结时间：$endTime")
             .text("\n数据来源：WhatAnime")
             .build()
-        val videoMsg = MsgUtils.builder().video(basic.video, imgUrl).build()
+        val videoMsg = MsgUtils.builder().video(basic.video, "").build()
         repository.save(WhatAnimeCacheEntity(0, imgMd5, infoMsg, videoMsg))
         return Pair(infoMsg, videoMsg)
     }
