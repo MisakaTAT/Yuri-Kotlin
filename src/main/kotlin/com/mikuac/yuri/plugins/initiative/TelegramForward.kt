@@ -88,8 +88,8 @@ class TelegramForward(opts: DefaultBotOptions, token: String) : TelegramLongPoll
 
     private fun from(username: String, chat: Chat): String {
         return when (chat.type) {
-            CHANNEL -> "来自：$username 频道：${chat.title}"
-            GROUP, SUPER_GROUP -> "来自：$username 群组：${chat.title}"
+            CHANNEL -> "来自：$username\n频道：${chat.title}"
+            GROUP, SUPER_GROUP -> "来自：$username\n群组：${chat.title}"
             else -> "来自：$username"
         }
     }
