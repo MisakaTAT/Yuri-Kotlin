@@ -129,7 +129,6 @@ data class ConfigModel(
 
         data class Telegram(
             val enable: Boolean,
-            val waitTime: Int,
             val botUsername: String,
             val botToken: String,
             val proxy: Boolean,
