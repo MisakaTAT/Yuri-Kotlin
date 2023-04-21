@@ -2,7 +2,6 @@ package com.mikuac.yuri.plugins.initiative
 
 import cn.hutool.core.util.IdUtil
 import com.mikuac.shiro.common.utils.MsgUtils
-import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.config.ConfigModel.Plugins.Telegram.Rules.RuleItem
 import com.mikuac.yuri.global.Global
@@ -46,45 +45,56 @@ class TelegramForward(opts: DefaultBotOptions, token: String) : TelegramLongPoll
 
         val message = update.message
         val chat = message.chat
-        val username = message.from.userName
+        val type = chat.type
+        val title = chat.title ?: ""
+        val username = message.from.userName ?: ""
 
-        val items = ArrayList<String>()
-        if (message.hasText()) message.text.trim().takeIf { it.isNotBlank() }?.let { items.add(it) }
-        if (message.hasPhoto()) photo(message).trim().takeIf { it.isNotBlank() }?.let { items.add(it) }
-        if (message.hasVideo()) video(message).trim().takeIf { it.isNotBlank() }?.let { items.add(it) }
+        if (message.hasText()) message.text.trim().takeIf { it.isNotBlank() }?.let {
+            MsgUtils.builder().text(it).text("\n${from(username, chat)}").build().let { msg ->
+                send(type, msg, username, title)
+            }
+            return
+        }
+
+        if (message.hasPhoto()) photo(message).let { builder ->
+            builder.text("\n${from(username, chat)}").build().let {
+                send(type, it, username, title)
+            }
+            return
+        }
+
+        if (message.hasVideo()) video(message).trim().takeIf { it.isNotBlank() }?.let {
+            send(type, it, username, title)
+            send(type, from(username, chat), username, title)
+            return
+        }
+
         if (message.hasSticker()) {
             val sticker = message.sticker
-            if (sticker.isVideo) videoSticker(message).takeIf { it.isNotBlank() }?.let { items.add(it) }
-            if (!sticker.isAnimated && !sticker.isVideo) imgSticker(message).takeIf {
-                it.isNotBlank()
-            }?.let {
-                items.add(it)
+            if (sticker.isVideo) videoSticker(message).let { builder ->
+                builder.text("\n${from(username, chat)}").build().let {
+                    send(type, it, username, title)
+                }
+                return
             }
-        }
-        items.add(builderFrom(username, chat))
-
-        // check user white list
-        listOf(GROUP, SUPER_GROUP).takeIf { it.contains(chat.type) }.let {
-            if (cfg.enableUserWhiteList && !cfg.userWhiteList.contains(username)) return
-        }
-
-        val msg = ShiroUtils.generateForwardMsg(Config.base.selfId, Config.base.nickname, items)
-        send(chat.type, msg, username ?: "", chat.title ?: "")
-    }
-
-    private fun builderFrom(username: String, chat: Chat): String {
-        val builder = MsgUtils.builder()
-        return builder.build().trim().takeIf { it.isNotBlank() }.let {
-            when (chat.type) {
-                CHANNEL -> builder.text("来自：$username 频道：${chat.title}")
-                GROUP, SUPER_GROUP -> builder.text("来自：$username 群组：${chat.title}")
-                else -> builder.text("来自：$username")
+            if (!sticker.isAnimated && !sticker.isVideo) imgSticker(message).let { builder ->
+                builder.text("\n${from(username, chat)}").build().let {
+                    send(type, it, username, title)
+                }
+                return
             }
-            builder.build()
         }
     }
 
-    private fun photo(message: Message): String {
+    private fun from(username: String, chat: Chat): String {
+        return when (chat.type) {
+            CHANNEL -> "来自：$username 频道：${chat.title}"
+            GROUP, SUPER_GROUP -> "来自：$username 群组：${chat.title}"
+            else -> "来自：$username"
+        }
+    }
+
+    private fun photo(message: Message): MsgUtils {
         val builder = MsgUtils.builder()
         message.photo.stream().max(Comparator.comparingInt { obj: PhotoSize -> obj.fileSize }).ifPresent {
             getFile(it.fileId, cfg.proxy).let { url ->
@@ -92,10 +102,9 @@ class TelegramForward(opts: DefaultBotOptions, token: String) : TelegramLongPoll
             }
         }
         message.caption?.takeIf { it.isNotBlank() }?.let {
-            builder.text("\n")
-            builder.text(message.caption)
+            builder.text("\n${message.caption}")
         }
-        return builder.build()
+        return builder
     }
 
     private fun video(message: Message): String {
@@ -116,19 +125,19 @@ class TelegramForward(opts: DefaultBotOptions, token: String) : TelegramLongPoll
         }
     }
 
-    private fun imgSticker(message: Message): String {
+    private fun imgSticker(message: Message): MsgUtils {
         val builder = MsgUtils.builder()
         return getFile(message.sticker.fileId, cfg.proxy).let { url ->
             if (url.isNotBlank()) builder.img(formatPNG(url, cfg.proxy))
-            builder.build()
+            builder
         }
     }
 
-    private fun videoSticker(message: Message): String {
+    private fun videoSticker(message: Message): MsgUtils {
         val builder = MsgUtils.builder()
         return message.sticker.fileId.let { fileId ->
             getFile(fileId, cfg.proxy).takeIf { it.isNotBlank() }?.let { url ->
-                if (!url.endsWith(".webm")) return builder.build()
+                if (!url.endsWith(".webm")) return builder
                 NetUtils.download(
                     url,
                     "cache/telegram",
@@ -138,14 +147,18 @@ class TelegramForward(opts: DefaultBotOptions, token: String) : TelegramLongPoll
                     builder.img("file://${FFmpegUtils.webm2Gif(it)}")
                 }
             }
-            builder.build()
+            builder
         }
     }
 
-    private fun send(type: String, msg: List<Map<String, Any>>, fromUser: String, title: String) {
+    private fun send(type: String, msg: String, username: String, title: String) {
+        listOf(GROUP, SUPER_GROUP).takeIf { it.contains(type) }.let {
+            if (cfg.enableUserWhiteList && !cfg.userWhiteList.contains(username)) return
+        }
+
         when (type) {
             PRIVATE -> {
-                val target = Supplier<Stream<RuleItem>> { cfg.rules.friend.stream().filter { it.source == fromUser } }
+                val target = Supplier<Stream<RuleItem>> { cfg.rules.friend.stream().filter { it.source == username } }
                 handler(target, msg)
             }
 
@@ -161,16 +174,16 @@ class TelegramForward(opts: DefaultBotOptions, token: String) : TelegramLongPoll
         }
     }
 
-    private fun handler(targets: Supplier<Stream<RuleItem>>, msg: List<Map<String, Any>>) {
+    private fun handler(targets: Supplier<Stream<RuleItem>>, msg: String) {
         val bot = BeanUtils.getBean(Global::class.java).bot()
         targets.get().forEach { t ->
             t.target.friend.forEach {
-                bot.sendPrivateForwardMsg(it, msg)
+                bot.sendPrivateMsg(it, msg, false)
             }
         }
         targets.get().forEach { t ->
             t.target.group.forEach {
-                bot.sendGroupForwardMsg(it, msg)
+                bot.sendGroupMsg(it, msg, false)
             }
         }
     }
