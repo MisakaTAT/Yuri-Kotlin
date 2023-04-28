@@ -7,7 +7,6 @@ import com.mikuac.yuri.config.ConfigModel.Plugins.Telegram.Rules.RuleItem
 import com.mikuac.yuri.global.Global
 import com.mikuac.yuri.utils.BeanUtils
 import com.mikuac.yuri.utils.FFmpegUtils
-import com.mikuac.yuri.utils.ImageUtils.formatPNG
 import com.mikuac.yuri.utils.NetUtils
 import com.mikuac.yuri.utils.TelegramUtils.getFile
 import lombok.extern.slf4j.Slf4j
@@ -36,7 +35,6 @@ class TelegramForward(opts: DefaultBotOptions, token: String) : TelegramLongPoll
         return cfg.botUsername
     }
 
-    @Suppress("kotlin:S3776")
     override fun onUpdateReceived(update: Update) {
         // check enable and has message
         if (!cfg.enable || !update.hasMessage()) {
@@ -98,7 +96,7 @@ class TelegramForward(opts: DefaultBotOptions, token: String) : TelegramLongPoll
         val builder = MsgUtils.builder()
         message.photo.stream().max(Comparator.comparingInt { obj: PhotoSize -> obj.fileSize }).ifPresent {
             getFile(it.fileId, cfg.proxy).let { url ->
-                if (url.isNotBlank()) builder.img(formatPNG(url, cfg.proxy))
+                if (url.isNotBlank()) builder.img(NetUtils.getBase64(url, cfg.proxy))
             }
         }
         message.caption?.takeIf { it.isNotBlank() }?.let {
@@ -128,7 +126,7 @@ class TelegramForward(opts: DefaultBotOptions, token: String) : TelegramLongPoll
     private fun imgSticker(message: Message): MsgUtils {
         val builder = MsgUtils.builder()
         return getFile(message.sticker.fileId, cfg.proxy).let { url ->
-            if (url.isNotBlank()) builder.img(formatPNG(url, cfg.proxy))
+            if (url.isNotBlank()) builder.img(NetUtils.getBase64(url, cfg.proxy))
             builder
         }
     }

@@ -14,7 +14,6 @@ import com.mikuac.yuri.dto.ParseYoutubeDTO
 import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
-import com.mikuac.yuri.utils.ImageUtils
 import com.mikuac.yuri.utils.NetUtils
 import com.mikuac.yuri.utils.RegexUtils
 import org.springframework.stereotype.Component
@@ -37,7 +36,7 @@ class ParseYoutube {
     private fun buildMsg(parseYoutube: ParseYoutubeDTO): String {
         if (parseYoutube.items.isEmpty()) throw YuriException("数据获取失败")
         val data = parseYoutube.items[0]
-        val img = ImageUtils.formatPNG(data.snippet.thumbnails.maxres.url, cfg.proxy)
+        val img = NetUtils.getBase64(data.snippet.thumbnails.maxres.url, cfg.proxy)
         val localDateTime = LocalDateTimeUtil.parse(data.snippet.publishedAt, "yyyy-MM-dd'T'HH:mm:ss'Z'")
         val time = LocalDateTimeUtil.format(localDateTime, DatePattern.NORM_DATETIME_PATTERN)
 

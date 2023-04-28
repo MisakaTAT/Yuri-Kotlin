@@ -2,7 +2,6 @@
 
 package com.mikuac.yuri.plugins.passive
 
-import cn.hutool.core.util.IdUtil
 import com.google.gson.Gson
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
@@ -43,14 +42,8 @@ class Vits {
         if (!speakersId.contains(model)) throw YuriException("当前 ID 不存在，请使用 vits models 查询可用模型")
         // https://github.com/Artrajz/vits-simple-api 的 silk 似乎有问题
         // 所以请求 wav 格式然后给 go-cqhttp 装上 ffmpeg 让 go-cqhttp 做转换 :)
-        NetUtils.download(
-            "${cfg.api}/voice?lang=auto&format=wav&id=${model}&text=${text}",
-            "cache/vits",
-            "${IdUtil.simpleUUID()}.wav",
-            cfg.timeout
-        ).let {
-            bot.sendMsg(event, MsgUtils.builder().voice("file://$it").build(), false)
-        }
+        val url = "${cfg.api}/voice?lang=auto&format=wav&id=${model}&text=${text}"
+        bot.sendMsg(event, MsgUtils.builder().voice(NetUtils.getBase64(url, false)).build(), false)
     }
 
     private fun models(bot: Bot, event: AnyMessageEvent) {

@@ -25,18 +25,6 @@ object ImageUtils {
         }
     }
 
-    fun formatPNG(imgURL: String, proxy: Boolean): String {
-        return NetUtils.get(imgURL, proxy).use { resp ->
-            val bufferedImage = ImageIO.read(resp.body?.byteStream())
-            val out = ByteArrayOutputStream()
-            ImageIO.write(bufferedImage, extractImageFormat(imgURL), out)
-            imgToBase64(out.toByteArray()).let {
-                if (it.second) return it.first
-                imgURL
-            }
-        }
-    }
-
     fun imgAntiShielding(imgURL: String, mode: Int, proxy: Boolean): String {
         return NetUtils.get(imgURL, proxy).use { resp ->
             if (resp.code != 200) throw YuriException("图片获取失败：${resp.code}")

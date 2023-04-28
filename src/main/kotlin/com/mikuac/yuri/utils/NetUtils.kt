@@ -11,6 +11,7 @@ import okhttp3.Response
 import java.io.File
 import java.net.InetSocketAddress
 import java.net.Proxy
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 @Suppress("unused")
@@ -107,5 +108,22 @@ object NetUtils {
         if (proxy) client.proxy(createProxy())
         return client.build().newCall(req.build()).execute()
     }
+
+    fun getBase64(url: String, proxy: Boolean): String {
+        val req = Request.Builder().url(url).build()
+        val client = client.newBuilder()
+        if (proxy) client.proxy(createProxy())
+        val resp = client.build().newCall(req).execute()
+        resp.use { r ->
+            r.body?.bytes()?.let { bytes ->
+                Base64.getEncoder().encodeToString(bytes).trim().let {
+                    if (it.isBlank()) throw YuriException("Empty resp body")
+                    return "base64://${it}"
+                }
+            }
+        }
+        throw YuriException("Error fetching data from $url")
+    }
+
 
 }

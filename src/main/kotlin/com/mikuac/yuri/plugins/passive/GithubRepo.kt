@@ -12,7 +12,6 @@ import com.mikuac.yuri.dto.GithubRepoDTO
 import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
-import com.mikuac.yuri.utils.ImageUtils
 import com.mikuac.yuri.utils.NetUtils
 import org.springframework.stereotype.Component
 import java.util.regex.Matcher
@@ -35,7 +34,7 @@ class GithubRepo {
         val repoName = matcher.group("repo").trim()
         if (repoName.isBlank()) throw YuriException("请按格式输入正确的仓库名")
         val data = request(repoName).items[0]
-        val img = ImageUtils.formatPNG("https://opengraph.githubassets.com/0/${data.fullName}", cfg.proxy)
+        val img = NetUtils.getBase64("https://opengraph.githubassets.com/0/${data.fullName}", cfg.proxy)
         return MsgUtils.builder()
             .text("RepoName: ${data.fullName}")
             .text("\nDefaultBranch: ${data.defaultBranch}")

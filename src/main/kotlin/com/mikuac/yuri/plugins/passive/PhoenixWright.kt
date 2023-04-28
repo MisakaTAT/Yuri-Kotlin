@@ -9,7 +9,7 @@ import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.enums.Regex
 import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
-import com.mikuac.yuri.utils.ImageUtils.formatPNG
+import com.mikuac.yuri.utils.NetUtils
 import org.springframework.stereotype.Component
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -26,10 +26,7 @@ class PhoenixWright {
         var bottomText = matcher.group("bottom") ?: throw YuriException("请输入底部内容")
         topText = URLEncoder.encode(topText, StandardCharsets.UTF_8.toString())
         bottomText = URLEncoder.encode(bottomText, StandardCharsets.UTF_8.toString())
-        val img = formatPNG(
-            "https://gsapi.cbrx.io/image?top=${topText}&bottom=${bottomText}",
-            cfg.proxy
-        )
+        val img = NetUtils.getBase64("https://gsapi.cbrx.io/image?top=${topText}&bottom=${bottomText}", cfg.proxy)
         return MsgUtils.builder().img(img).build()
     }
 
