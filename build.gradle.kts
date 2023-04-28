@@ -47,7 +47,6 @@ dependencies {
     api("org.telegram:telegrambots:6.5.0")
     api("org.jsoup:jsoup:1.15.4")
     api("com.squareup.okhttp3:okhttp:4.10.0")
-    api("org.sejda.imageio:webp-imageio:0.1.6")
     api("com.kennycason:kumo-core:1.28")
     api("com.huaban:jieba-analysis:1.0.2")
     api("com.theokanning.openai-gpt3-java:service:0.12.0")
