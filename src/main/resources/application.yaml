@@ -19,9 +19,3 @@ spring:
         persistence:
           sharedCache:
             mode: UNSPECIFIED
-
-shiro:
-  plugin-list:
-    - com.mikuac.yuri.plugins.initiative.Poke
-    - com.mikuac.yuri.plugins.passive.GroupAddRequest
-

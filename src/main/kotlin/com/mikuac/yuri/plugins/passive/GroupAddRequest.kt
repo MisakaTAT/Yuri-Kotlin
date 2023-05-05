@@ -1,9 +1,10 @@
 package com.mikuac.yuri.plugins.passive
 
+import com.mikuac.shiro.annotation.GroupAddRequestHandler
 import com.mikuac.shiro.annotation.PrivateMessageHandler
+import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
-import com.mikuac.shiro.core.BotPlugin
 import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 import com.mikuac.shiro.dto.event.request.GroupAddRequestEvent
 import com.mikuac.yuri.config.Config
@@ -11,12 +12,14 @@ import com.mikuac.yuri.enums.Regex
 import org.springframework.stereotype.Component
 import java.util.regex.Matcher
 
+@Shiro
 @Component
-class GroupAddRequest : BotPlugin() {
+class GroupAddRequest {
 
     private val cfg = Config.base
 
-    override fun onGroupAddRequest(bot: Bot, event: GroupAddRequestEvent): Int {
+    @GroupAddRequestHandler
+    fun handler(bot: Bot, event: GroupAddRequestEvent) {
         cfg.adminList.forEach {
             val msg = MsgUtils.builder()
                 .text("申请人: ${event.userId}")
@@ -27,7 +30,6 @@ class GroupAddRequest : BotPlugin() {
                 .build()
             bot.sendPrivateMsg(it, msg, false)
         }
-        return MESSAGE_IGNORE
     }
 
     @PrivateMessageHandler(cmd = Regex.GROUP_ADD_REQ)
