@@ -124,12 +124,12 @@ class ChatGPT {
     }
 
     fun handleRateLimitError(errMsg: String): String {
-        val regex = Pattern.compile("""Limit: (\d+) / min\. Current: (\d+) / min""")
+        val regex = Pattern.compile("""Limit: (\d+) / min\. Please try again in (\d+s)\.""")
         val matcher = regex.matcher(errMsg)
         if (matcher.find()) {
-            val limit = matcher.group(1).toInt()
-            val current = matcher.group(2).toInt()
-            return "API调用过快，限制$limit/分钟，当前$current/分钟`。"
+            val limit = matcher.group(1)
+            val tryTime = matcher.group(2)
+            return "API调用过快，限制$limit/分钟，请在${tryTime}后重试`。"
         }
         return errMsg
     }
