@@ -5,7 +5,7 @@ group = "com.mikuac"
 plugins {
     kotlin("jvm") version "1.8.20"
     kotlin("plugin.jpa") version "1.8.20"
-    kotlin("plugin.spring") version "1.8.20"
+    kotlin("plugin.spring") version "1.8.21"
     kotlin("plugin.allopen") version "1.8.20"
 
     id("io.freefair.lombok") version "8.0.1"
