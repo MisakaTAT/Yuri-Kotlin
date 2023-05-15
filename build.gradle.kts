@@ -57,7 +57,7 @@ dependencies {
     api("mysql:mysql-connector-java:8.0.33")
 
 
-    api("org.jetbrains.kotlin:kotlin-reflect:1.8.20")
+    api("org.jetbrains.kotlin:kotlin-reflect:1.8.21")
     api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 }
