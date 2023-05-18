@@ -45,7 +45,7 @@ dependencies {
     api("net.coobird:thumbnailator:0.4.19")
     api("com.github.oshi:oshi-core:6.4.2")
     api("org.telegram:telegrambots:6.5.0")
-    api("org.jsoup:jsoup:1.15.4")
+    api("org.jsoup:jsoup:1.16.1")
     api("com.squareup.okhttp3:okhttp:4.11.0")
     api("com.kennycason:kumo-core:1.28")
     api("com.huaban:jieba-analysis:1.0.2")
