@@ -33,7 +33,7 @@ class PicSearch {
         if (!SearchModeUtils.check(this.javaClass.simpleName, event.userId, event.groupId ?: 0L)) return
         // 发送检索结果
         ExceptionHandler.with(bot, event) {
-            val imgUrl = SearchModeUtils.getImgUrl(event.userId, event.groupId, event.arrayMsg) ?: return@with
+            val imgUrl = SearchModeUtils.getImgUrl(event.userId, event.groupId ?: 0L, event.arrayMsg) ?: return@with
             val imgMd5 = imgUrl.split("-").last()
             // SauceNao
             val sauceNaoResult = sauceNao.buildMsgForSauceNao(imgUrl, imgMd5)
