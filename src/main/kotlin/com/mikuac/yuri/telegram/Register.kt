@@ -31,12 +31,14 @@ class Register : ApplicationRunner {
                 return@launch
             }
 
-            val proxy = Config.base.proxy
-            val type = DefaultBotOptions.ProxyType.valueOf(proxy.type)
-            botOptions.proxyHost = proxy.host
-            botOptions.proxyPort = proxy.port
-            botOptions.proxyType = type;
-            log.info("Telegram 代理启用: {}:{} 代理类型: {}", proxy.host, proxy.port, type)
+            if (cfg.proxy) {
+                val proxy = Config.base.proxy
+                val type = DefaultBotOptions.ProxyType.valueOf(proxy.type)
+                botOptions.proxyHost = proxy.host
+                botOptions.proxyPort = proxy.port
+                botOptions.proxyType = type;
+                log.info("Telegram 代理启用: {}:{} 代理类型: {}", proxy.host, proxy.port, type)
+            }
 
             try {
                 botsApi.registerBot(TelegramForward(botOptions, cfg.botToken))
