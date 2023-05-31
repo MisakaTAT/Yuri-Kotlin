@@ -55,7 +55,8 @@ dependencies {
     api("org.graalvm.js:js-scriptengine:22.3.2")
     api("com.microsoft.playwright:playwright:1.32.0")
     api("mysql:mysql-connector-java:8.0.33")
-
+    api("org.xerial:sqlite-jdbc:3.42.0.0")
+    api("org.hibernate.orm:hibernate-community-dialects")
 
     api("org.jetbrains.kotlin:kotlin-reflect:1.8.21")
     api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20")

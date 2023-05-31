@@ -1,7 +1,7 @@
 package com.mikuac.yuri.config
 
 import com.mikuac.yuri.annotation.Slf4j
-import com.mikuac.yuri.exception.YuriException
+import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -22,10 +22,13 @@ class DataSourceConfig {
             builder.url("jdbc:mysql://${cfg.url}/${cfg.database}")
             builder.username(cfg.username)
             builder.password(cfg.password)
+            log.info("当前使用 MySQL 数据库")
             return builder.build()
         }
-        // 计划重新支持 SQLite3
-        throw YuriException("请正确配置并启用数据库")
+        builder.driverClassName("org.sqlite.JDBC")
+        builder.url("jdbc:sqlite:yuri.sqlite")
+        log.info("当前使用 SQLite 数据库")
+        return builder.build()
     }
 
 }

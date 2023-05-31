@@ -19,3 +19,5 @@ spring:
         persistence:
           sharedCache:
             mode: UNSPECIFIED
+    # database-platform: org.hibernate.community.dialect.SQLiteDialect
+
