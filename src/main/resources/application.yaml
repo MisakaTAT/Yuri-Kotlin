@@ -13,11 +13,5 @@ spring:
       ddl-auto: update
     show-sql: false
     open-in-view: false
-    # https://github.com/spring-projects/spring-data-jpa/issues/2717
-    properties:
-      jakarta:
-        persistence:
-          sharedCache:
-            mode: UNSPECIFIED
     # database-platform: org.hibernate.community.dialect.SQLiteDialect
 
