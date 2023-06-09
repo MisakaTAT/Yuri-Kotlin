@@ -43,7 +43,7 @@ dependencies {
     api("cn.hutool:hutool-core:5.8.18")
     api("cn.hutool:hutool-system:5.8.18")
     api("net.coobird:thumbnailator:0.4.19")
-    api("com.github.oshi:oshi-core:6.4.2")
+    api("com.github.oshi:oshi-core:6.4.3")
     api("org.telegram:telegrambots:6.5.0")
     api("org.jsoup:jsoup:1.16.1")
     api("com.squareup.okhttp3:okhttp:4.11.0")
