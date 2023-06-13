@@ -60,5 +60,5 @@ dependencies {
 
     api("org.jetbrains.kotlin:kotlin-reflect:1.8.21")
     api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22")
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
 }
