@@ -3,10 +3,10 @@
 group = "com.mikuac"
 
 plugins {
-    kotlin("jvm") version "1.8.21"
+    kotlin("jvm") version "1.8.22"
     kotlin("plugin.jpa") version "1.8.22"
     kotlin("plugin.spring") version "1.8.21"
-    kotlin("plugin.allopen") version "1.8.21"
+    kotlin("plugin.allopen") version "1.8.22"
 
     id("io.freefair.lombok") version "8.0.1"
     // id("org.graalvm.buildtools.native") version "0.9.19"
@@ -40,10 +40,10 @@ dependencies {
 
     api("com.mikuac:shiro:2.0.5")
     api("net.jodah:expiringmap:0.5.10")
-    api("cn.hutool:hutool-core:5.8.18")
+    api("cn.hutool:hutool-core:5.8.19")
     api("cn.hutool:hutool-system:5.8.18")
     api("net.coobird:thumbnailator:0.4.19")
-    api("com.github.oshi:oshi-core:6.4.2")
+    api("com.github.oshi:oshi-core:6.4.3")
     api("org.telegram:telegrambots:6.5.0")
     api("org.jsoup:jsoup:1.16.1")
     api("com.squareup.okhttp3:okhttp:4.11.0")
@@ -60,5 +60,5 @@ dependencies {
 
     api("org.jetbrains.kotlin:kotlin-reflect:1.8.21")
     api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22")
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
 }
