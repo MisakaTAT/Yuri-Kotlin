@@ -1,3 +1,5 @@
+@file:Suppress("SpellCheckingInspection")
+
 package com.mikuac.yuri.plugins.initiative
 
 import com.google.gson.Gson
@@ -15,28 +17,36 @@ import com.mikuac.yuri.exception.ExceptionHandler
 import com.mikuac.yuri.exception.YuriException
 import com.mikuac.yuri.utils.NetUtils
 import com.mikuac.yuri.utils.RegexUtils
+import net.jodah.expiringmap.ExpirationPolicy
+import net.jodah.expiringmap.ExpiringMap
 import org.springframework.stereotype.Component
+import java.util.concurrent.TimeUnit
 
 @Shiro
 @Component
 class AntiBiliMiniApp {
 
-    private fun request(shortURL: String): AntiBiliMiniAppDTO {
-        return NetUtils.get(shortURL).use { resp ->
-            RegexUtils.group("bid", resp.request.url.toString(), Regex.BILIBILI_BID)
-        }.let { bid ->
-            NetUtils.get("https://api.bilibili.com/x/web-interface/view?bvid=${bid}").use { resp ->
-                val data = Gson().fromJson(resp.body?.string(), AntiBiliMiniAppDTO::class.java)
-                if (data.code != 0) throw YuriException(data.message)
-                data
-            }
+    private val expiringMap: ExpiringMap<Long, String> = ExpiringMap.builder()
+        .variableExpiration()
+        .expirationPolicy(ExpirationPolicy.CREATED)
+        .expiration(300 * 1000L, TimeUnit.MILLISECONDS)
+        .build()
+
+    private fun request(bid: String): AntiBiliMiniAppDTO {
+        return NetUtils.get("https://api.bilibili.com/x/web-interface/view?bvid=${bid}").use { resp ->
+            val data = Gson().fromJson(resp.body?.string(), AntiBiliMiniAppDTO::class.java)
+            if (data.code != 0) throw YuriException(data.message)
+            data
         }
     }
 
-    private fun buildMsg(json: String): String {
-        val jsonObject = JsonParser.parseString(json)
-        val shortURL = jsonObject.asJsonObject["meta"].asJsonObject["detail_1"].asJsonObject["qqdocurl"].asString
-        val data = request(shortURL).data
+    private fun parseBidByShortURL(url: String): String {
+        return NetUtils.get(url).use { resp ->
+            RegexUtils.group("bid", resp.request.url.toString(), Regex.BILIBILI_BID)
+        }
+    }
+
+    private fun buildMsg(data: AntiBiliMiniAppDTO.Data): String {
         return MsgUtils.builder()
             .img(data.pic)
             .text("\n${ShiroUtils.escape2(data.title)}")
@@ -53,10 +63,30 @@ class AntiBiliMiniApp {
     fun handler(bot: Bot, event: AnyMessageEvent) {
         ExceptionHandler.with(bot, event) {
             val msg = event.message
-            if (!msg.contains("com.tencent.miniapp_01") || !msg.contains("哔哩哔哩")) return@with
-            val json = event.arrayMsg.filter { it.type == MsgTypeEnum.json }
-            if (json.isNotEmpty()) {
-                bot.sendMsg(event, json[0].data["data"]?.let { buildMsg(it) }, false)
+            val userId = event.userId
+            expiringMap[userId]?.let {
+                if (it == msg) return@with
+            }
+            if (msg.contains("com.tencent.miniapp_01") && msg.contains("哔哩哔哩")) {
+                val json = event.arrayMsg.filter { it.type == MsgTypeEnum.json }
+                if (json.isNotEmpty()) {
+                    val jsonObject = JsonParser.parseString(json[0].data["data"])
+                    val url = jsonObject.asJsonObject["meta"].asJsonObject["detail_1"].asJsonObject["qqdocurl"].asString
+                    parseBidByShortURL(url).let { bid ->
+                        request(bid).let { resp ->
+                            bot.sendMsg(event, buildMsg(resp.data), false)
+                            expiringMap[userId] = msg
+                        }
+                    }
+                }
+            }
+            if (msg.contains("bilibili.com/video/")) {
+                RegexUtils.group("bid", msg, Regex.BILIBILI_BID).let { bid ->
+                    request(bid).let { resp ->
+                        bot.sendMsg(event, buildMsg(resp.data), false)
+                        expiringMap[userId] = msg
+                    }
+                }
             }
         }
     }

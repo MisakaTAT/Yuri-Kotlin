@@ -6,7 +6,7 @@ object Regex {
     const val CHAT_GPT = "^(?i)chat\\s(?<action>set|del|show)?\\s?(?<prompt>[\\s\\S]+?)?\$"
     const val DOU_YIN_REAL_URL_ID = "/video/(?<id>\\d+)"
     const val DOU_YIN_SHORT_URL = "(?<url>(?:https?:\\/\\/)?v\\.douyin\\.com\\/\\w+)"
-    const val BILIBILI_BID = "video/(?<bid>[^/?]+)"
+    const val BILIBILI_BID = "(?<bid>BV[A-Za-z0-9]+)"
     const val YOUTUBE_URL = "(?:https?://)?(?:www\\.)?(?:youtube\\.com|youtu\\.be)/watch\\?v=(?<id>[^#&?]*)"
     const val BOT_STATUS = "^(?i)status|状态\$"
     const val THROW_USER = "^(?i)(?:throw|[丢抛]).*"
