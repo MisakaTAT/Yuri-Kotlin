@@ -63,9 +63,9 @@ class AntiBiliMiniApp {
     fun handler(bot: Bot, event: AnyMessageEvent) {
         ExceptionHandler.with(bot, event) {
             val msg = event.message
-            val userId = event.userId
-            expiringMap[userId]?.let {
-                if (it == msg) return@with
+            val groupId = event.groupId ?: 0L
+            expiringMap[groupId]?.let {
+                if (groupId != 0L && it == msg) return@with
             }
             if (msg.contains("com.tencent.miniapp_01") && msg.contains("哔哩哔哩")) {
                 val json = event.arrayMsg.filter { it.type == MsgTypeEnum.json }
@@ -75,7 +75,7 @@ class AntiBiliMiniApp {
                     parseBidByShortURL(url).let { bid ->
                         request(bid).let { resp ->
                             bot.sendMsg(event, buildMsg(resp.data), false)
-                            expiringMap[userId] = msg
+                            expiringMap[groupId] = msg
                         }
                     }
                 }
@@ -84,7 +84,7 @@ class AntiBiliMiniApp {
                 RegexUtils.group("bid", msg, Regex.BILIBILI_BID).let { bid ->
                     request(bid).let { resp ->
                         bot.sendMsg(event, buildMsg(resp.data), false)
-                        expiringMap[userId] = msg
+                        expiringMap[groupId] = msg
                     }
                 }
             }
