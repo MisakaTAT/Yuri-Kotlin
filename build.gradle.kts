@@ -58,7 +58,7 @@ dependencies {
     api("org.xerial:sqlite-jdbc:3.42.0.0")
     api("org.hibernate.orm:hibernate-community-dialects")
 
-    api("org.jetbrains.kotlin:kotlin-reflect:1.8.21")
+    api("org.jetbrains.kotlin:kotlin-reflect:1.8.22")
     api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
 }
