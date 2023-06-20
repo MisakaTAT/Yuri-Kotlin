@@ -52,7 +52,7 @@ dependencies {
     api("com.theokanning.openai-gpt3-java:service:0.12.0")
     api("com.google.code.gson:gson:2.10.1")
     api("org.graalvm.js:js:22.3.2")
-    api("org.graalvm.js:js-scriptengine:22.3.2")
+    api("org.graalvm.js:js-scriptengine:23.0.0")
     api("com.microsoft.playwright:playwright:1.35.0")
     api("mysql:mysql-connector-java:8.0.33")
     api("org.xerial:sqlite-jdbc:3.42.0.0")
