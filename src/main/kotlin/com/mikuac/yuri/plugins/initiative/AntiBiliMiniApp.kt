@@ -59,34 +59,39 @@ class AntiBiliMiniApp {
             .build()
     }
 
+    private fun handleMiniApp(bot: Bot, event: AnyMessageEvent, id: Long) {
+        val json = event.arrayMsg.filter { it.type == MsgTypeEnum.json }
+        if (json.isNotEmpty()) {
+            val jsonObject = JsonParser.parseString(json[0].data["data"])
+            val url = jsonObject.asJsonObject["meta"].asJsonObject["detail_1"].asJsonObject["qqdocurl"].asString
+            handleRequest(bot, event, id, parseBidByShortURL(url))
+        }
+    }
+
+    private fun handleURL(bot: Bot, event: AnyMessageEvent, id: Long) {
+        handleRequest(bot, event, id, RegexUtils.group("bid", event.message, Regex.BILIBILI_BID))
+    }
+
+    private fun handleRequest(bot: Bot, event: AnyMessageEvent, id: Long, bid: String) {
+        expiringMap[id]?.let {
+            if (it == bid) return
+        }
+        request(bid).let { resp ->
+            bot.sendMsg(event, buildMsg(resp.data), false)
+            expiringMap[id] = bid
+        }
+    }
+
     @AnyMessageHandler
     fun handler(bot: Bot, event: AnyMessageEvent) {
         ExceptionHandler.with(bot, event) {
             val msg = event.message
-            val groupId = event.groupId ?: 0L
-            expiringMap[groupId]?.let {
-                if (groupId != 0L && it == msg) return@with
-            }
+            val id = event.groupId ?: event.userId
             if (msg.contains("com.tencent.miniapp_01") && msg.contains("哔哩哔哩")) {
-                val json = event.arrayMsg.filter { it.type == MsgTypeEnum.json }
-                if (json.isNotEmpty()) {
-                    val jsonObject = JsonParser.parseString(json[0].data["data"])
-                    val url = jsonObject.asJsonObject["meta"].asJsonObject["detail_1"].asJsonObject["qqdocurl"].asString
-                    parseBidByShortURL(url).let { bid ->
-                        request(bid).let { resp ->
-                            bot.sendMsg(event, buildMsg(resp.data), false)
-                            expiringMap[groupId] = msg
-                        }
-                    }
-                }
+                handleMiniApp(bot, event, id)
             }
-            if (msg.contains("bilibili.com/video/")) {
-                RegexUtils.group("bid", msg, Regex.BILIBILI_BID).let { bid ->
-                    request(bid).let { resp ->
-                        bot.sendMsg(event, buildMsg(resp.data), false)
-                        expiringMap[groupId] = msg
-                    }
-                }
+            if (msg.contains("bilibili.com/video/BV")) {
+                handleURL(bot, event, id)
             }
         }
     }
