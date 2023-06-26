@@ -49,7 +49,7 @@ dependencies {
     api("com.squareup.okhttp3:okhttp:4.11.0")
     api("com.kennycason:kumo-core:1.28")
     api("com.huaban:jieba-analysis:1.0.2")
-    api("com.theokanning.openai-gpt3-java:service:0.12.0")
+    api("com.theokanning.openai-gpt3-java:service:0.14.0")
     api("com.google.code.gson:gson:2.10.1")
     api("org.graalvm.js:js:22.3.2")
     api("org.graalvm.js:js-scriptengine:22.3.2")
