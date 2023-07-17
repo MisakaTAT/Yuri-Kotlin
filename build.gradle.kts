@@ -53,7 +53,7 @@ dependencies {
     api("com.google.code.gson:gson:2.10.1")
     api("org.graalvm.js:js:22.3.2")
     api("org.graalvm.js:js-scriptengine:22.3.2")
-    api("com.microsoft.playwright:playwright:1.35.0")
+    api("com.microsoft.playwright:playwright:1.36.0")
     api("mysql:mysql-connector-java:8.0.33")
     api("org.xerial:sqlite-jdbc:3.42.0.0")
     api("org.hibernate.orm:hibernate-community-dialects")
