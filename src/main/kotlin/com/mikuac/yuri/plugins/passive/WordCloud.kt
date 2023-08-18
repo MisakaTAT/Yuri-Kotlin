@@ -203,10 +203,9 @@ class WordCloud {
         val cronTaskRate = Config.plugins.wordCloud.cronTaskRate.times(1000L)
         bot.groupList.data.forEach {
             sleep(cronTaskRate)
-            bot.sendGroupMsg(it.groupId, "嗨嗨嗨，摸鱼的一天结束啦，让我来看看群友${range}聊了些什么～", false)
+            bot.sendGroupMsg(it.groupId, "今天也是忙碌的一天呢，让我来看看群友${range}聊了些什么奇怪的东西～", false)
             val contents = getWords(0L, it.groupId, "本群", range)
             if (contents.isEmpty()) {
-                bot.sendGroupMsg(it.groupId, "唔呣～ 居然一条记录都没有，难道你们不聊天的嘛？？", false)
                 return@forEach
             }
             val msg = MsgUtils.builder().img("base64://${generateWordCloud(contents)}").build()
