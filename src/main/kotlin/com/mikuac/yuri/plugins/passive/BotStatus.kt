@@ -4,6 +4,7 @@ import cn.hutool.core.io.FileUtil
 import cn.hutool.system.SystemUtil
 import cn.hutool.system.oshi.OshiUtil
 import com.mikuac.shiro.annotation.AnyMessageHandler
+import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
@@ -59,7 +60,8 @@ class BotStatus {
             .build()
     }
 
-    @AnyMessageHandler(cmd = Regex.BOT_STATUS)
+    @AnyMessageHandler
+    @MessageHandlerFilter(cmd = Regex.BOT_STATUS)
     fun handler(bot: Bot, event: AnyMessageEvent) {
         ExceptionHandler.with(bot, event) {
             bot.sendMsg(event, buildMsg(), false)

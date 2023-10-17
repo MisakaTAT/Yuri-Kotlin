@@ -2,6 +2,7 @@ package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
 import com.mikuac.shiro.annotation.AnyMessageHandler
+import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
@@ -82,7 +83,8 @@ class SeTu {
         return Pair(buildTextMsg.first, buildTextMsg.second)
     }
 
-    @AnyMessageHandler(cmd = Regex.SETU)
+    @AnyMessageHandler
+    @MessageHandlerFilter(cmd = Regex.SETU)
     fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             val groupId = event.groupId ?: 0L

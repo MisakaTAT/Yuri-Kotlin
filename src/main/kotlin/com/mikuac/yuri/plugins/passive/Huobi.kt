@@ -2,6 +2,7 @@ package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
 import com.mikuac.shiro.annotation.AnyMessageHandler
+import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
@@ -51,7 +52,8 @@ class Huobi {
         """.trimIndent()
     }
 
-    @AnyMessageHandler(cmd = Regex.Huobi)
+    @AnyMessageHandler
+    @MessageHandlerFilter(cmd = Regex.Huobi)
     fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             bot.sendMsg(event, buildMsg(matcher), false)

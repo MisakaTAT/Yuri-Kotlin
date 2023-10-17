@@ -1,6 +1,7 @@
 package com.mikuac.yuri.plugins.passive
 
 import com.mikuac.shiro.annotation.AnyMessageHandler
+import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
@@ -23,7 +24,8 @@ class PicSearch {
 
     private val cfg = Config.plugins.picSearch
 
-    @AnyMessageHandler(cmd = Regex.SAUCE_NAO_SEARCH)
+    @AnyMessageHandler
+    @MessageHandlerFilter(cmd = Regex.SAUCE_NAO_SEARCH)
     fun handler(bot: Bot, event: AnyMessageEvent) {
         SearchModeUtils.setSearchMode(this.javaClass.simpleName, event.userId, event.groupId ?: 0L, bot)
     }

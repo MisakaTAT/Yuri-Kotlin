@@ -7,6 +7,7 @@ import com.microsoft.playwright.PlaywrightException
 import com.microsoft.playwright.options.Clip
 import com.microsoft.playwright.options.Proxy
 import com.mikuac.shiro.annotation.AnyMessageHandler
+import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
@@ -54,7 +55,8 @@ class WebScreenshot {
         }
     }
 
-    @AnyMessageHandler(cmd = Regex.WEB_SCREENSHOT)
+    @AnyMessageHandler
+    @MessageHandlerFilter(cmd = Regex.WEB_SCREENSHOT)
     fun handler(event: AnyMessageEvent, bot: Bot, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             try {

@@ -1,6 +1,7 @@
 package com.mikuac.yuri.utils
 
 import com.mikuac.shiro.annotation.AnyMessageHandler
+import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
@@ -24,7 +25,8 @@ class SearchModeUtils {
         val bot: Bot
     )
 
-    @AnyMessageHandler(cmd = Regex.UNSET_SEARCH_MODE)
+    @AnyMessageHandler
+    @MessageHandlerFilter(cmd = Regex.UNSET_SEARCH_MODE)
     fun unsetSearchMode(bot: Bot, event: AnyMessageEvent) {
         remove(event.userId, event.groupId, bot)
     }

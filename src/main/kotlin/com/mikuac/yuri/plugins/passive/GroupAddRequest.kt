@@ -1,6 +1,7 @@
 package com.mikuac.yuri.plugins.passive
 
 import com.mikuac.shiro.annotation.GroupAddRequestHandler
+import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.PrivateMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
@@ -32,7 +33,8 @@ class GroupAddRequest {
         }
     }
 
-    @PrivateMessageHandler(cmd = Regex.GROUP_ADD_REQ)
+    @PrivateMessageHandler
+    @MessageHandlerFilter(cmd = Regex.GROUP_ADD_REQ)
     fun handler(event: PrivateMessageEvent, bot: Bot, matcher: Matcher) {
         val type = matcher.group(1)
         val reqType = matcher.group(2)

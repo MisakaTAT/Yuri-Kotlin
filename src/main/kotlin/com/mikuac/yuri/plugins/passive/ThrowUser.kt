@@ -1,6 +1,8 @@
 package com.mikuac.yuri.plugins.passive
 
+import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.GroupMessageHandler
+import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
@@ -74,7 +76,8 @@ class ThrowUser {
         return "base64://${drawImage(atUserId.toLong())}"
     }
 
-    @GroupMessageHandler(cmd = Regex.THROW_USER)
+    @GroupMessageHandler
+    @MessageHandlerFilter(cmd = Regex.THROW_USER)
     fun handler(bot: Bot, event: GroupMessageEvent) {
         ExceptionHandler.with(bot, event) {
             bot.sendGroupMsg(event.groupId, MsgUtils.builder().img(buildMsg(event)).build(), false)

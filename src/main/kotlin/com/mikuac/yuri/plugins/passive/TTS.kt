@@ -1,6 +1,7 @@
 package com.mikuac.yuri.plugins.passive
 
 import com.mikuac.shiro.annotation.AnyMessageHandler
+import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
@@ -16,7 +17,8 @@ import org.springframework.stereotype.Component
 @Component
 class TTS {
 
-    @AnyMessageHandler(cmd = Regex.TTS)
+    @AnyMessageHandler
+    @MessageHandlerFilter(cmd = Regex.TTS)
     fun handler(event: AnyMessageEvent, bot: Bot) {
         ExceptionHandler.with(bot, event) {
             val msg = event.arrayMsg.filter { it.type == MsgTypeEnum.text }.map { it.data["text"] }.joinToString()

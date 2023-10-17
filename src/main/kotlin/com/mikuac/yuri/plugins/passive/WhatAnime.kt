@@ -3,6 +3,7 @@ package com.mikuac.yuri.plugins.passive
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.mikuac.shiro.annotation.AnyMessageHandler
+import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
@@ -125,7 +126,8 @@ class WhatAnime {
         return Pair(infoMsg, videoMsg)
     }
 
-    @AnyMessageHandler(cmd = Regex.WHAT_ANIME_SEARCH)
+    @AnyMessageHandler
+    @MessageHandlerFilter(cmd = Regex.WHAT_ANIME_SEARCH)
     fun handler(bot: Bot, event: AnyMessageEvent) {
         SearchModeUtils.setSearchMode(this.javaClass.simpleName, event.userId, event.groupId ?: 0L, bot)
     }

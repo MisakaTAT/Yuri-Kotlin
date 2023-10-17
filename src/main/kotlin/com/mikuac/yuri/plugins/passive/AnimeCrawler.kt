@@ -2,6 +2,7 @@ package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
 import com.mikuac.shiro.annotation.AnyMessageHandler
+import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
@@ -155,7 +156,8 @@ class AnimeCrawler {
         }
     }
 
-    @AnyMessageHandler(cmd = Regex.ANIME_CRAWLER)
+    @AnyMessageHandler
+    @MessageHandlerFilter(cmd = Regex.ANIME_CRAWLER)
     fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             var msg: String = buildMsg(matcher)

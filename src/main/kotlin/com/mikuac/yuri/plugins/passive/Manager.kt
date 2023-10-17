@@ -1,5 +1,6 @@
 package com.mikuac.yuri.plugins.passive
 
+import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.PrivateMessageHandler
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
@@ -36,7 +37,8 @@ class Manager {
     @Autowired
     private lateinit var checkUtils: CheckUtils
 
-    @PrivateMessageHandler(cmd = Regex.MANAGER)
+    @PrivateMessageHandler
+    @MessageHandlerFilter(cmd = Regex.MANAGER)
     fun handler(bot: Bot, event: PrivateMessageEvent, matcher: Matcher) {
         if (event.userId !in cfg.adminList) {
             bot.sendPrivateMsg(event.userId, "此操作仅管理员可执行 config.yaml --> adminList", false)

@@ -1,6 +1,8 @@
 package com.mikuac.yuri.plugins.passive
 
+import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.GroupMessageHandler
+import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
@@ -34,7 +36,8 @@ class DriftBottle {
     private lateinit var repository: DriftBottleRepository
 
     @Suppress("kotlin:S3776")
-    @GroupMessageHandler(cmd = Regex.DRIFT_BOTTLE)
+    @GroupMessageHandler
+    @MessageHandlerFilter(cmd = Regex.DRIFT_BOTTLE)
     fun handler(event: GroupMessageEvent, bot: Bot, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             val msg = event.message

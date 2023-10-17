@@ -1,6 +1,7 @@
 package com.mikuac.yuri.plugins.passive
 
 import com.mikuac.shiro.annotation.AnyMessageHandler
+import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
@@ -57,7 +58,8 @@ class BvToAv {
         return "转换失败"
     }
 
-    @AnyMessageHandler(cmd = Regex.BV_AV_CONVERT)
+    @AnyMessageHandler
+    @MessageHandlerFilter(cmd = Regex.BV_AV_CONVERT)
     fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             bot.sendMsg(event, buildMsg(matcher), false)

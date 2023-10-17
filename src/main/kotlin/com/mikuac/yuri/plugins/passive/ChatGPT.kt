@@ -1,6 +1,7 @@
 package com.mikuac.yuri.plugins.passive
 
 import com.mikuac.shiro.annotation.AnyMessageHandler
+import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
@@ -134,7 +135,8 @@ class ChatGPT {
         return errMsg
     }
 
-    @AnyMessageHandler(cmd = Regex.CHAT_GPT)
+    @AnyMessageHandler
+    @MessageHandlerFilter(cmd = Regex.CHAT_GPT)
     fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             val userId = event.userId

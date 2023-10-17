@@ -1,6 +1,7 @@
 package com.mikuac.yuri.plugins.passive
 
 import com.mikuac.shiro.annotation.AnyMessageHandler
+import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
@@ -23,7 +24,8 @@ class Broadcast {
         }
     }
 
-    @AnyMessageHandler(cmd = Regex.BROADCAST)
+    @AnyMessageHandler
+    @MessageHandlerFilter(cmd = Regex.BROADCAST)
     fun handler(bot: Bot, event: AnyMessageEvent, matcher: Matcher) {
         if (event.userId in Config.base.adminList) {
             val msg = matcher.group(1)

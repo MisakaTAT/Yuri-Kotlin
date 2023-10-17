@@ -2,6 +2,7 @@ package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
 import com.mikuac.shiro.annotation.AnyMessageHandler
+import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
@@ -45,7 +46,8 @@ class Nsfw {
         return c
     }
 
-    @AnyMessageHandler(cmd = Regex.NSFW)
+    @AnyMessageHandler
+    @MessageHandlerFilter(cmd = Regex.NSFW)
     fun handler(event: AnyMessageEvent, bot: Bot) {
         ExceptionHandler.with(bot, event) {
             val images = event.arrayMsg.filter { it.type == MsgTypeEnum.image }

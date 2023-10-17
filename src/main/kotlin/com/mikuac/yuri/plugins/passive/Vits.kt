@@ -4,6 +4,7 @@ package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
 import com.mikuac.shiro.annotation.AnyMessageHandler
+import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
@@ -57,7 +58,8 @@ class Vits {
         }
     }
 
-    @AnyMessageHandler(cmd = Regex.VITS)
+    @AnyMessageHandler
+    @MessageHandlerFilter(cmd = Regex.VITS)
     fun handler(event: AnyMessageEvent, bot: Bot, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             if (cfg.api.isBlank()) throw YuriException("请配置 VITS 接口")

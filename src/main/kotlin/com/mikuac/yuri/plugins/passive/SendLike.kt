@@ -1,6 +1,7 @@
 package com.mikuac.yuri.plugins.passive
 
 import com.mikuac.shiro.annotation.GroupMessageHandler
+import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
@@ -29,7 +30,8 @@ class SendLike {
         status.clear()
     }
 
-    @GroupMessageHandler(cmd = Regex.CLEAR_SEND_LIKE)
+    @GroupMessageHandler
+    @MessageHandlerFilter(cmd = Regex.CLEAR_SEND_LIKE)
     fun handler(bot: Bot, event: GroupMessageEvent) {
         if (event.userId !in Config.base.adminList) {
             bot.sendGroupMsg(event.groupId, "此操作需要管理员权限", false)
@@ -41,7 +43,8 @@ class SendLike {
         }
     }
 
-    @GroupMessageHandler(cmd = Regex.SEND_LIKE)
+    @GroupMessageHandler
+    @MessageHandlerFilter(cmd = Regex.SEND_LIKE)
     fun handler(bot: Bot, event: GroupMessageEvent, matcher: Matcher) {
         ExceptionHandler.with(bot, event) {
             val userId = event.userId

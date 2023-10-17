@@ -1,6 +1,7 @@
 package com.mikuac.yuri.plugins.passive
 
 import com.mikuac.shiro.annotation.GroupMessageHandler
+import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
@@ -182,7 +183,8 @@ class Roulette {
         data.progress++
     }
 
-    @GroupMessageHandler(cmd = Regex.ROULETTE)
+    @GroupMessageHandler
+    @MessageHandlerFilter(cmd = Regex.ROULETTE)
     fun handler(event: GroupMessageEvent, bot: Bot, matcher: Matcher) {
         val groupId = event.groupId
         val userId = event.userId

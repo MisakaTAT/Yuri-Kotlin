@@ -2,6 +2,7 @@ package com.mikuac.yuri.plugins.passive
 
 import com.google.gson.Gson
 import com.mikuac.shiro.annotation.AnyMessageHandler
+import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.core.Bot
@@ -43,7 +44,8 @@ class Hitokoto {
         }
     }
 
-    @AnyMessageHandler(cmd = Regex.HITOKOTO)
+    @AnyMessageHandler
+    @MessageHandlerFilter(cmd = Regex.HITOKOTO)
     fun handler(bot: Bot, event: AnyMessageEvent) {
         ExceptionHandler.with(bot, event) {
             val data = request()

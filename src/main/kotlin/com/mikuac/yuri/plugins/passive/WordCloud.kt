@@ -12,6 +12,7 @@ import com.kennycason.kumo.nlp.tokenizer.api.WordTokenizer
 import com.kennycason.kumo.palette.ColorPalette
 import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.GroupMessageHandler
+import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
@@ -147,7 +148,8 @@ class WordCloud {
         return contents
     }
 
-    @GroupMessageHandler(cmd = Regex.WORD_CLOUD)
+    @GroupMessageHandler
+    @MessageHandlerFilter(cmd = Regex.WORD_CLOUD)
     fun handler(event: GroupMessageEvent, bot: Bot, matcher: Matcher) {
         val msgId = event.messageId
         ExceptionHandler.with(bot, event) {
@@ -163,7 +165,8 @@ class WordCloud {
         }
     }
 
-    @AnyMessageHandler(cmd = Regex.WORD_CLOUD_CRON)
+    @AnyMessageHandler
+    @MessageHandlerFilter(cmd = Regex.WORD_CLOUD_CRON)
     fun handler(event: AnyMessageEvent, bot: Bot, matcher: Matcher) {
         if (event.userId !in Config.base.adminList) {
             bot.sendMsg(event, "此操作需要管理员权限", false)
