@@ -20,8 +20,8 @@ import java.net.URL
 import java.security.SecureRandom
 import javax.script.ScriptEngineManager
 
-@Shiro
-@Component
+// @Shiro
+// @Component
 class DouYinParse {
 
     private val agent =
