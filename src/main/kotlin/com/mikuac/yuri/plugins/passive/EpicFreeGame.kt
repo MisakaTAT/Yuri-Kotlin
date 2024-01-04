@@ -5,6 +5,7 @@ import cn.hutool.core.date.DateUtil
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.mikuac.shiro.annotation.AnyMessageHandler
+import com.mikuac.shiro.annotation.GroupMessageHandler
 import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.common.Shiro
 import com.mikuac.shiro.common.utils.MsgUtils
@@ -112,12 +113,12 @@ class EpicFreeGame {
         }
     }
 
-    @AnyMessageHandler
+    @GroupMessageHandler
     @MessageHandlerFilter(cmd = Regex.EPIC_FREE_GAME)
     fun handler(bot: Bot, event: AnyMessageEvent) {
         ExceptionHandler.with(bot, event) {
-            val msg = ShiroUtils.generateForwardMsg(event.selfId, Config.base.nickname, buildMsg())
-            bot.sendForwardMsg(event, msg)
+            val msg = ShiroUtils.generateForwardMsg(buildMsg())
+            bot.sendGroupForwardMsg(event.groupId, msg)
         }
     }
 
