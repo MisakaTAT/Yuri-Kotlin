@@ -12,6 +12,7 @@ import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent
+import com.mikuac.shiro.dto.event.message.GroupMessageEvent
 import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.dto.EpicFreeGameDTO
@@ -115,7 +116,7 @@ class EpicFreeGame {
 
     @GroupMessageHandler
     @MessageHandlerFilter(cmd = Regex.EPIC_FREE_GAME)
-    fun handler(bot: Bot, event: AnyMessageEvent) {
+    fun handler(bot: Bot, event: GroupMessageEvent) {
         ExceptionHandler.with(bot, event) {
             val msg = ShiroUtils.generateForwardMsg(buildMsg())
             bot.sendGroupForwardMsg(event.groupId, msg)
