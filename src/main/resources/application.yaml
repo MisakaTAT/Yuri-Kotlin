@@ -1,6 +1,11 @@
 server:
   port: 5555
 
+shiro:
+  ws:
+    server:
+      enable: true
+
 logging:
   level:
     com.kennycason.kumo: OFF
