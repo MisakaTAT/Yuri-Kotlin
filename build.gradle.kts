@@ -59,6 +59,6 @@ dependencies {
     api("org.hibernate.orm:hibernate-community-dialects")
 
     api("org.jetbrains.kotlin:kotlin-reflect:1.8.22")
-    api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22")
+    api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.23")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
 }
