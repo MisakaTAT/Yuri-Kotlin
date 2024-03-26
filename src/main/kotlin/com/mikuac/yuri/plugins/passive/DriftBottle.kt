@@ -68,7 +68,7 @@ class DriftBottle {
                     throw YuriException("呜～ 太快了会坏掉的··· 冷却：[${expectedExpiration}秒]")
                 }
                 expiringMap.put(groupId, userId, cfg.cd.toLong(), TimeUnit.SECONDS)
-                val bottles = repository.findAllByOpenIsFalseAndUserIdNotLikeAndGroupIdNotLike(userId, groupId)
+                val bottles = repository.findAllByOpenIsFalseAndUserIdNotAndGroupIdNot(userId, groupId)
                 val count = repository.countAllByOpenIsFalse()
                 if (bottles.isEmpty()) {
                     throw YuriException("当前剩余 $count 个未被捞取的漂流瓶，你暂无可捞取的漂流瓶（无法捞取本群或自己的瓶子）")

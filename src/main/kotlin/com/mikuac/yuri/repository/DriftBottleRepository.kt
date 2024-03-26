@@ -3,12 +3,12 @@ package com.mikuac.yuri.repository
 import com.mikuac.yuri.entity.DriftBottleEntity
 import jakarta.transaction.Transactional
 import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Repository
 
-@Component
+@Repository
 interface DriftBottleRepository : JpaRepository<DriftBottleEntity, Int> {
 
-    fun findAllByOpenIsFalseAndUserIdNotLikeAndGroupIdNotLike(userId: Long, groupId: Long): List<DriftBottleEntity>
+    fun findAllByOpenIsFalseAndUserIdNotAndGroupIdNot(userId: Long, groupId: Long): List<DriftBottleEntity>
 
     fun countAllByOpenIsFalse(): Int
 
