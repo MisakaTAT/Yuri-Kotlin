@@ -41,7 +41,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("com.mikuac:shiro:2.2.0")
     implementation("net.jodah:expiringmap:0.5.11")
-    implementation("cn.hutool:hutool-core:5.8.26")
+    implementation("cn.hutool:hutool-core:5.8.27")
     implementation("cn.hutool:hutool-system:5.8.26")
     implementation("net.coobird:thumbnailator:0.4.20")
     implementation("com.github.oshi:oshi-core:6.5.0")
