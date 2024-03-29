@@ -44,6 +44,7 @@ data class ConfigModel(
         val sendLike: SendLike,
         val webScreenshot: WebScreenshot,
         val vits: Vits,
+        val steamPlayerStatus: SteamPlayerStatus,
     ) {
         data class Vits(
             val timeout: Int,
@@ -125,6 +126,11 @@ data class ConfigModel(
 
         data class SendLike(
             val maxTimes: Int
+        )
+
+        data class SteamPlayerStatus(
+            val apiKey: String,
+            val subscriber: Map<String, List<String>>
         )
 
         data class Telegram(

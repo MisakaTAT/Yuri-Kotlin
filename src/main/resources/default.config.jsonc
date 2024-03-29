@@ -215,6 +215,17 @@
       "api": "",
       // 超时（秒）
       "timeout": 60
+    },
+    // 获取ApiKey https://steamcommunity.com/dev/apikey
+    steamPlayerStatus: {
+      "apiKey": "",
+      "subscriber": {
+        // 群号
+        "697677064": [
+          // Steam 玩家 ID
+          "76561198404622389"
+        ]
+      }
     }
   }
 }
