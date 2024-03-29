@@ -60,8 +60,7 @@ class SteamPlayerStatus {
         cfg.subscriber.forEach { group ->
             group.value.forEach { players ->
                 val msg = request(players)
-                if (msg.isBlank()) return
-                bot.sendGroupMsg(group.key.toLong(), msg, false)
+                if (msg.isNotBlank()) bot.sendGroupMsg(group.key.toLong(), msg, false)
             }
         }
     }
