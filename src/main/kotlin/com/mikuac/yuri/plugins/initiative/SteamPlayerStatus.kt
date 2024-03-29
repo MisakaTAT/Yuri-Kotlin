@@ -2,6 +2,8 @@ package com.mikuac.yuri.plugins.initiative
 
 import com.google.gson.JsonParser
 import com.mikuac.shiro.annotation.common.Shiro
+import com.mikuac.yuri.annotation.Slf4j
+import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import com.mikuac.yuri.config.Config
 import com.mikuac.yuri.global.Global
 import com.mikuac.yuri.utils.NetUtils
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
+@Slf4j
 @Shiro
 @Component
 class SteamPlayerStatus {
@@ -57,12 +60,15 @@ class SteamPlayerStatus {
     @Scheduled(cron = "0 0/1 * * * ?", zone = "Asia/Shanghai")
     fun handler() {
         val bot = global.bot()
+        log.info("开始处理 Steam 玩家状态订阅")
         cfg.subscriber.forEach { group ->
+            log.info("开始处理群：$group，订阅数：${group.value.size}")
             group.value.forEach { players ->
                 val msg = request(players)
                 if (msg.isNotBlank()) bot.sendGroupMsg(group.key.toLong(), msg, false)
             }
         }
+        log.info("Steam 玩家状态订阅处理完毕")
     }
 
 }
