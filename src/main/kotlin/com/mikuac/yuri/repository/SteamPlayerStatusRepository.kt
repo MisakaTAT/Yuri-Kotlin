@@ -9,6 +9,8 @@ import java.util.*
 @Repository
 interface SteamPlayerStatusRepository : JpaRepository<SteamPlayerStatusEntity, Int> {
 
+    fun findByGroupIdAndSteamId(groupId: Long, steamId: String):Optional<SteamPlayerStatusEntity>
+
     fun findByGroupId(groupId: Long): List<SteamPlayerStatusEntity>
 
     fun findByUserIdAndGroupIdAndSteamId(

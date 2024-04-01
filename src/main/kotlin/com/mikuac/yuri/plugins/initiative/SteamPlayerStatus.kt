@@ -89,6 +89,8 @@ class SteamPlayerStatus {
             when (action) {
                 "bd" -> {
                     if (steamId.isBlank()) throw YuriException("请输入有效的 Steam64 ID")
+                    val isBinned = repository.findByGroupIdAndSteamId(event.groupId, steamId)
+                    if (isBinned.isPresent) throw YuriException("该 Steam64 ID 已被他人绑定")
                     val record = repository.findByUserIdAndGroupIdAndSteamId(event.userId, event.groupId, steamId)
                     if (record.isPresent) {
                         record.get().steamId = steamId
