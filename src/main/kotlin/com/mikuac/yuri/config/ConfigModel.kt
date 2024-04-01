@@ -130,7 +130,6 @@ data class ConfigModel(
 
         data class SteamPlayerStatus(
             val apiKey: String,
-            val subscriber: Map<String, List<String>>
         )
 
         data class Telegram(
