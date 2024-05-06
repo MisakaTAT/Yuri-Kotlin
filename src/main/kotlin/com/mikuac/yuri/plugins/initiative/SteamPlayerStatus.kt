@@ -48,21 +48,22 @@ class SteamPlayerStatus {
         val api = "${domain}/ISteamUser/GetPlayerSummaries/v0002/?key=${cfg.apiKey}&steamids=${playerId}"
         NetUtils.get(api).use { resp ->
             val jsonObj = JsonParser.parseString(resp.body?.string())
-            val players = jsonObj.asJsonObject["response"].asJsonObject["players"].asJsonArray[0]
-            val personaName = players.asJsonObject["personaname"].asString
-            val gameName = players.asJsonObject["gameextrainfo"]
+            val players = jsonObj?.asJsonObject?.get("response")?.asJsonObject?.get("players")?.asJsonArray?.get(0)
+            val personaName = players?.asJsonObject?.get("personaname")?.asString
+            val gameName = players?.asJsonObject?.get("gameextrainfo")?.asString
+
             when {
                 // 如果发现开始玩了而之前未玩
                 gameName != null && cache[flag] == null -> {
-                    cache[flag] = gameName.asString
+                    cache[flag] = gameName
                     gamingTime[flag] = LocalDateTime.now()
                     return "[Steam] $personaName 正在游玩 ${cache[flag]}"
                 }
                 // 如果发现开始玩了而之前也在玩
                 gameName != null && cache[flag] != null -> {
                     // 如果发现玩的是新游戏
-                    if (gameName.asString != cache[flag]) {
-                        cache[flag] = gameName.asString
+                    if (gameName != cache[flag]) {
+                        cache[flag] = gameName
                         gamingTime[flag] = LocalDateTime.now()
                         return "[Steam] $personaName 正在游玩新游戏 ${cache[flag]}"
                     }
