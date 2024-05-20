@@ -54,7 +54,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("org.graalvm.js:js:23.0.3")
     implementation("org.graalvm.js:js-scriptengine:24.0.0")
-    implementation("com.microsoft.playwright:playwright:1.42.0")
+    implementation("com.microsoft.playwright:playwright:1.44.0")
     implementation("mysql:mysql-connector-java:8.0.33")
     implementation("org.xerial:sqlite-jdbc:3.45.2.0")
     implementation("org.hibernate.orm:hibernate-community-dialects:6.4.4.Final")
