@@ -17,7 +17,7 @@ data class AntiBiliMiniAppDTO(
         )
 
         data class Stat(
-            val aid: Int,
+            val aid: Long,
             val view: Int,
             val danmaku: Int,
             val reply: Int,
