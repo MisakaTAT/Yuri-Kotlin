@@ -39,7 +39,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("com.mikuac:shiro:2.2.6")
+    implementation("com.mikuac:shiro:2.2.8")
     implementation("net.jodah:expiringmap:0.5.11")
     implementation("cn.hutool:hutool-core:5.8.26")
     implementation("cn.hutool:hutool-system:5.8.26")
