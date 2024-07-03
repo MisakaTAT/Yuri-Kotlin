@@ -42,7 +42,7 @@ dependencies {
     implementation("com.mikuac:shiro:2.2.8")
     implementation("net.jodah:expiringmap:0.5.11")
     implementation("cn.hutool:hutool-core:5.8.26")
-    implementation("cn.hutool:hutool-system:5.8.26")
+    implementation("cn.hutool:hutool-system:5.8.29")
     implementation("net.coobird:thumbnailator:0.4.20")
     implementation("com.github.oshi:oshi-core:6.5.0")
     implementation("org.telegram:telegrambots:6.9.7.1")
