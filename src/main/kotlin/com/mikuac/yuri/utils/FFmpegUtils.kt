@@ -32,7 +32,6 @@ object FFmpegUtils {
     fun webm2Gif(src: String): String {
         return File(src).let { file ->
             if (!file.name.endsWith("webm")) throw YuriException("不支持的文件格式：${file.extension}")
-            val outputDir = "${file.parent}/frames"
             val dst = "${file.parent}/${file.nameWithoutExtension}.gif"
 
             val cache = File(dst)
@@ -40,51 +39,33 @@ object FFmpegUtils {
                 return@let dst
             }
 
-            File(outputDir).mkdirs()
+            val p1 = ProcessBuilder(
+                ffmpeg(),
+                "-vcodec", "libvpx-vp9",
+                "-i", src,
+                "-pix_fmt", "rgba",
+                "-plays", "0",
+                "-f", "apng",
+                "-"
+            ).start()
 
-            // 将 WebM 文件切成 PNG 序列
-            val extractProcess = ProcessBuilder()
-                .command(
-                    ffmpeg(),
-                    "-vcodec",
-                    "libvpx-vp9",
-                    "-i",
-                    src,
-                    "-pix_fmt",
-                    "rgba",
-                    "$outputDir/%04d.png"
-                )
-                .redirectOutput(ProcessBuilder.Redirect.DISCARD)
-                .redirectError(ProcessBuilder.Redirect.DISCARD)
-                .start()
 
-            extractProcess.waitFor().let {
-                if (it != 0) {
-                    throw YuriException("WebM to PNG extraction failed")
-                }
+            val p2 = ProcessBuilder(
+                ffmpeg(),
+                "-f", "apng",
+                "-i", "-",
+                "-lavfi", "split[v],palettegen,[v]paletteuse",
+                "-y",
+                dst
+            ).start()
+
+            p1.inputStream.copyTo(p2.outputStream)
+            p2.outputStream.close()
+
+            if (p1.waitFor() != 0 || p2.waitFor() != 0) {
+                throw YuriException("WebM to GIF conversion failed")
             }
 
-            // 将 PNG 序列合并为 GIF
-            val mergeProcess = ProcessBuilder()
-                .command(
-                    ffmpeg(),
-                    "-i",
-                    "$outputDir/%04d.png",
-                    "-lavfi",
-                    "split[v],palettegen,[v]paletteuse",
-                    dst
-                )
-                .redirectOutput(ProcessBuilder.Redirect.DISCARD)
-                .redirectError(ProcessBuilder.Redirect.DISCARD)
-                .start()
-
-            mergeProcess.waitFor().let {
-                if (it != 0) {
-                    throw YuriException("PNG to GIF merge failed")
-                }
-            }
-
-            File(outputDir).deleteRecursively()
             return@let dst
         }
     }
