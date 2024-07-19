@@ -32,16 +32,20 @@ object FFmpegUtils {
         }
     }
 
-
-    /**
-     * ffmpeg -y -i src.webm -vf "scale=320:-1" -r 10 dst.gif
-     */
-    fun webm2Gif(src: String): String {
+    fun webm2Gif(src: String, fps: Int = 24, maxWidth: Int = 320): String {
         return File(src).let { file ->
             if (!file.name.endsWith("webm")) throw YuriException("不支持的文件格式：${file.extension}")
             val dst = "${file.parent}/${file.nameWithoutExtension}.gif"
             val process = ProcessBuilder()
-                .command(ffmpeg(), "-y", "-i", src, "-vf", "scale=320:-1", "-r", "10", dst)
+                .command(
+                    ffmpeg(),
+                    "-y",
+                    "-i",
+                    src,
+                    "-vf",
+                    "fps=$fps,scale=$maxWidth:-1:flags=lanczos,split[s0][s1];[s0]palettegen=reserve_transparent=on:transparency_color=ffffff[p];[s1][p]paletteuse",
+                    dst
+                )
                 .redirectErrorStream(true)
                 .start()
             val reader = BufferedReader(InputStreamReader(process.inputStream))
@@ -60,5 +64,4 @@ object FFmpegUtils {
             }
         }
     }
-
 }
