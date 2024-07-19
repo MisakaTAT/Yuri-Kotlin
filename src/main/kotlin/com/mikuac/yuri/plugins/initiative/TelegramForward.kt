@@ -16,6 +16,7 @@ import org.telegram.telegrambots.meta.api.objects.Chat
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.PhotoSize
 import org.telegram.telegrambots.meta.api.objects.Update
+import java.io.File
 import java.util.function.Supplier
 import java.util.stream.Stream
 
@@ -136,13 +137,21 @@ class TelegramForward(opts: DefaultBotOptions, token: String) : TelegramLongPoll
         return message.sticker.fileId.let { fileId ->
             getFile(fileId, cfg.proxy).takeIf { it.isNotBlank() }?.let { url ->
                 if (!url.endsWith(".webm")) return builder
-                NetUtils.download(
-                    url,
-                    "cache/telegram",
-                    "${IdUtil.simpleUUID()}.webm",
-                    cfg.proxy
-                ).let {
-                    builder.img("file://${FFmpegUtils.webm2Gif(it)}")
+
+                val fileName = "${message.sticker.fileUniqueId}.webm"
+                val cachePath = "cache/telegram"
+                val file = File(cachePath, fileName)
+                if (file.exists()) {
+                    builder.img("file://${FFmpegUtils.webm2Gif(file.absolutePath)}")
+                } else {
+                    NetUtils.download(
+                        url,
+                        cachePath,
+                        fileName,
+                        cfg.proxy
+                    ).let {
+                        builder.img("file://${FFmpegUtils.webm2Gif(it)}")
+                    }
                 }
             }
             builder

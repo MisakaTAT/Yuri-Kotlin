@@ -2,13 +2,10 @@
 
 package com.mikuac.yuri.utils
 
-import com.mikuac.yuri.annotation.Slf4j.Companion.log
 import com.mikuac.yuri.exception.YuriException
 import lombok.extern.slf4j.Slf4j
-import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
-import java.io.InputStreamReader
 import java.util.*
 
 @Slf4j
@@ -32,36 +29,64 @@ object FFmpegUtils {
         }
     }
 
-    fun webm2Gif(src: String, fps: Int = 24, maxWidth: Int = 320): String {
+    fun webm2Gif(src: String): String {
         return File(src).let { file ->
             if (!file.name.endsWith("webm")) throw YuriException("不支持的文件格式：${file.extension}")
+            val outputDir = "${file.parent}/frames"
             val dst = "${file.parent}/${file.nameWithoutExtension}.gif"
-            val process = ProcessBuilder()
+
+            val cache = File(dst)
+            if (cache.exists()) {
+                return@let dst
+            }
+
+            File(outputDir).mkdirs()
+
+            // 将 WebM 文件切成 PNG 序列
+            val extractProcess = ProcessBuilder()
                 .command(
                     ffmpeg(),
-                    "-y",
+                    "-vcodec",
+                    "libvpx-vp9",
                     "-i",
                     src,
-                    "-vf",
-                    "fps=$fps,scale=$maxWidth:-1:flags=lanczos,split[s0][s1];[s0]palettegen=reserve_transparent=on:transparency_color=ffffff[p];[s1][p]paletteuse",
+                    "-pix_fmt",
+                    "rgba",
+                    "$outputDir/%04d.png"
+                )
+                .redirectOutput(ProcessBuilder.Redirect.DISCARD)
+                .redirectError(ProcessBuilder.Redirect.DISCARD)
+                .start()
+
+            extractProcess.waitFor().let {
+                if (it != 0) {
+                    throw YuriException("WebM to PNG extraction failed")
+                }
+            }
+
+            // 将 PNG 序列合并为 GIF
+            val mergeProcess = ProcessBuilder()
+                .command(
+                    ffmpeg(),
+                    "-i",
+                    "$outputDir/%04d.png",
+                    "-lavfi",
+                    "split[v],palettegen,[v]paletteuse",
                     dst
                 )
-                .redirectErrorStream(true)
+                .redirectOutput(ProcessBuilder.Redirect.DISCARD)
+                .redirectError(ProcessBuilder.Redirect.DISCARD)
                 .start()
-            val reader = BufferedReader(InputStreamReader(process.inputStream))
-            var line: String? = reader.readLine()
-            var lastLine: String? = null
-            while (line != null) {
-                lastLine = line
-                line = reader.readLine()
-            }
-            process.waitFor().let {
+
+            mergeProcess.waitFor().let {
                 if (it != 0) {
-                    log.error("WebM2Gif Failed: $lastLine")
-                    throw YuriException("WebM2Gif Failed")
+                    throw YuriException("PNG to GIF merge failed")
                 }
-                dst
             }
+
+            File(outputDir).deleteRecursively()
+            return@let dst
         }
     }
+
 }

@@ -3,9 +3,12 @@ server:
 
 shiro:
   ws:
-    server:
+    client:
       enable: true
-
+      url: "ws://192.168.100.77:3000"
+    server:
+      enable: false
+      url: "/ws/shiro"
 logging:
   level:
     com.kennycason.kumo: OFF
