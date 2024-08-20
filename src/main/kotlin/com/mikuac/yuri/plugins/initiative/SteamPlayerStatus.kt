@@ -48,10 +48,9 @@ class SteamPlayerStatus {
         if (gameNameCache.containsKey(gameId)) {
             return gameNameCache[gameId] ?: originalName ?: ""
         }
-
         val url = "https://store.steampowered.com/api/appdetails?appids=$gameId&cc=cn"
         try {
-            val response = NetUtils.get(url)
+            val response = NetUtils.get(url, true)
             val jsonObj = JsonParser.parseString(response.body?.string())
             val gameData = jsonObj?.asJsonObject?.get(gameId)?.asJsonObject?.get("data")?.asJsonObject
             val name = gameData?.get("name")?.asString ?: return originalName ?: ""
@@ -71,7 +70,7 @@ class SteamPlayerStatus {
         val flag = groupId + playerId
         val domain = "https://api.steampowered.com"
         val api = "${domain}/ISteamUser/GetPlayerSummaries/v0002/?key=${cfg.apiKey}&steamids=${playerId}"
-        NetUtils.get(api).use { resp ->
+        NetUtils.get(api, true).use { resp ->
             val jsonObj = JsonParser.parseString(resp.body?.string())
             val players = jsonObj?.asJsonObject?.get("response")?.asJsonObject?.get("players")?.asJsonArray?.get(0)
             val personaName = players?.asJsonObject?.get("personaname")?.asString
