@@ -39,7 +39,7 @@ class SteamPlayerStatus {
 
     private val gamingTime = HashMap<String, LocalDateTime>()
 
-    private val gameNameCache = mutableMapOf<String, String>()
+    private val gameNameCache = HashMap<String, String>()
 
     @Autowired
     private lateinit var global: Global
@@ -50,7 +50,10 @@ class SteamPlayerStatus {
         }
         val url = "https://store.steampowered.com/api/appdetails?appids=$gameId&cc=cn"
         try {
-            val response = NetUtils.get(url, true)
+            val headers = HashMap<String, String>()
+            headers["Accept-Language"] = "zh-CN,zh;q=0.9,en;q=0.8"
+
+            val response = NetUtils.get(url, headers, true)
             val jsonObj = JsonParser.parseString(response.body?.string())
             val gameData = jsonObj?.asJsonObject?.get(gameId)?.asJsonObject?.get("data")?.asJsonObject
             val name = gameData?.get("name")?.asString ?: return originalName ?: ""

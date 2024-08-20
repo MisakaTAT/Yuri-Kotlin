@@ -37,7 +37,16 @@ object NetUtils {
         val client = client.newBuilder()
         if (proxy) client.proxy(createProxy())
         return client.build().newCall(req.build()).execute()
+    }
 
+    fun get(url: String, headers: Map<String, String>, proxy: Boolean): Response {
+        val req = Request.Builder().url(url).get()
+        headers.forEach {
+            req.header(it.key, it.value)
+        }
+        val client = client.newBuilder()
+        if (proxy) client.proxy(createProxy())
+        return client.build().newCall(req.build()).execute()
     }
 
     fun get(url: String, headers: Map<String, String>): Response {
