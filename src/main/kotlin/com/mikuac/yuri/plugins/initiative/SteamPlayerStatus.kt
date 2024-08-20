@@ -54,10 +54,8 @@ class SteamPlayerStatus {
             val jsonObj = JsonParser.parseString(response.body?.string())
             val gameData = jsonObj?.asJsonObject?.get(gameId)?.asJsonObject?.get("data")?.asJsonObject
             val name = gameData?.get("name")?.asString ?: return originalName ?: ""
-
             if (name != originalName) {
                 gameNameCache[gameId] = name
-                gameNameCache[name] = gameId
             }
             return name
         } catch (e: Exception) {
