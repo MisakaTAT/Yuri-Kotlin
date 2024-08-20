@@ -39,8 +39,33 @@ class SteamPlayerStatus {
 
     private val gamingTime = HashMap<String, LocalDateTime>()
 
+    private val gameNameCache = mutableMapOf<String, String>()
+
     @Autowired
     private lateinit var global: Global
+
+    private fun getGameName(gameId: String, originalName: String?): String {
+        if (gameNameCache.containsKey(gameId)) {
+            return gameNameCache[gameId] ?: originalName ?: ""
+        }
+
+        val url = "https://store.steampowered.com/api/appdetails?appids=$gameId&cc=cn"
+        try {
+            val response = NetUtils.get(url)
+            val jsonObj = JsonParser.parseString(response.body?.string())
+            val gameData = jsonObj?.asJsonObject?.get(gameId)?.asJsonObject?.get("data")?.asJsonObject
+            val name = gameData?.get("name")?.asString ?: return originalName ?: ""
+
+            if (name != originalName) {
+                gameNameCache[gameId] = name
+                gameNameCache[name] = gameId
+            }
+            return name
+        } catch (e: Exception) {
+            log.error("获取游戏名称失败：$e")
+            return originalName ?: ""
+        }
+    }
 
     private fun request(groupId: String, playerId: String): String {
         val flag = groupId + playerId
@@ -50,7 +75,9 @@ class SteamPlayerStatus {
             val jsonObj = JsonParser.parseString(resp.body?.string())
             val players = jsonObj?.asJsonObject?.get("response")?.asJsonObject?.get("players")?.asJsonArray?.get(0)
             val personaName = players?.asJsonObject?.get("personaname")?.asString
-            val gameName = players?.asJsonObject?.get("gameextrainfo")?.asString
+            val gameExtraInfo = players?.asJsonObject?.get("gameextrainfo")?.asString
+            val gameId = players?.asJsonObject?.get("gameid")?.asString
+            val gameName = if (gameId != null) getGameName(gameId, gameExtraInfo) else gameExtraInfo
 
             when {
                 // 如果发现开始玩了而之前未玩

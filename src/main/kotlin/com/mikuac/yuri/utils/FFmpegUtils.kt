@@ -49,7 +49,6 @@ object FFmpegUtils {
                 "-"
             ).start()
 
-
             val p2 = ProcessBuilder(
                 ffmpeg(),
                 "-f", "apng",
