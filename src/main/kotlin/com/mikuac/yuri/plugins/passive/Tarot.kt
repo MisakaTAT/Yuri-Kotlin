@@ -48,13 +48,22 @@ class Tarot : ApplicationRunner {
         data = Gson().fromJson(Gson().toJson(map), TarotDTO::class.java)
     }
 
+    private fun imageToBase64(imageName: String): String {
+        val path = "images/tarot/$imageName"
+        val data = ThrowUser::class.java.classLoader.getResourceAsStream(path)?.use { inputStream ->
+            val imageBytes = inputStream.readAllBytes()
+            Base64.getEncoder().encodeToString(imageBytes)
+        }
+        return "base64://${data}"
+    }
+
     private fun buildMsg(msgId: Int): String {
         val data = data.tarot[Random().nextInt(data.tarot.size)]
         val desc = if (Random().nextInt(100) and 1 != 0) "[正位] ${data.positive}" else "[逆位] ${data.negative}"
         return MsgUtils.builder()
             .text(data.name)
             .text("\n\n$desc")
-            .img("https://mikuac.com/images/tarot/${data.imageName}")
+            .img(imageToBase64(data.imageName))
             .reply(msgId)
             .build()
     }
