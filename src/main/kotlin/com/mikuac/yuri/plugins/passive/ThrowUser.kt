@@ -1,6 +1,5 @@
 package com.mikuac.yuri.plugins.passive
 
-import com.mikuac.shiro.annotation.AnyMessageHandler
 import com.mikuac.shiro.annotation.GroupMessageHandler
 import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.common.Shiro
@@ -68,9 +67,10 @@ class ThrowUser {
         return Base64.getEncoder().encodeToString(stream.toByteArray())
     }
 
+    @Suppress("kotlin:S6611")
     private fun buildMsg(event: GroupMessageEvent): String {
         val atList = event.arrayMsg.filter { it.type == MsgTypeEnum.at }
-        if (atList.isEmpty()) throw YuriException("请 @ 一名群成员")
+        if (atList.isEmpty()) return ""
         val atUserId = atList[0].data["qq"]!!
         if ("all" == atUserId) throw YuriException("哼哼～ 没想到你个笨蛋还想把所有人都丢出去")
         return "base64://${drawImage(atUserId.toLong())}"
@@ -80,7 +80,9 @@ class ThrowUser {
     @MessageHandlerFilter(cmd = Regex.THROW_USER)
     fun handler(bot: Bot, event: GroupMessageEvent) {
         ExceptionHandler.with(bot, event) {
-            bot.sendGroupMsg(event.groupId, MsgUtils.builder().img(buildMsg(event)).build(), false)
+            buildMsg(event).let {
+                if (it.isNotBlank()) bot.sendGroupMsg(event.groupId, MsgUtils.builder().img(it).build(), false)
+            }
         }
     }
 

@@ -10,6 +10,6 @@ https://mikuac.com/archives/675
 
 # Thanks
 
-Thanks [JetBrains](https://www.jetbrains.com/?from=mirai) Provide Free License Support OpenSource Project
+[JetBrains](https://www.jetbrains.com/?from=Shiro) offers free licenses to support open source projects.
 
-[<img src="https://mikuac.com/images/jetbrains-variant-3.png" width="200"/>](https://www.jetbrains.com/?from=mirai)
+[<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.png" width="280"/>](https://www.jetbrains.com/?from=shiro)
