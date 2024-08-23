@@ -8,13 +8,20 @@ import com.mikuac.shiro.dto.event.message.PrivateMessageEvent
 
 object SendUtils {
 
+    fun group(groupId: Long, bot: Bot, text: String): Int? {
+        return bot.sendGroupMsg(
+            groupId,
+            MsgUtils.builder().text(text).build(),
+            false
+        )?.data?.messageId
+    }
+
     fun at(userId: Long, groupId: Long, bot: Bot, text: String): Int? {
         if (groupId != 0L) return bot.sendGroupMsg(
             groupId,
             MsgUtils.builder().at(userId).text(text).build(),
             false
         )?.data?.messageId
-
         return bot.sendPrivateMsg(userId, text, false)?.data?.messageId
     }
 
