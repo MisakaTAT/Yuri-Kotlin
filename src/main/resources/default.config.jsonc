@@ -35,6 +35,10 @@
   },
   // 插件配置
   "plugins": {
+    //临时邮箱配置
+    "tempEmail":{
+      "timeout": 120
+    },
     // 搜图插件配置
     "picSearch": {
       // 是否启用代理

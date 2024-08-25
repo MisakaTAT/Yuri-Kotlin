@@ -27,6 +27,7 @@ data class ConfigModel(
     }
 
     data class Plugins(
+        val tempEmail: TempEmail,
         val picSearch: PicSearch,
         val setu: SeTu,
         val repeat: Repeat,
@@ -57,7 +58,9 @@ data class ConfigModel(
             val maxFontSize: Int,
             val filterRule: List<String>,
         )
-
+        data class TempEmail(
+            val timeout: Int,
+        )
         data class PicSearch(
             val timeout: Int,
             val similarity: String,
@@ -66,7 +69,6 @@ data class ConfigModel(
             val sauceNaoKey: String,
             val proxy: Boolean,
         )
-
         data class SeTu(
             val r18: Boolean,
             val cd: Int,

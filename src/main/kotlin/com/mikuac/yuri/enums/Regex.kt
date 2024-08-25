@@ -39,6 +39,8 @@ object Regex {
     const val SEND_LIKE = "^赞我([0-9]+)次\$"
     const val CLEAR_SEND_LIKE = "^重置点赞(.*)\$"
     const val STEAM_PLAYER_STATUS = "^steam\\s(?<action>bd|subs|ubd)?\\s?(?<steamId>[0-9]+)?"
+    const val TEMP_EMAIL = "^临时邮箱$"
+    const val UNSET_TEMP_EMAIL = "^邮箱退出\$"
 
 }
 
