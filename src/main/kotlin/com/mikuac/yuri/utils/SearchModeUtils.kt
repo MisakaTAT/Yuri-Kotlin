@@ -28,7 +28,7 @@ class SearchModeUtils {
     @AnyMessageHandler
     @MessageHandlerFilter(cmd = Regex.UNSET_SEARCH_MODE)
     fun unsetSearchMode(bot: Bot, event: AnyMessageEvent) {
-        remove(event.userId, event.groupId, bot)
+        remove(event.userId, event.groupId ?: 0L, bot)
     }
 
     companion object {

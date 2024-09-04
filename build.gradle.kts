@@ -31,6 +31,7 @@ tasks.withType<KotlinCompile> {
 repositories {
     mavenCentral()
     mavenLocal()
+    maven("https://jitpack.io")
 }
 
 dependencies {
@@ -62,4 +63,5 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.23")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
     implementation("javax.xml.bind:jaxb-api:2.3.1")
+    implementation("com.github.shivam1608:JMailTM:0.8.0")
 }
