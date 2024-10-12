@@ -3,6 +3,7 @@ package com.mikuac.yuri.plugins.passive
 import com.mikuac.shiro.annotation.GroupMessageHandler
 import com.mikuac.shiro.annotation.MessageHandlerFilter
 import com.mikuac.shiro.annotation.common.Shiro
+import com.mikuac.shiro.common.utils.MsgUtils
 import com.mikuac.shiro.common.utils.ShiroUtils
 import com.mikuac.shiro.core.Bot
 import com.mikuac.shiro.dto.event.message.GroupMessageEvent
@@ -79,7 +80,9 @@ class VoteKick {
         SendUtils.group(
             groupId,
             bot,
-            "已发起针对 @$targetId 的踢人投票。\n投票持续${Config.plugins.voteKick.timeout}分钟,请发送 “赞成” 或 “反对” 参与。"
+            "已发起针对 ${
+                MsgUtils.builder().at(targetId).build()
+            } 的踢人投票。\n投票持续 ${Config.plugins.voteKick.timeout} 分钟,请发送 “赞成” 或 “反对” 参与。"
         )
     }
 
@@ -110,7 +113,9 @@ class VoteKick {
             SendUtils.group(
                 groupId,
                 bot,
-                "@$voterId 已投$vt。当前赞成票数: ${voteData.agreeVotes.size}, 反对票数: ${voteData.disagreeVotes.size}, 需要赞成票数: ${voteData.requiredVotes}"
+                "${
+                    MsgUtils.builder().at(voterId).build()
+                } 已投$vt。当前赞成票数: ${voteData.agreeVotes.size}, 反对票数: ${voteData.disagreeVotes.size}, 需要赞成票数: ${voteData.requiredVotes}"
             )
 
             if (voteData.agreeVotes.size >= voteData.requiredVotes) {
@@ -159,7 +164,9 @@ class VoteKick {
         SendUtils.group(
             groupId,
             bot,
-            "投票通过。@${voteData.targetId} 已被踢出群聊。最终结果: 赞成票数: ${voteData.agreeVotes.size}, 反对票数: ${voteData.disagreeVotes.size}"
+            "投票通过。${
+                MsgUtils.builder().at(voteData.targetId).build()
+            } 已被踢出群聊。最终结果: 赞成票数: ${voteData.agreeVotes.size}, 反对票数: ${voteData.disagreeVotes.size}"
         )
     }
 }
