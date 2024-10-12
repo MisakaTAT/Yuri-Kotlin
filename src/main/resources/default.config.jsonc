@@ -221,10 +221,10 @@
       "timeout": 60
     },
     // 获取ApiKey https://steamcommunity.com/dev/apikey
-    steamPlayerStatus: {
+    "steamPlayerStatus": {
       "apiKey": ""
     },
-    voteKick: {
+    "voteKick": {
       // 超时（分钟）
       "timeout": 5,
       "requiredVotes": 6
