@@ -41,6 +41,6 @@ object Regex {
     const val STEAM_PLAYER_STATUS = "^steam\\s(?<action>bd|subs|ubd)?\\s?(?<steamId>[0-9]+)?"
     const val TEMP_EMAIL = "^临时邮箱$"
     const val UNSET_TEMP_EMAIL = "^邮箱退出\$"
-
+    const val VOTE_KICK = "^(发起踢人投票.*|赞成$|反对$|结束投票$)"
 }
 

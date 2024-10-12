@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
 
-
 @Shiro
 @Component
 class Roulette {

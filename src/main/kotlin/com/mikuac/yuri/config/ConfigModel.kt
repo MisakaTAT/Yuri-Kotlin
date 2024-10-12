@@ -46,10 +46,16 @@ data class ConfigModel(
         val webScreenshot: WebScreenshot,
         val vits: Vits,
         val steamPlayerStatus: SteamPlayerStatus,
+        val voteKick: VoteKick,
     ) {
         data class Vits(
             val timeout: Int,
             val api: String,
+        )
+
+        data class VoteKick(
+            val timeout: Int,
+            val requiredVotes: Int,
         )
 
         data class WordCloud(
@@ -58,9 +64,11 @@ data class ConfigModel(
             val maxFontSize: Int,
             val filterRule: List<String>,
         )
+
         data class TempEmail(
             val timeout: Int,
         )
+
         data class PicSearch(
             val timeout: Int,
             val similarity: String,
@@ -69,6 +77,7 @@ data class ConfigModel(
             val sauceNaoKey: String,
             val proxy: Boolean,
         )
+
         data class SeTu(
             val r18: Boolean,
             val cd: Int,

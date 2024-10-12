@@ -223,6 +223,11 @@
     // 获取ApiKey https://steamcommunity.com/dev/apikey
     steamPlayerStatus: {
       "apiKey": ""
+    },
+    voteKick: {
+      // 超时（分钟）
+      "timeout": 5,
+      "requiredVotes": 6
     }
   }
 }
