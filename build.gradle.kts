@@ -45,7 +45,7 @@ dependencies {
     implementation("cn.hutool:hutool-core:5.8.26")
     implementation("cn.hutool:hutool-system:5.8.26")
     implementation("net.coobird:thumbnailator:0.4.20")
-    implementation("com.github.oshi:oshi-core:6.5.0")
+    implementation("com.github.oshi:oshi-core:6.6.2")
     implementation("org.telegram:telegrambots:6.9.7.1")
     implementation("org.jsoup:jsoup:1.17.2")
     implementation("com.kennycason:kumo-core:1.28")
